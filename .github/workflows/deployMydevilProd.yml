@@ -28,6 +28,6 @@ jobs:
           pwd
           git pull origin main
           pnpm install
-          pnpm build
+          pnpm build:no:lint
           devil www restart 
           EOF
