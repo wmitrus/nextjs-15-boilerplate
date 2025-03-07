@@ -1,9 +1,10 @@
-name: Vercel Production Deployment
+name: Deploy to Linux Server
 env:
   MYDEVIL_PRIVATE_KEY: ${{ secrets.MYDEVIL_PRIVATE_KEY }}
   MYDEVIL_USER: ${{ secrets.MYDEVIL_USER }}
   MYDEVIL_HOST: ${{ secrets.MYDEVIL_HOST }}
   MYDEVIL_REPO_PATH: ${{ secrets.MYDEVIL_REPO_PATH }}
+  MYDEVIL_DOMAIN: ${{ secrets.MYDEVIL_DOMAIN }}
 on:
   push:
     branches:
@@ -12,11 +13,20 @@ jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
     steps:
-      - name: install ssh keys
-        run: |
-          install -m 600 -D /dev/null ~/.ssh/github_id_rsa
-          echo "${{ secrets.MYDEVIL_PRIVATE_KEY }}" > ~/.ssh/github_id_rsa
-          ssh-keyscan -H ${{ secrets.MYDEVIL_HOST }} > ~/.ssh/known_hosts
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Connect and Pull
-        run: ssh ${{ secrets.MYDEVIL_USER }}@${{ secrets.MYDEVIL_HOST }} "cd ${{ secrets.MYDEVIL_REPO_PATH }} && git checkout main && git pull && exit"
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.MYDEVIL_PRIVATE_KEY }}
+
+      - name: Deploy to Server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.MYDEVIL_USER }}@${{ secrets.MYDEVIL_HOST }} << 'EOF'
+          cd ${{ secrets.MYDEVIL_REPO_PATH }}
+          git pull origin main
+          pnpm install
+          pnpm build
+          devil www restart 
+          EOF
