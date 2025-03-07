@@ -1,0 +1,22 @@
+name: Vercel Production Deployment
+env:
+  MYDEVIL_PRIVATE_KEY: ${{ secrets.MYDEVIL_PRIVATE_KEY }}
+  MYDEVIL_USER: ${{ secrets.MYDEVIL_USER }}
+  MYDEVIL_HOST: ${{ secrets.MYDEVIL_HOST }}
+  MYDEVIL_REPO_PATH: ${{ secrets.MYDEVIL_REPO_PATH }}
+on:
+  push:
+    branches:
+      - main
+jobs:
+  Deploy-Production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: install ssh keys
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/github_id_rsa
+          echo "${{ secrets.MYDEVIL_PRIVATE_KEY }}" > ~/.ssh/github_id_rsa
+          ssh-keyscan -H ${{ secrets.MYDEVIL_HOST }} > ~/.ssh/known_hosts
+
+      - name: Connect and Pull
+        run: ssh ${{ secrets.MYDEVIL_USER }}@${{ secrets.MYDEVIL_HOST }} "cd ${{ secrets.MYDEVIL_REPO_PATH }} && git checkout main && git pull && exit"
