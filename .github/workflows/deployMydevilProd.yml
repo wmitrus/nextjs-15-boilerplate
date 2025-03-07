@@ -23,7 +23,7 @@ jobs:
 
       - name: Deploy to Server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.MYDEVIL_USER }}@${{ secrets.MYDEVIL_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -t ${{ secrets.MYDEVIL_USER }}@${{ secrets.MYDEVIL_HOST }} << 'EOF'
           cd ${{ secrets.MYDEVIL_REPO_PATH }}
           pwd
           git pull origin main
