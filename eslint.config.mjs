@@ -18,7 +18,7 @@ const eslintConfig = [
       'plugin:jsx-a11y/recommended',
       'plugin:prettier/recommended',
     ],
-    plugins: ['prettier', 'jsx-a11y'],
+    plugins: ['prettier', 'jsx-a11y', 'import'],
     rules: {
       'prettier/prettier': 'error',
       'react/react-in-jsx-scope': 'off',
@@ -28,6 +28,31 @@ const eslintConfig = [
       'jsx-a11y/aria-unsupported-elements': 'warn',
       'jsx-a11y/role-has-required-aria-props': 'warn',
       'jsx-a11y/role-supports-aria-props': 'warn',
+      'import/order': [
+        'error',
+        {
+          groups: [
+            ['builtin', 'external'],
+            'internal',
+            ['parent', 'sibling', 'index'],
+            'object',
+            'type',
+          ],
+          pathGroups: [
+            {
+              pattern: 'react',
+              group: 'external',
+              position: 'before',
+            },
+          ],
+          pathGroupsExcludedImportTypes: ['react'],
+          'newlines-between': 'always',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+          },
+        },
+      ],
     },
   }),
 ]
