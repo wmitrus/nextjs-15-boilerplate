@@ -54,6 +54,14 @@ const eslintConfig = [
         },
       ],
     },
+    ignorePatterns: [
+      'dist/',
+      'build/',
+      '.next/',
+      'node_modules/',
+      'public/',
+      'coverage/',
+    ],
   }),
 ]
 
