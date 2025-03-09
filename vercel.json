@@ -1,16 +1,6 @@
 {
   "version": 2,
   "public": true,
-  "builds": [
-    {
-      "src": "storybook-static/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
   "routes": [
     {
       "src": "/storybook/(.*)",
