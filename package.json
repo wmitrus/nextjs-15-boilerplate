@@ -11,7 +11,10 @@
     "lint:fix": "next lint --fix",
     "prepare": "husky",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "e2e": "pnpm exec playwright test",
+    "e2e:ui": "pnpm exec playwright test --ui",
+    "e2e:debug": "pnpm exec playwright test --debug"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,mjs}": [
@@ -35,6 +38,7 @@
     "@eslint/eslintrc": "^3.3.0",
     "@eslint/js": "^9.21.0",
     "@next/eslint-plugin-next": "^15.2.1",
+    "@playwright/test": "^1.51.0",
     "@tailwindcss/postcss": "^4.0.11",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
