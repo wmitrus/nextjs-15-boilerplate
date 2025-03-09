@@ -15,6 +15,7 @@ const eslintConfig = [
       'next',
       'next/core-web-vitals',
       'next/typescript',
+      'plugin:storybook/recommended',
       'plugin:jsx-a11y/recommended',
       'plugin:prettier/recommended',
       'plugin:jest/recommended',
@@ -22,6 +23,7 @@ const eslintConfig = [
       'plugin:testing-library/react',
     ],
     plugins: [
+      'storybook',
       'prettier',
       'jsx-a11y',
       'import',
