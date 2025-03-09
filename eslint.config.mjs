@@ -17,8 +17,18 @@ const eslintConfig = [
       'next/typescript',
       'plugin:jsx-a11y/recommended',
       'plugin:prettier/recommended',
+      'plugin:jest/recommended',
+      'plugin:jest-dom/recommended',
+      'plugin:testing-library/react',
     ],
-    plugins: ['prettier', 'jsx-a11y', 'import'],
+    plugins: [
+      'prettier',
+      'jsx-a11y',
+      'import',
+      'jest',
+      'jest-dom',
+      'testing-library',
+    ],
     rules: {
       'prettier/prettier': 'error',
       'react/react-in-jsx-scope': 'off',
@@ -61,6 +71,27 @@ const eslintConfig = [
       'node_modules/',
       'public/',
       'coverage/',
+    ],
+    overrides: [
+      {
+        files: ['**/*.test.{js,jsx,ts,tsx}'],
+        env: {
+          'jest/globals': true,
+        },
+        plugins: ['jest', 'jest-dom', 'testing-library'],
+        extends: [
+          'plugin:jest/recommended',
+          'plugin:jest-dom/recommended',
+          'plugin:testing-library/react',
+        ],
+        rules: {
+          // Add or override jest-specific rules here
+          'jest/no-disabled-tests': 'warn',
+          'jest/no-focused-tests': 'error',
+          'jest/no-identical-title': 'error',
+          'jest/valid-expect': 'error',
+        },
+      },
     ],
   }),
 ]
