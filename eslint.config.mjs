@@ -28,6 +28,7 @@ const eslintConfig = [
       'jest',
       'jest-dom',
       'testing-library',
+      'playwright',
     ],
     rules: {
       'prettier/prettier': 'error',
@@ -90,6 +91,19 @@ const eslintConfig = [
           'jest/no-focused-tests': 'error',
           'jest/no-identical-title': 'error',
           'jest/valid-expect': 'error',
+        },
+      },
+      {
+        files: ['e2e/**/*.[jt]s?(x)'],
+        extends: 'plugin:playwright/recommended',
+        plugins: ['playwright'],
+        rules: {
+          // Disable React Testing Library rules for Playwright tests
+          'testing-library/prefer-screen-queries': 'off',
+          'jest/no-disabled-tests': 'off',
+          'jest/no-focused-tests': 'off',
+          'jest/no-identical-title': 'off',
+          'jest/valid-expect': 'off',
         },
       },
     ],
