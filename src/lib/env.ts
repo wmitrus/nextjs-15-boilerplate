@@ -1,13 +1,14 @@
-import { createEnv } from '@t3-oss/env-nextjs'
-import { pino, Level } from 'pino'
-import { z } from 'zod'
+import { createEnv } from '@t3-oss/env-nextjs';
+import { pino, Level } from 'pino';
+import { z } from 'zod';
 
-const logLevels = Object.keys(pino.levels.values) as [Level, ...Level[]]
+const logLevels = Object.keys(pino.levels.values) as [Level, ...Level[]];
 
 export const env = createEnv({
   server: {
     // DATABASE_URL: z.string().url(),
     // OPEN_AI_API_KEY: z.string().min(1),
+    NODE_ENV: z.string().min(1),
     LOG_DIR: z.string(),
     LOG_LEVEL: z.enum(logLevels),
     FILE_LOG_LEVEL: z.enum(logLevels),
@@ -21,6 +22,7 @@ export const env = createEnv({
   },
   // If you're using Next.js < 13.4.4, you'll need to specify the runtimeEnv manually
   runtimeEnv: {
+    NODE_ENV: process.env.NODE_ENV,
     LOG_DIR: process.env.LOG_DIR,
     LOG_LEVEL: process.env.LOG_LEVEL,
     FILE_LOG_LEVEL: process.env.FILE_LOG_LEVEL,
@@ -32,4 +34,4 @@ export const env = createEnv({
   // experimental__runtimeEnv: {
   //   NEXT_PUBLIC_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_PUBLISHABLE_KEY,
   // }
-})
+});
