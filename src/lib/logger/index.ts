@@ -13,7 +13,7 @@ import { createFileTransport, createConsoleTransport } from './utils'
 // isDev constant is use to select proper transports for different environments
 const LOG_DIR = env.LOG_DIR || 'logs'
 const LOG_LEVEL = env.LOG_LEVEL || 'info'
-const isDev = process.env.NODE_ENV === 'development'
+const isDev = process.env.NODE_ENV === 'development' || 'local'
 const LOG_TO_FILE_PROD = env.LOG_TO_FILE_PROD || false
 const LOG_TO_FILE_DEV = env.LOG_TO_FILE_DEV || false
 
