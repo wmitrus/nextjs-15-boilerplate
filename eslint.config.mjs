@@ -1,13 +1,13 @@
-import { FlatCompat } from '@eslint/eslintrc'
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
+import { FlatCompat } from '@eslint/eslintrc';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
-})
+});
 
 const eslintConfig = [
   ...compat.config({
@@ -33,6 +33,7 @@ const eslintConfig = [
       'playwright',
     ],
     rules: {
+      semi: ['error', 'always'],
       'prettier/prettier': 'error',
       'react/react-in-jsx-scope': 'off',
       'jsx-a11y/alt-text': 'warn',
@@ -111,6 +112,6 @@ const eslintConfig = [
       },
     ],
   }),
-]
+];
 
-export default eslintConfig
+export default eslintConfig;
