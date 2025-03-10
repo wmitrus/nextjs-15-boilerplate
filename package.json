@@ -15,8 +15,8 @@
     "e2e": "pnpm exec playwright test",
     "e2e:ui": "pnpm exec playwright test --ui",
     "e2e:debug": "pnpm exec playwright test --debug",
-    "storybook": "storybook dev -p 6006 -s public",
-    "build-storybook": "storybook build -s public",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
     "serve-storybook": "serve storybook-static",
     "chromatic": "dotenv -e .env.local npx chromatic"
   },

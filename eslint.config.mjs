@@ -72,6 +72,7 @@ const eslintConfig = [
       'build/',
       '.next/',
       'node_modules/',
+      'storybook-static/',
       'public/',
       'coverage/',
     ],
