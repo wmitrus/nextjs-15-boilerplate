@@ -3,14 +3,14 @@
  * https://jestjs.io/docs/configuration
  */
 
-import nextJest from 'next/jest.js'
+import nextJest from 'next/jest.js';
 
-import type { Config } from 'jest'
+import type { Config } from 'jest';
 
 const createJestConfig = nextJest({
   // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
   dir: './',
-})
+});
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
 
@@ -79,6 +79,15 @@ const config: Config = {
   // A set of global variables that need to be available in all test environments
   // globals: {},
 
+  globals: {
+    'ts-jest': {
+      tsconfig: {
+        target: 'ES2017',
+        module: 'commonjs',
+      },
+    },
+  },
+
   // The maximum amount of workers used to run your tests. Can be specified as % or a number. E.g. maxWorkers: 10% will use 10% of your CPU amount + 1 as the maximum worker number. maxWorkers: 2 will use a maximum of 2 workers.
   // maxWorkers: "50%",
 
@@ -99,6 +108,8 @@ const config: Config = {
   //   "node"
   // ],
 
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   // moduleNameMapper: {},
 
@@ -116,7 +127,7 @@ const config: Config = {
   // notifyMode: "failure-change",
 
   // A preset that is used as a base for Jest's configuration
-  // preset: undefined,
+  preset: 'ts-jest',
 
   // Run tests from one or more projects
   // projects: undefined,
@@ -176,8 +187,8 @@ const config: Config = {
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   testPathIgnorePatterns: [
-    '/node_modules/',
-    '/e2e/', // Use this pattern to ignore e2e tests
+    '\\\\node_modules\\\\',
+    '\\\\e2e\\\\', // Use this pattern to ignore e2e tests
   ],
 
   // The regexp pattern or array of patterns that Jest uses to detect test files
@@ -190,13 +201,16 @@ const config: Config = {
   // testRunner: "jest-circus/runner",
 
   // A map from regular expressions to paths to transformers
-  // transform: undefined,
+  transform: {
+    '^.+\\.tsx?$': 'ts-jest',
+  },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
   // transformIgnorePatterns: [
   //   "\\\\node_modules\\\\",
   //   "\\.pnp\\.[^\\\\]+$"
   // ],
+  transformIgnorePatterns: ['/node_modules/(?!@t3-oss/env-nextjs)'],
 
   // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
   // unmockedModulePathPatterns: undefined,
@@ -209,6 +223,6 @@ const config: Config = {
 
   // Whether to use watchman for file crawling
   // watchman: true,
-}
+};
 
-export default createJestConfig(config)
+export default createJestConfig(config);
