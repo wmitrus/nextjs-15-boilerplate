@@ -7,8 +7,7 @@ import {
 } from 'pino'
 
 import { env } from '@/lib/env'
-
-import { createFileTransport, createConsoleTransport } from './utils'
+import { createFileTransport, createConsoleTransport } from '@/lib/logger/utils'
 
 // isDev constant is use to select proper transports for different environments
 const LOG_DIR = env.LOG_DIR || 'logs'
