@@ -1,24 +1,24 @@
-import fs from 'fs'
-import path from 'path'
-import { TransportTargetOptions } from 'pino'
+import fs from 'fs';
+import path from 'path';
+import { TransportTargetOptions } from 'pino';
 
 export function ensureLogDirectory(logDir: string): boolean {
-  const logDirectory = path.join(process.cwd(), logDir)
+  const logDirectory = path.join(process.cwd(), logDir);
   if (!fs.existsSync(logDirectory)) {
     try {
-      fs.mkdirSync(logDirectory)
+      fs.mkdirSync(logDirectory);
     } catch (err) {
       if (err instanceof Error) {
-        console.error('Error setting up log directory:', err.message)
-        console.error(err)
+        console.error('Error setting up log directory:', err.message);
+        console.error(err);
       } else {
-        console.error('Unknown error occurred while setting up log directory.')
-        console.error(err)
+        console.error('Unknown error occurred while setting up log directory.');
+        console.error(err);
       }
-      return false
+      return false;
     }
   }
-  return true
+  return true;
 }
 
 export function createFileTransport(
@@ -26,7 +26,7 @@ export function createFileTransport(
   logDir: string,
 ): TransportTargetOptions | null {
   if (!ensureLogDirectory(logDir)) {
-    return null
+    return null;
   }
 
   return {
@@ -35,7 +35,7 @@ export function createFileTransport(
       destination: logFile,
       mkdir: true,
     },
-  }
+  };
 }
 
 export function createConsoleTransport(): TransportTargetOptions {
@@ -46,5 +46,5 @@ export function createConsoleTransport(): TransportTargetOptions {
       translateTime: 'yyyy-mm-dd HH:MM:ss',
       ignore: 'pid,hostname',
     },
-  }
+  };
 }
