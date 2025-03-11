@@ -10,12 +10,15 @@ import { env } from '@/lib/env';
 import {
   createFileTransport,
   createConsoleTransport,
+  createLogflareTransport,
+  createLogflareBrowserTransport,
 } from '@/lib/logger/utils';
 
 // isDev constant is used to select proper transports for different environments
 const LOG_DIR = env.LOG_DIR || 'logs';
 const LOG_LEVEL = env.LOG_LEVEL || 'info';
-const isDev = env.NODE_ENV === 'development' || 'local';
+const isDev = env.NODE_ENV === 'development';
+
 const LOG_TO_FILE_PROD = env.LOG_TO_FILE_PROD || false;
 const LOG_TO_FILE_DEV = env.LOG_TO_FILE_DEV || false;
 
@@ -38,11 +41,16 @@ if (isDev) {
 // Common logger options
 const options: LoggerOptions = {
   level: LOG_LEVEL,
+  browser: createLogflareBrowserTransport(),
+  base: {
+    env: process.env.VERCEL_ENV || process.env.NODE_ENV,
+    revision: process.env.VERCEL_GITHUB_COMMIT_SHA,
+  },
 };
 
 let transport;
 // if there will be no targets, following logger will be used
-let logger: Logger = pino({ enabled: false });
+let logger: Logger = pino({ level: 'info' }, createLogflareTransport());
 
 if (targets.length > 0) {
   try {

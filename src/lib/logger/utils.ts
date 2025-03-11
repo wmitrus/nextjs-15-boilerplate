@@ -1,6 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import { TransportTargetOptions } from 'pino';
+import { TransportTargetOptions, DestinationStream } from 'pino';
+import { logflarePinoVercel } from 'pino-logflare';
+
+import { env } from '@/lib/env';
 
 export function ensureLogDirectory(logDir: string): boolean {
   const logDirectory = path.join(process.cwd(), logDir);
@@ -47,4 +50,29 @@ export function createConsoleTransport(): TransportTargetOptions {
       ignore: 'pid,hostname',
     },
   };
+}
+
+export function createLogflareTransport(): DestinationStream {
+  const { stream } = logflarePinoVercel({
+    apiKey: env.LOGFLARE_API_KEY,
+    sourceToken: env.LOGFLARE_SOURCE_TOKEN,
+  });
+
+  return stream;
+}
+
+export function createLogflareBrowserTransport() {
+  const { send } = logflarePinoVercel({
+    apiKey: env.LOGFLARE_API_KEY,
+    sourceToken: env.LOGFLARE_SOURCE_TOKEN,
+  });
+
+  const stream = {
+    transmit: {
+      level: 'info',
+      send: send,
+    },
+  };
+
+  return stream;
 }
