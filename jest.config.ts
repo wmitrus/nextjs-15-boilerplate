@@ -115,6 +115,7 @@ const config: Config = {
 
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@t3-oss/env-nextjs$': '<rootDir>/__mocks__/env.js',
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
@@ -141,8 +142,8 @@ const config: Config = {
   // Reset the module registry before running each individual test
   // resetModules: false,
 
-  // A path to a custom resolver
-  // resolver: undefined,
+  // A path to a custom dependency extractor
+  // dependencyExtractor: undefined,
 
   // Automatically restore mock state and implementation before every test
   // restoreMocks: false,

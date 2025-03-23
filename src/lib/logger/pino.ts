@@ -1,29 +1,27 @@
 import path from 'path';
-import {
-  pino,
-  TransportTargetOptions,
-  type Logger,
-  type LoggerOptions,
-} from 'pino';
+import { pino, DestinationStream, type Logger, type LoggerOptions } from 'pino';
 
 import { env } from '@/lib/env';
 import {
-  createFileTransport,
-  createConsoleTransport,
+  createLogflareBrowserTransport,
+  createLogflareWriteStream,
+  createConsoleStream,
+  createFileStream,
 } from '@/lib/logger/utils';
 
 // isDev constant is used to select proper transports for different environments
 const LOG_DIR = env.LOG_DIR || 'logs';
 const LOG_LEVEL = env.LOG_LEVEL || 'info';
-const isDev = env.NODE_ENV === 'development' || 'local';
+const isDev = env.NODE_ENV === 'development';
+
 const LOG_TO_FILE_PROD = env.LOG_TO_FILE_PROD || false;
 const LOG_TO_FILE_DEV = env.LOG_TO_FILE_DEV || false;
 
-const targets: TransportTargetOptions[] = [];
+const targets: DestinationStream[] = [];
 
 if (LOG_TO_FILE_PROD || LOG_TO_FILE_DEV) {
   const logFile = path.join(process.cwd(), LOG_DIR, 'server.log');
-  const fileTarget = createFileTransport(logFile, LOG_DIR);
+  const fileTarget = createFileStream(logFile, LOG_DIR);
   if (fileTarget) {
     targets.push(fileTarget);
   } else {
@@ -32,23 +30,30 @@ if (LOG_TO_FILE_PROD || LOG_TO_FILE_DEV) {
 }
 
 if (isDev) {
-  targets.push(createConsoleTransport());
+  targets.push(createConsoleStream());
 }
 
 // Common logger options
 const options: LoggerOptions = {
   level: LOG_LEVEL,
+  browser: createLogflareBrowserTransport(),
+  base: {
+    env: process.env.VERCEL_ENV || process.env.NODE_ENV,
+    revision: process.env.VERCEL_GITHUB_COMMIT_SHA,
+  },
 };
+
+if (env.LOGFLARE_INTEGRATION_ENABLED) {
+  targets.push(createLogflareWriteStream());
+}
 
 let transport;
 // if there will be no targets, following logger will be used
-let logger: Logger = pino({ enabled: false });
+let logger: Logger = pino({ level: 'info' });
 
 if (targets.length > 0) {
   try {
-    transport = pino.transport({
-      targets,
-    });
+    transport = pino.multistream(targets);
     logger = pino(options, transport);
   } catch (err) {
     if (err instanceof Error) {
