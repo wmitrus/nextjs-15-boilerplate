@@ -6,21 +6,21 @@ export async function register() {
     'gstatic.com',
     'github.com/mona.png',
     'collector.eu01.nr-data.net',
-  ]
+  ];
 
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     // MSW INSTRUMENTATION
-    const { server } = await import('./lib/mocks/server')
+    const { server } = await import('./lib/mocks/server');
     server.listen({
       onUnhandledRequest(request, print) {
-        const url = new URL(request.url)
+        const url = new URL(request.url);
         if (unmocked.some((host) => url.hostname.includes(host))) {
-          return
+          return;
         }
 
         // Print the regular MSW unhandled request warning otherwise.
-        print.warning()
+        print.warning();
       },
-    })
+    });
   }
 }
