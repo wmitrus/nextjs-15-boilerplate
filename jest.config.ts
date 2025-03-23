@@ -115,6 +115,7 @@ const config: Config = {
 
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@t3-oss/env-nextjs$': '<rootDir>/__mocks__/env.js',
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
