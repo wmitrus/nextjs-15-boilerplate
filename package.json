@@ -22,13 +22,13 @@
     "chromatic": "dotenv -e .env.local npx chromatic",
     "skott": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies",
     "skott:check:only": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies --displayMode=raw",
-    "depcheck": "pnpm exec depcheck"
+    "depcheck": "pnpm exec depcheck",
+    "madge": "pnpm exec madge --circular ./src"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,mjs}": [
       "eslint --fix",
-      "prettier --write",
-      "pnpm depcheck"
+      "prettier --write"
     ],
     "*.{json,css,scss,md,yml,yaml}": [
       "prettier --write"
