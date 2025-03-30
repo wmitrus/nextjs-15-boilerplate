@@ -1,0 +1,46 @@
+/**
+ * @jest-environment node
+ */
+{{#if isTypeScript}}import { NextRequest } from "next/server";{{/if}}
+import { createMocks } from 'node-mocks-http';
+
+// Import the API methods
+import { {{#each methods}}{{this.type}}{{#unless @last}}, {{/unless}}{{/each}} } from '@/app/api/{{dashCase name}}/{{#each dynamicRoutes}}[{{this}}]{{#unless @last}}/{{/unless}}{{/each}}/route';
+
+const schema = {
+  type: 'object',
+  properties: {
+    {{#if hasDynamicRoutes}}
+    {{#each dynamicRoutes}}
+    {{this}}: { type: 'string' },
+    {{/each}}
+    {{/if}}
+    name: { type: 'string' },
+  },
+  required: [{{#if hasDynamicRoutes}}{{#each dynamicRoutes}}'{{this}}'{{#unless @last}},{{/unless}}{{/each}}{{/if}}],
+};
+
+describe('API Route: /{{dashCase name}}{{#if hasDynamicRoutes}}/{{#each dynamicRoutes}}[{{this}}]{{#unless @last}}/{{/unless}}{{/each}}{{/if}}', () => {
+  {{#each methods}}
+  test('{{this.type}} method', async () => {
+    {{#if ../hasDynamicRoutes}}const params = { {{#each dynamicRoutes}}{{this}}: ''{{#unless @last}}, {{/unless}}{{/each}} };{{/if}}
+    {{#if (eq this.type "POST")}}const body = { attr1: '', attr2: '' };{{else if (eq this.type "PUT")}}const body = { attr1: '', attr2: '' };{{/if}}
+
+    const { req } = createMocks({
+      method: '{{this.type}}',
+      {{#if (eq this.type "POST")}}json: async () => body,
+      {{else if (eq this.type "PUT")}}json: async () => body,
+      {{/if}}
+      {{#if ../hasDynamicRoutes}}params: params,{{/if}}
+    });
+
+    const response = await {{this.type}}(req as NextRequest{{#if ../hasDynamicRoutes}}, { params: params }{{/if}});
+    const json = await response.json();
+
+    expect(response.status).toBe({{#if (eq this.type "POST")}}201{{else}}200{{/if}});
+    expect(json.data.length).toBe(1);
+    expect(json.data[0]).toMatchSchema(schema);
+  });
+
+  {{/each}}
+});

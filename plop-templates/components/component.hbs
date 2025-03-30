@@ -1,0 +1,40 @@
+{{#if (eq componentType "polymorphic")}}
+{{#if isTypeScript}}
+import { {{#if withChildren}}PropsWithChildren, {{/if}}ReactElement } from 'react';
+import { ComponentPropsWithoutRef } from 'react';
+
+import { cn } from '@/lib/utils';
+
+type {{pascalCase name}}Props = {} & ComponentPropsWithoutRef<'{{htmlElement}}'>;
+
+{{/if}}
+const {{pascalCase name}} = ({ {{#if withChildren}}children, {{/if}}className, ...rest }{{#if isTypeScript}}: {{#if withChildren}}PropsWithChildren<{{/if}}{{pascalCase name}}Props{{#if withChildren}}>{{/if}}{{/if}}){{#if isTypeScript}}: ReactElement{{/if}} => {
+
+  return (
+    <{{htmlElement}} role="{{dashCase name}}" className={cn(['', className])} {...rest}>
+      {{#if withChildren}}{children}{{else}}Content{{/if}}
+    </{{htmlElement}}>
+  );
+}
+
+export default {{pascalCase name}};
+{{else}}
+
+{{#if isTypeScript}}
+import { ReactElement } from 'react';
+
+type {{pascalCase name}}Props = {};
+
+{{/if}}
+const {{pascalCase name}} = ({}{{#if isTypeScript}}: {{pascalCase name}}Props{{/if}}){{#if isTypeScript}}: ReactElement{{/if}} => {
+
+  return (
+    <div role="{{dashCase name}}">
+      {{pascalCase name}}
+    </div>
+  );
+}
+
+export default {{pascalCase name}};
+
+{{/if}}
