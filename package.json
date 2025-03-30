@@ -32,9 +32,6 @@
     ],
     "*.{json,css,scss,md,yml,yaml}": [
       "prettier --write"
-    ],
-    "package.json": [
-      "bash -c \"pnpm depcheck\""
     ]
   },
   "dependencies": {
