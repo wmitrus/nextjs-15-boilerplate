@@ -1,10 +1,22 @@
 #!/bin/bash
 
 branch="$(git rev-parse --abbrev-ref HEAD)"
+is_ci=${CI:-false} # Check if CI environment variable is set
 
+# Get the list of staged files
+staged_files=$(git diff --cached --name-only)
+
+# Check if the branch is main
 if [ "$branch" = "main" ]; then
-  echo "You can't commit directly to main branch"
-  exit 1
+  if [ "$is_ci" = "true" ]; then
+    echo "CI/CD environment detected. Allowing commit to the main branch."
+  elif [ "$staged_files" = "CHANGELOG.md" ]; then
+    echo "Allowing commit for CHANGELOG.md on the main branch."
+  else
+    echo "You can't commit directly to the main branch unless it's from CI/CD or for CHANGELOG.md."
+    exit 1
+  fi
 fi
 
+# Run lint-staged
 pnpm exec lint-staged
