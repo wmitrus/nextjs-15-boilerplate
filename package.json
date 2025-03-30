@@ -33,7 +33,7 @@
     "*.{json,css,scss,md,yml,yaml}": [
       "prettier --write"
     ],
-    "{package.json,js,jsx,ts,tsx}": [
+    "package.json": [
       "bash -c \"pnpm depcheck\""
     ]
   },
