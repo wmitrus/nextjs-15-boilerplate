@@ -19,7 +19,9 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "serve-storybook": "serve storybook-static",
-    "chromatic": "dotenv -e .env.local npx chromatic"
+    "chromatic": "dotenv -e .env.local npx chromatic",
+    "skott": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies",
+    "skott:check:only": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies --displayMode=raw"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,mjs}": [
@@ -101,6 +103,7 @@
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "semantic-release": "^24.2.3",
+    "skott": "^0.35.4",
     "storybook": "8.6.4",
     "tailwindcss": "^4.0.11",
     "ts-jest": "^29.2.6",
@@ -130,6 +133,9 @@
       "esbuild",
       "msw",
       "sharp"
+    ],
+    "ignoredBuiltDependencies": [
+      "@parcel/watcher"
     ]
   }
 }
