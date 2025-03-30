@@ -21,12 +21,14 @@
     "serve-storybook": "serve storybook-static",
     "chromatic": "dotenv -e .env.local npx chromatic",
     "skott": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies",
-    "skott:check:only": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies --displayMode=raw"
+    "skott:check:only": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies --displayMode=raw",
+    "depcheck": "pnpm exec depcheck"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,mjs}": [
       "eslint --fix",
-      "prettier --write"
+      "prettier --write",
+      "pnpm depcheck"
     ],
     "*.{json,css,scss,md,yml,yaml}": [
       "prettier --write"
