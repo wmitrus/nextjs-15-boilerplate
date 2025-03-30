@@ -13,6 +13,7 @@
       'eslint-*',
       'globals',
       'jest-environment-jsdom',
+      'plop',
       'prettier-plugin-tailwindcss',
       'tailwindcss',
       'ts-jest',
