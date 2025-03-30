@@ -43,7 +43,7 @@ jobs:
           node-version: '22'
 
       - name: Install pnpm
-        run: npm install -g pnpm
+        run: npm install -g pnpm depcheck madge
 
       - name: Install Dependencies
         run: pnpm install

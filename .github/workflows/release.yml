@@ -23,6 +23,10 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
+
+      - name: Install packages
+        run: npm install -g pnpm depcheck madge
+
       - name: Run semantic release
         run: |
           export HUSKY_SKIP_HOOKS=1
