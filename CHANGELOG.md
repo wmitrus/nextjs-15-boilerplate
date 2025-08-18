@@ -1,3 +1,9 @@
+# [1.4.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.3.0...v1.4.0) (2025-08-18)
+
+### Features
+
+- **plop:** install plop, nextjs templates and main plop file for api, routes and tests ([dec8c87](https://github.com/wmitrus/nextjs-15-boilerplate/commit/dec8c8756c93e47b486a8c27332f12d1cbb75b4f))
+
 # [1.3.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.2.0...v1.3.0) (2025-03-30)
 
 ### Features
