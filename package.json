@@ -22,7 +22,7 @@
     "chromatic": "dotenv -e .env.local npx chromatic",
     "skott": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies",
     "skott:check:only": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies --displayMode=raw",
-    "depcheck": "pnpm exec depcheck",
+    "depcheck": "pnpm exec depcheck --config=.depcheck.json",
     "madge": "pnpm exec madge --circular ./src"
   },
   "lint-staged": {
