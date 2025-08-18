@@ -22,7 +22,7 @@
     "chromatic": "dotenv -e .env.local npx chromatic",
     "skott": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies",
     "skott:check:only": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies --displayMode=raw",
-    "depcheck": "pnpm exec depcheck",
+    "depcheck": "pnpm exec depcheck --config=.depcheck.json",
     "madge": "pnpm exec madge --circular ./src"
   },
   "lint-staged": {
@@ -94,6 +94,7 @@
     "eslint-plugin-storybook": "^0.11.4",
     "eslint-plugin-testing-library": "^7.1.1",
     "globals": "^16.0.0",
+    "handlebars-helpers": "^0.10.0",
     "husky": "^9.1.7",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
@@ -102,6 +103,7 @@
     "msw": "^2.7.3",
     "pino-pretty": "^13.0.0",
     "playwright": "^1.51.0",
+    "plop": "^4.0.1",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "semantic-release": "^24.2.3",

@@ -1,0 +1,14 @@
+import '@testing-library/jest-dom';
+import { render, screen } from '@testing-library/react';
+
+{{#if type}}import {{pascalCase name}} from '@/components/{{dashCase type}}/{{dashCase name}}/{{pascalCase name}}'
+{{else}}import {{pascalCase name}} from '@/components/{{dashCase name}}/{{pascalCase name}}'{{/if}}
+
+describe('Component', () => {
+  it('renders a {{pascalCase name}}', () => {
+    render(<{{pascalCase name}}></{{pascalCase name}}>);
+
+    const element = screen.getByRole('{{dashCase name}}');
+    expect(element).toBeInTheDocument();
+  });
+});

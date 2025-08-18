@@ -1,0 +1,20 @@
+import '@testing-library/jest-dom';
+import { render, screen } from '@testing-library/react';
+
+// Import the Page component
+import {{pascalCase name}}Page from '@/app/{{dashCase name}}/{{#each dynamicRoutes}}[{{this}}]{{#unless @last}}/{{/unless}}{{/each}}/page';
+
+describe('{{pascalCase name}} Page', () => {
+  test('renders a {{pascalCase name}}', async () => {
+    {{#if hasDynamicRoutes}}const params = { {{#each dynamicRoutes}}{{this}}: ''{{#unless @last}}, {{/unless}}{{/each}} };{{/if}}
+
+    // Render the CardPage component with the mocked params
+    render(<{{pascalCase name}}Page params={params} />);
+
+    // Check if the header and body are rendered correctly
+    const element = screen.getByRole('heading', { level: 1 });
+    expect(element).toHaveTextContent('Hello World');
+
+    expect(screen.getByText('Sample text')).toBeInTheDocument();
+  });
+});
