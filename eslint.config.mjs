@@ -112,6 +112,13 @@ const eslintConfig = [
           'jest/valid-expect': 'off',
         },
       },
+      {
+        files: ['**/*.stories.@(js|jsx|ts|tsx)', '**/*.story.@(js|jsx|ts|tsx)'],
+        plugins: ['testing-library'],
+        rules: {
+          'testing-library/no-node-access': 'off',
+        },
+      },
     ],
   }),
 ];
