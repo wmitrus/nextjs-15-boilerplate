@@ -1,4 +1,18 @@
 name: Playwright Tests
+env:
+  LOG_DIR: './logs'
+  LOG_LEVEL: 'info'
+  FILE_LOG_LEVEL: 'info'
+  CONSOLE_LOG_LEVEL: 'info'
+  LOG_TO_FILE_PROD: 'false'
+  LOG_TO_FILE_DEV: 'false'
+  LOGFLARE_INTEGRATION_ENABLED: 'false'
+  LOGFLARE_LOG_LEVEL: 'info'
+  LOGFLARE_API_KEY: 'dummy'
+  LOGFLARE_SOURCE_TOKEN: 'dummy'
+  LOGFLARE_ENDPOINT: 'https://logflare.app/api/logs'
+  NEXT_PUBLIC_APP_URL: http://localhost:3000
+  NODE_ENV: development
 on:
   pull_request:
     branches: [main]
