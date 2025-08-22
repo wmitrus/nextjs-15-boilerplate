@@ -104,6 +104,7 @@ const eslintConfig = [
         rules: {
           // Disable React Testing Library rules for Playwright tests
           'testing-library/prefer-screen-queries': 'off',
+          'testing-library/no-node-access': 'off',
           'jest/no-disabled-tests': 'off',
           'jest/no-focused-tests': 'off',
           'jest/no-identical-title': 'off',
