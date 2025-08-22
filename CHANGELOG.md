@@ -1,3 +1,28 @@
+# [1.5.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.4.0...v1.5.0) (2025-08-22)
+
+### Bug Fixes
+
+- **Configure.mdx:** standardize import formatting for consistency ([eac3bcc](https://github.com/wmitrus/nextjs-15-boilerplate/commit/eac3bcc4a529d6d45ad3d844be6093d2b3d62372))
+- **env:** update logLevels definition to use levels.labels from pino ([3c4ded5](https://github.com/wmitrus/nextjs-15-boilerplate/commit/3c4ded5449d0c400bb59d04613cdc01476252274))
+- **eslint:** add testing-library rules for story files ([8e4ef50](https://github.com/wmitrus/nextjs-15-boilerplate/commit/8e4ef50b4831bf94d69c914efe2919e47dae67fc))
+- **eslint:** disable 'testing-library/no-node-access' rule for Playwright tests ([98d4b52](https://github.com/wmitrus/nextjs-15-boilerplate/commit/98d4b527a6764eae9ee7ea509bb2e52c2e391065))
+- **eslint:** disable storybook/no-renderer-packages rule ([f8ddeac](https://github.com/wmitrus/nextjs-15-boilerplate/commit/f8ddeac0ba48f19429c882d2734ea8001e856a46))
+- **logger/utils:** update createConsoleStream return type to PrettyStream ([19ae9ab](https://github.com/wmitrus/nextjs-15-boilerplate/commit/19ae9ab978e3473848aab965f7fba9d512ce3d86))
+- **logger:** correct import order for pino module ([ffe30fc](https://github.com/wmitrus/nextjs-15-boilerplate/commit/ffe30fcfdf397744ce8a21374a5c143e5e116d3f))
+- **mocks:** add options to server and worker start methods for unhandled requests ([b639a45](https://github.com/wmitrus/nextjs-15-boilerplate/commit/b639a45dd9c9704ef1bee8e51f729dccaaab7733))
+- **mocks:** enhance unhandled request handling for server and worker based on environment ([1d4eaa2](https://github.com/wmitrus/nextjs-15-boilerplate/commit/1d4eaa229dfe2696326665800ca69ff0583878a7))
+- **mockServiceWorker:** update version, checksum; refactor event listeners ([5eac4fc](https://github.com/wmitrus/nextjs-15-boilerplate/commit/5eac4fcdc13f25e07f92affd54806a93dd477109))
+- **mocks:** simplify initMocks by removing environment checks for unhandled requests ([cf004ee](https://github.com/wmitrus/nextjs-15-boilerplate/commit/cf004ee3f8b1a5a814ca56dc25ea99d184439398))
+- **playwright:** add caching for Playwright browsers to improve test performance ([79a6409](https://github.com/wmitrus/nextjs-15-boilerplate/commit/79a640987fe6919121077714599d1ba74d3ca8ae))
+- **playwright:** add environment variables for Playwright tests ([f4628e5](https://github.com/wmitrus/nextjs-15-boilerplate/commit/f4628e5d3e90e1d884ed92583e6ea54e8a501bdc))
+- **playwright:** move headless option inside use configuration ([3b773a2](https://github.com/wmitrus/nextjs-15-boilerplate/commit/3b773a25268fb9eb6afdba120cf20c065918c7f3))
+
+### Features
+
+- **docs:** add repository information overview and structure details ([267737a](https://github.com/wmitrus/nextjs-15-boilerplate/commit/267737a7f8b3a5a07809e80b477806b25218c8a3))
+- **e2e:** add comprehensive error handling and performance tests ([def8199](https://github.com/wmitrus/nextjs-15-boilerplate/commit/def81993c390b0efb891090f64a3a250b63bbdbe))
+- **msw:** implement Logflare API request handlers with success responses ([b8f02f5](https://github.com/wmitrus/nextjs-15-boilerplate/commit/b8f02f58f8ef08982c2d7cac6154ab1adf6088b0))
+
 # [1.4.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.3.0...v1.4.0) (2025-08-18)
 
 ### Features
