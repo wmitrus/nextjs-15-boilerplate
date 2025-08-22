@@ -1,18 +1,10 @@
 async function initMocks() {
-  const isNode = typeof window === 'undefined';
-  const isTest = process.env.NODE_ENV === 'test';
-
-  if (isNode) {
+  if (typeof window === 'undefined') {
     const { server } = await import('./server');
-    server.listen({
-      onUnhandledRequest: isTest ? 'warn' : 'bypass',
-    });
+    server.listen();
   } else {
     const { worker } = await import('./browser');
-    worker.start({
-      onUnhandledRequest: isTest ? 'warn' : 'bypass',
-      quiet: !isTest,
-    });
+    worker.start();
   }
 }
 
