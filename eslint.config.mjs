@@ -36,6 +36,7 @@ const eslintConfig = [
       semi: ['error', 'always'],
       'prettier/prettier': 'error',
       'react/react-in-jsx-scope': 'off',
+      'storybook/no-renderer-packages': 'off',
       'jsx-a11y/alt-text': 'warn',
       'jsx-a11y/aria-props': 'warn',
       'jsx-a11y/aria-proptypes': 'warn',
