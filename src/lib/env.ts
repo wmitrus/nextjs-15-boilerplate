@@ -1,8 +1,9 @@
 import { createEnv } from '@t3-oss/env-nextjs';
-import { pino, Level } from 'pino';
+import { levels } from 'pino';
 import { z } from 'zod';
 
-const logLevels = Object.keys(pino.levels.values) as [Level, ...Level[]];
+// const logLevels = Object.keys(pino.levels.values) as [Level, ...Level[]];
+const logLevels = Object.values(levels.labels) as [string, ...string[]];
 
 export const env = createEnv({
   server: {
