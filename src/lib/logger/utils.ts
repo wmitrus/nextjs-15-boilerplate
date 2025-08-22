@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { TransportTargetOptions, DestinationStream, destination } from 'pino';
 import { logflarePinoVercel, createWriteStream } from 'pino-logflare';
-import pretty from 'pino-pretty';
+import pretty, { PrettyStream } from 'pino-pretty';
 
 import { env } from '@/lib/env';
 
@@ -92,7 +92,7 @@ export function createLogflareBrowserTransport() {
 }
 
 // New method to create a console stream
-export function createConsoleStream(): DestinationStream {
+export function createConsoleStream(): PrettyStream {
   return pretty({
     colorize: true, // Enables color in logs
     translateTime: 'yyyy-mm-dd HH:MM:ss',
