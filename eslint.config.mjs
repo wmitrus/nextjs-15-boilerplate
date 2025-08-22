@@ -36,6 +36,7 @@ const eslintConfig = [
       semi: ['error', 'always'],
       'prettier/prettier': 'error',
       'react/react-in-jsx-scope': 'off',
+      'storybook/no-renderer-packages': 'off',
       'jsx-a11y/alt-text': 'warn',
       'jsx-a11y/aria-props': 'warn',
       'jsx-a11y/aria-proptypes': 'warn',
@@ -104,10 +105,18 @@ const eslintConfig = [
         rules: {
           // Disable React Testing Library rules for Playwright tests
           'testing-library/prefer-screen-queries': 'off',
+          'testing-library/no-node-access': 'off',
           'jest/no-disabled-tests': 'off',
           'jest/no-focused-tests': 'off',
           'jest/no-identical-title': 'off',
           'jest/valid-expect': 'off',
+        },
+      },
+      {
+        files: ['**/*.stories.@(js|jsx|ts|tsx)', '**/*.story.@(js|jsx|ts|tsx)'],
+        plugins: ['testing-library'],
+        rules: {
+          'testing-library/no-node-access': 'off',
         },
       },
     ],

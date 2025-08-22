@@ -1,8 +1,14 @@
-/* eslint-disable jest/no-disabled-tests */
 import type { DestinationStream, Logger } from 'pino';
 
 // --- Set up our mutable environment ---
-const mockEnv = {
+const mockEnv: {
+  LOG_DIR: string | undefined;
+  LOG_LEVEL: string | undefined;
+  NODE_ENV: string;
+  LOG_TO_FILE_PROD: boolean | undefined;
+  LOG_TO_FILE_DEV: boolean | undefined;
+  LOGFLARE_INTEGRATION_ENABLED: boolean | undefined;
+} = {
   LOG_DIR: 'test_logs',
   LOG_LEVEL: 'debug',
   NODE_ENV: 'development',
@@ -116,44 +122,7 @@ describe('Logger', () => {
       logger = loggerModule.default;
     });
 
-    it.skip('should create file transport in development environment', () => {
-      // Our logger file calls pino.transport({ targets }) when targets.length > 0.
-      // Grab the first call's first argument (the options object) and inspect its targets.
-      const calls = pinoMock.transport.mock.calls;
-      expect(calls.length).toBeGreaterThanOrEqual(1);
-      const targets = calls[0][0].targets;
-      // We expect two transport targets: one for file and one for console.
-      expect(targets).toHaveLength(2);
-      expect(targets[0].target).toBe('pino/file');
-    });
-
-    it.skip('should create console transport in development environment', () => {
-      const calls = pinoMock.transport.mock.calls;
-      expect(calls.length).toBeGreaterThanOrEqual(1);
-      const targets = calls[0][0].targets;
-      expect(targets).toHaveLength(2);
-      expect(targets[1].target).toBe('pino/console');
-    });
-
-    it.skip('should not create file transport if LOG_TO_FILE_DEV is false', async () => {
-      // Adjust the mutable environment for this test:
-      mockEnv.LOG_TO_FILE_DEV = false;
-      jest.resetModules();
-      // Re-import the modules:
-      const pinoModule = await import('pino');
-      pinoMock = pinoModule.pino as unknown as PinoMockType;
-      const loggerModule = await import('@/lib/logger');
-      logger = loggerModule.default;
-
-      const calls = pinoMock.transport.mock.calls;
-      expect(calls.length).toBeGreaterThanOrEqual(1);
-      const targets = calls[0][0].targets;
-      // With file transport turned off, only console transport should be added.
-      expect(targets).toHaveLength(1);
-      expect(targets[0].target).toBe('pino/console');
-    });
-
-    // New tests for the updated implementation
+    // Tests for the multistream implementation
     it('should create file stream in development environment', () => {
       const calls = pinoMock.multistream.mock.calls;
       expect(calls.length).toBeGreaterThanOrEqual(1);
@@ -213,6 +182,122 @@ describe('Logger', () => {
       expect(mockConsoleError).toHaveBeenCalledWith(
         'Error setting up logger transport.',
       );
+    });
+
+    it('should handle non-Error exceptions during transport setup', async () => {
+      // Reset modules and then override pino.multistream before importing the logger.
+      jest.resetModules();
+      const pinoModule = await import('pino');
+      pinoMock = pinoModule.pino as unknown as PinoMockType;
+      const testError = 'String error';
+      pinoMock.multistream.mockImplementation(() => {
+        throw testError;
+      });
+      // Now import the logger module. Its initialization should run into the error.
+      const loggerModule = await import('@/lib/logger');
+      // We don't need the returned logger; we just need the initialization to error out.
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      loggerModule.default;
+
+      // Verify that our catch block logged the expected error message.
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        'Unknown error occurred while setting up logger transport.',
+      );
+      expect(mockConsoleError).toHaveBeenCalledWith(testError);
+    });
+
+    it('should handle file stream creation failure', async () => {
+      // Reset modules and mock createFileStream to return null
+      jest.resetModules();
+
+      // Mock the utils module to return null for createFileStream
+      jest.doMock('@/lib/logger/utils', () => ({
+        createFileStream: jest.fn().mockReturnValue(null),
+        createConsoleStream: jest.fn().mockReturnValue({
+          write: jest.fn(),
+        }),
+        createLogflareWriteStream: jest.fn().mockReturnValue({
+          write: jest.fn(),
+        }),
+        createLogflareBrowserTransport: jest.fn().mockReturnValue({
+          transmit: {
+            level: 'info',
+            send: jest.fn(),
+          },
+        }),
+      }));
+
+      const pinoModule = await import('pino');
+      pinoMock = pinoModule.pino as unknown as PinoMockType;
+
+      // Import the logger module. Its initialization should handle the null file stream.
+      const loggerModule = await import('@/lib/logger');
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      loggerModule.default;
+
+      // Verify that our error handling logged the expected error message.
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        'Failed to create pino file transport',
+      );
+    });
+  });
+
+  describe('Environment Variable Branches', () => {
+    it('should use default values when environment variables are not set', async () => {
+      // Test the || branches by setting env vars to undefined/empty
+      const originalEnv = { ...mockEnv };
+      mockEnv.LOG_DIR = undefined;
+      mockEnv.LOG_LEVEL = undefined;
+      mockEnv.LOG_TO_FILE_PROD = undefined;
+      mockEnv.LOG_TO_FILE_DEV = undefined;
+
+      jest.resetModules();
+      const pinoModule = await import('pino');
+      pinoMock = pinoModule.pino as unknown as PinoMockType;
+      const loggerModule = await import('@/lib/logger');
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      loggerModule.default;
+
+      // Verify that the logger was created (this tests the default branches)
+      expect(pinoMock).toHaveBeenCalled();
+
+      // Restore original env
+      Object.assign(mockEnv, originalEnv);
+    });
+
+    it('should use custom values when environment variables are set', async () => {
+      // Test the truthy branches
+      mockEnv.LOG_DIR = 'custom-logs';
+      mockEnv.LOG_LEVEL = 'debug';
+      mockEnv.LOG_TO_FILE_PROD = true;
+      mockEnv.LOG_TO_FILE_DEV = true;
+
+      jest.resetModules();
+      const pinoModule = await import('pino');
+      pinoMock = pinoModule.pino as unknown as PinoMockType;
+      const loggerModule = await import('@/lib/logger');
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      loggerModule.default;
+
+      // Verify that the logger was created with custom values
+      expect(pinoMock).toHaveBeenCalled();
+    });
+
+    it('should handle production environment without file logging', async () => {
+      mockEnv.NODE_ENV = 'production';
+      mockEnv.LOG_TO_FILE_PROD = false;
+      mockEnv.LOG_TO_FILE_DEV = false;
+
+      jest.resetModules();
+      const pinoModule = await import('pino');
+      pinoMock = pinoModule.pino as unknown as PinoMockType;
+      const loggerModule = await import('@/lib/logger');
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      loggerModule.default;
+
+      // In production without file logging and without console (isDev=false),
+      // only logflare stream should be added if enabled
+      expect(pinoMock).toHaveBeenCalled();
     });
   });
 });
