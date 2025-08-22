@@ -1,5 +1,5 @@
 import path from 'path';
-import { pino, DestinationStream, type Logger, type LoggerOptions } from 'pino';
+import pino, { DestinationStream, type Logger, type LoggerOptions } from 'pino';
 
 import { env } from '@/lib/env';
 import {
