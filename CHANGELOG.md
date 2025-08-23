@@ -1,3 +1,13 @@
+# [1.6.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.5.0...v1.6.0) (2025-08-23)
+
+### Bug Fixes
+
+- **env:** remove CODECOV_TOKEN from environment variables ([a95a452](https://github.com/wmitrus/nextjs-15-boilerplate/commit/a95a452d2c13b01174ff217e6231f8077fd70fd2))
+
+### Features
+
+- **env:** add CODECOV_TOKEN to environment configuration and tests ([4516954](https://github.com/wmitrus/nextjs-15-boilerplate/commit/4516954abc3f4238ee752cd90fd8c33ded7ddb56))
+
 # [1.5.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.4.0...v1.5.0) (2025-08-22)
 
 ### Bug Fixes
