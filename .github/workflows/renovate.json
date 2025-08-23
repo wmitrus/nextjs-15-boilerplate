@@ -22,7 +22,8 @@
     },
     {
       "matchUpdateTypes": ["major"],
-      "automerge": false
+      "automerge": false,
+      "groupName": "major-updates"
     },
     {
       "matchUpdateTypes": ["security"],
@@ -30,8 +31,15 @@
       "automergeType": "pr"
     },
     {
-      "matchPackageNames": ["react", "@types/react", "next", "@next/*"],
-      "groupName": "react-updates"
+      "matchPackageNames": [
+        "react",
+        "@types/react",
+        "react-dom",
+        "@types/react-dom",
+        "next",
+        "@next/*"
+      ],
+      "groupName": "react-next-updates"
     },
     {
       "matchPackageNames": [
@@ -40,7 +48,10 @@
         "playwright",
         "@playwright/*",
         "vitest",
-        "@vitest/*"
+        "@vitest/*",
+        "@types/jest*",
+        "jest-*",
+        "msw"
       ],
       "groupName": "testing-updates"
     },
@@ -50,7 +61,10 @@
         "@eslint/*",
         "prettier*",
         "@typescript-eslint/*",
-        "typescript"
+        "typescript",
+        "typescript-eslint",
+        "eslint-*",
+        "prettier-*"
       ],
       "groupName": "code-quality-updates"
     },
@@ -62,6 +76,93 @@
         "chromatic"
       ],
       "enabled": false
+    },
+    {
+      "matchPackageNames": [
+        "tailwindcss",
+        "@tailwindcss/*",
+        "prettier-plugin-tailwindcss"
+      ],
+      "groupName": "tailwind-updates"
+    },
+    {
+      "matchPackageNames": ["pino*", "pino-*"],
+      "groupName": "logging-updates"
+    },
+    {
+      "matchPackageNames": [
+        "@semantic-release/*",
+        "semantic-release",
+        "@commitlint/*",
+        "husky",
+        "lint-staged",
+        "cz-conventional-changelog"
+      ],
+      "groupName": "release-tooling-updates"
+    },
+    {
+      "matchPackageNames": ["@types/*"],
+      "groupName": "type-definitions",
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "matchPackageNames": [
+        "zod",
+        "@t3-oss/env-nextjs",
+        "@mdx-js/react",
+        "markdown-to-jsx"
+      ],
+      "groupName": "utility-updates"
+    },
+    {
+      "matchPackageNames": ["dotenv*", "dotenv-*"],
+      "groupName": "environment-updates"
+    },
+    {
+      "matchPackageNames": ["ts-*", "@types/node", "globals"],
+      "groupName": "typescript-tooling"
+    },
+    {
+      "matchPackageNames": ["handlebars*", "plop*"],
+      "groupName": "code-generation"
+    },
+    {
+      "matchPackageNames": ["skott", "madge", "depcheck"],
+      "groupName": "dependency-analysis"
+    },
+    {
+      "matchPackageNames": ["serve*"],
+      "groupName": "dev-servers",
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "matchPackagePatterns": ["^@types/"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "type-definitions",
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch"],
+      "groupName": "dev-patch-updates",
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "matchPackageNames": [
+        "sharp",
+        "core-js-pure",
+        "esbuild",
+        "highlight.js",
+        "unrs-resolver",
+        "@parcel/watcher"
+      ],
+      "groupName": "build-tools",
+      "automerge": true,
+      "automergeType": "pr"
     }
   ],
   "dependencyDashboard": true,
@@ -69,6 +170,11 @@
   "timezone": "Etc/UTC",
   "assignees": ["@me"],
   "labels": ["dependencies", "automated"],
-  "prHourlyLimit": 10,
-  "prConcurrentLimit": 10
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 3,
+  "minimumReleaseAge": "7 days",
+  "stabilityDays": 7,
+  "rebaseWhen": "conflicted",
+  "platformAutomerge": true,
+  "ignoreUnstable": true
 }
