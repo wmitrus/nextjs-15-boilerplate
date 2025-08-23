@@ -1,0 +1,84 @@
+version: 2
+updates:
+  # Enable version updates for npm (pnpm)
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'Etc/UTC'
+    open-pull-requests-limit: 10
+    assignees:
+      - '@me'
+    commit-message:
+      prefix: 'chore'
+      prefix-development: 'chore'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'automated'
+    # Group updates for better PR management
+    groups:
+      # Group all patch updates together
+      patch-updates:
+        patterns:
+          - '*'
+        update-types:
+          - 'patch'
+      # Group minor updates for development dependencies
+      dev-minor-updates:
+        patterns:
+          - '*'
+        dependency-type: 'development'
+        update-types:
+          - 'minor'
+      # Group React ecosystem updates
+      react-updates:
+        patterns:
+          - 'react*'
+          - '@types/react*'
+          - 'next'
+          - '@next/*'
+      # Group testing dependencies
+      testing-updates:
+        patterns:
+          - '*jest*'
+          - '@testing-library/*'
+          - 'playwright'
+          - '@playwright/*'
+          - 'vitest'
+          - '@vitest/*'
+      # Group linting and formatting tools
+      code-quality-updates:
+        patterns:
+          - 'eslint*'
+          - '@eslint/*'
+          - 'prettier*'
+          - '@typescript-eslint/*'
+          - 'typescript'
+      # Group Storybook dependencies
+      storybook-updates:
+        patterns:
+          - 'storybook'
+          - '@storybook/*'
+          - '@chromatic-com/*'
+          - 'chromatic'
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'Etc/UTC'
+    open-pull-requests-limit: 5
+    assignees:
+      - '@me'
+    commit-message:
+      prefix: 'ci'
+      include: 'scope'
+    labels:
+      - 'github-actions'
+      - 'automated'
