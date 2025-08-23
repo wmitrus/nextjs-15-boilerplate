@@ -1,0 +1,74 @@
+{
+  "extends": ["config:base"],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["patch"],
+      "groupName": "patch-updates",
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "matchDepTypes": ["devDependencies"],
+      "groupName": "dev-minor-updates",
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "matchDepTypes": ["dependencies"],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "matchUpdateTypes": ["security"],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "matchPackageNames": ["react", "@types/react", "next", "@next/*"],
+      "groupName": "react-updates"
+    },
+    {
+      "matchPackageNames": [
+        "*jest*",
+        "@testing-library/*",
+        "playwright",
+        "@playwright/*",
+        "vitest",
+        "@vitest/*"
+      ],
+      "groupName": "testing-updates"
+    },
+    {
+      "matchPackageNames": [
+        "eslint*",
+        "@eslint/*",
+        "prettier*",
+        "@typescript-eslint/*",
+        "typescript"
+      ],
+      "groupName": "code-quality-updates"
+    },
+    {
+      "matchPackageNames": [
+        "storybook",
+        "@storybook/*",
+        "@chromatic-com/*",
+        "chromatic"
+      ],
+      "groupName": "storybook-updates"
+    }
+  ],
+  "dependencyDashboard": true,
+  "schedule": ["before 9am on Monday"],
+  "timezone": "Etc/UTC",
+  "assignees": ["@me"],
+  "labels": ["dependencies", "automated"],
+  "prHourlyLimit": 10,
+  "prConcurrentLimit": 10
+}
