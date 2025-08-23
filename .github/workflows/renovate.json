@@ -61,7 +61,7 @@
         "@chromatic-com/*",
         "chromatic"
       ],
-      "groupName": "storybook-updates"
+      "enabled": false
     }
   ],
   "dependencyDashboard": true,
