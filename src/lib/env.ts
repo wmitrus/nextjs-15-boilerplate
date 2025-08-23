@@ -8,7 +8,8 @@ const logLevels = Object.values(levels.labels) as [string, ...string[]];
 export const env = createEnv({
   server: {
     NODE_ENV: z.string().min(1),
-    LOG_DIR: z.string(),
+    LOG_DIR: z.string().min(1),
+    CODECOV_TOKEN: z.string().min(1),
     LOG_LEVEL: z.enum(logLevels),
     FILE_LOG_LEVEL: z.enum(logLevels),
     CONSOLE_LOG_LEVEL: z.enum(logLevels),
@@ -39,6 +40,7 @@ export const env = createEnv({
     LOGFLARE_LOG_LEVEL: process.env.LOGFLARE_LOG_LEVEL,
     LOGFLARE_API_KEY: process.env.LOGFLARE_API_KEY,
     LOGFLARE_SOURCE_TOKEN: process.env.LOGFLARE_SOURCE_TOKEN,
+    CODECOV_TOKEN: process.env.CODECOV_TOKEN,
   },
   // For Next.js >= 13.4.4, you only need to destructure client variables:
   // experimental__runtimeEnv: {

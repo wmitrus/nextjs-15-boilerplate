@@ -16,6 +16,7 @@ jest.mock('@t3-oss/env-nextjs', () => ({
       LOGFLARE_LOG_LEVEL?: string;
       LOGFLARE_API_KEY?: string;
       LOGFLARE_SOURCE_TOKEN?: string;
+      CODECOV_TOKEN?: string;
     } = {};
 
     // Process server config
@@ -80,6 +81,7 @@ describe('Environment Configuration', () => {
     process.env.LOGFLARE_LOG_LEVEL = 'info';
     process.env.LOGFLARE_API_KEY = 'test-api-key';
     process.env.LOGFLARE_SOURCE_TOKEN = 'test-source-token';
+    process.env.CODECOV_TOKEN = 'test-codecov-token';
 
     // This should not throw
     await expect(async () => {
@@ -105,6 +107,7 @@ describe('Environment Configuration', () => {
     process.env.LOGFLARE_LOG_LEVEL = 'info';
     process.env.LOGFLARE_API_KEY = 'test-api-key';
     process.env.LOGFLARE_SOURCE_TOKEN = 'test-source-atoken';
+    process.env.CODECOV_TOKEN = 'test-codecov-token';
 
     // This should throw due to invalid LOG_LEVEL
     await expect(async () => {
@@ -130,6 +133,7 @@ describe('Environment Configuration', () => {
     process.env.LOGFLARE_LOG_LEVEL = 'info';
     process.env.LOGFLARE_API_KEY = 'test-api-key';
     process.env.LOGFLARE_SOURCE_TOKEN = 'test-source-token';
+    process.env.CODECOV_TOKEN = 'test-codecov-token';
 
     // Test true case
     process.env.LOG_TO_FILE_PROD = 'true';
@@ -166,6 +170,7 @@ describe('Environment Configuration', () => {
     process.env.LOGFLARE_LOG_LEVEL = 'info';
     process.env.LOGFLARE_API_KEY = 'test-api-key';
     process.env.LOGFLARE_SOURCE_TOKEN = 'test-source-token';
+    process.env.CODECOV_TOKEN = 'test-codecov-token';
 
     // Test true case
     process.env.LOG_TO_FILE_DEV = 'true';
@@ -196,6 +201,7 @@ describe('Environment Configuration', () => {
     process.env.LOGFLARE_LOG_LEVEL = 'info';
     process.env.LOGFLARE_API_KEY = 'test-api-key';
     process.env.LOGFLARE_SOURCE_TOKEN = 'test-source-token';
+    process.env.CODECOV_TOKEN = 'test-codecov-token';
 
     // Test true case
     process.env.LOGFLARE_INTEGRATION_ENABLED = 'true';
