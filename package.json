@@ -45,7 +45,7 @@
     "zod": "^4.0.17"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "3.2.5",
+    "@chromatic-com/storybook": "4.1.1",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@eslint/eslintrc": "^3.3.1",
