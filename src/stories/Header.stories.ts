@@ -1,8 +1,8 @@
-import { fn } from '@storybook/test';
+import { fn } from 'storybook/test';
 
 import { Header } from './Header';
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs';
 
 const meta = {
   title: 'Example/Header',
