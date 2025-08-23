@@ -8,7 +8,7 @@ const logLevels = Object.values(levels.labels) as [string, ...string[]];
 export const env = createEnv({
   server: {
     NODE_ENV: z.string().min(1),
-    LOG_DIR: z.string(),
+    LOG_DIR: z.string().min(1),
     LOG_LEVEL: z.enum(logLevels),
     FILE_LOG_LEVEL: z.enum(logLevels),
     CONSOLE_LOG_LEVEL: z.enum(logLevels),
