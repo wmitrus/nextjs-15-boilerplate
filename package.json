@@ -137,6 +137,7 @@
       "@tailwindcss/oxide",
       "core-js-pure",
       "esbuild",
+      "highlight.js",
       "msw",
       "sharp",
       "unrs-resolver"
