@@ -1,6 +1,8 @@
 {
   "ignores": [
     "@chromatic-com/storybook",
+    "@mdx-js/react",
+    "markdown-to-jsx",
     "@commitlint/cli",
     "@commitlint/config-conventional",
     "@semantic-release/*",
