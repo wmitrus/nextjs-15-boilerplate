@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.6.0...v1.7.0) (2025-08-23)
+
+### Features
+
+- add Renovate configuration for automated dependency management ([109a41e](https://github.com/wmitrus/nextjs-15-boilerplate/commit/109a41e69c45d767d5873b8131fd0d1a520d4727))
+- **dependabot:** add configuration for automated dependency updates and auto-merging PRs ([5344c16](https://github.com/wmitrus/nextjs-15-boilerplate/commit/5344c168da573fa454e8f43bd12f5e7f30f5d7ff))
+
 # [1.6.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.5.0...v1.6.0) (2025-08-23)
 
 ### Bug Fixes
