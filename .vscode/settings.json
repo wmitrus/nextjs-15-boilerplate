@@ -15,5 +15,13 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "editor.insertSpaces": true
-  }
+  },
+  "jest.jestCommandLine": "pnpm test",
+  "jest.rootPath": ".",
+  "jest.runMode": {
+    "type": "on-demand",
+    "coverage": true
+  },
+  "jest.useDashedArgs": true,
+  "workbench.editor.labelFormat": "medium"
 }
