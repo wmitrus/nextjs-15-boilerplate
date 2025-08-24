@@ -1,3 +1,9 @@
+# [1.12.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.11.0...v1.12.0) (2025-08-24)
+
+### Features
+
+- **upstash:** install, configure upstash, add it to middleware ([4af971d](https://github.com/wmitrus/nextjs-15-boilerplate/commit/4af971d8d83e25d744c2adc076aa686af73003ea))
+
 # [1.11.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.10.0...v1.11.0) (2025-08-24)
 
 ### Bug Fixes
