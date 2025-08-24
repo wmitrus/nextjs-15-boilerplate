@@ -1,3 +1,9 @@
+## [1.7.1](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.7.0...v1.7.1) (2025-08-23)
+
+### Bug Fixes
+
+- **depcheck:** add @mdx-js/react and markdown-to-jsx to ignores ([0bb672e](https://github.com/wmitrus/nextjs-15-boilerplate/commit/0bb672ef3abf08dfde39eb46aa961dcc668870c8))
+
 # [1.7.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.6.0...v1.7.0) (2025-08-23)
 
 ### Features
