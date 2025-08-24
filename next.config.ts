@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   transpilePackages: ['msw'],
   allowedDevOrigins: ['127.0.0.1:3000'],
   typedRoutes: true,
+  productionBrowserSourceMaps: true,
 
   experimental: {
     serverActions: {
