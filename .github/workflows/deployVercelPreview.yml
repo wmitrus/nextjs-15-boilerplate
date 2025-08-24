@@ -1,11 +1,14 @@
 name: Vercel Preview Deployment
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
 on:
   push:
     branches-ignore:
       - main
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -34,6 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
@@ -42,8 +46,8 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install pnpm
-        run: npm install -g pnpm depcheck madge
+      - name: Install pnpm and tools
+        run: npm install -g pnpm depcheck madge @lhci/cli
 
       - name: Install Dependencies
         run: pnpm install
@@ -58,9 +62,26 @@ jobs:
           SENTRY_ORG: ozi
           SENTRY_PROJECT: nextjs-15-boilerplate
 
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Upload Source Maps to Sentry
+        run: npx sentry-cli upload-sourcemaps --include .next --url-prefix '~/' --rewrite
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ozi
           SENTRY_PROJECT: nextjs-15-boilerplate
+          SENTRY_ENVIRONMENT: preview
+          SENTRY_RELEASE: ${{ github.sha }}
+
+      - name: Deploy Project Artifacts to Vercel
+        id: vercel_deploy
+        run: |
+          DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "preview_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ozi
+          SENTRY_PROJECT: nextjs-15-boilerplate
+
+      - name: Run Lighthouse Audit
+        run: |
+          echo "Auditing ${{ steps.vercel_deploy.outputs.preview_url }}"
+          lhci autorun --collect.url=${{ steps.vercel_deploy.outputs.preview_url }}
