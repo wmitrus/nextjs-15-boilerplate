@@ -19,6 +19,7 @@
     "tailwindcss",
     "ts-jest",
     "ts-node",
-    "typescript-eslint"
+    "typescript-eslint",
+    "@lhci/cli"
   ]
 }
