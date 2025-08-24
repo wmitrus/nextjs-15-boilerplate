@@ -47,7 +47,7 @@ jobs:
           node-version: '22'
 
       - name: Install pnpm and tools
-        run: npm install -g pnpm depcheck madge @lhci/cli
+        run: npm install -g pnpm depcheck madge @lhci/cli @sentry/cli
 
       - name: Install Dependencies
         run: pnpm install
