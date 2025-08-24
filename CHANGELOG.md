@@ -1,3 +1,28 @@
+# [1.11.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.10.0...v1.11.0) (2025-08-24)
+
+### Bug Fixes
+
+- **actions:** add @sentry/cli to pnpm install in vercel, fix labeler.yml format ([8a99b0d](https://github.com/wmitrus/nextjs-15-boilerplate/commit/8a99b0dfc1e06afe85bee6f59ad006e895c7be91))
+- **actions:** add @sentry/cli to pnpm install in vercel, fix labeler.yml format ([0ce65a8](https://github.com/wmitrus/nextjs-15-boilerplate/commit/0ce65a8f560f256e412654f49be58b27295f000b))
+- **actions:** add lighthouse config and accordingly change the action workflow ([fdd8d5f](https://github.com/wmitrus/nextjs-15-boilerplate/commit/fdd8d5f89565c2285ba3e06e4fbd81b65a44ba12))
+- **actions:** change pull request type to only opened ([5b5e8bf](https://github.com/wmitrus/nextjs-15-boilerplate/commit/5b5e8bf5470943c62eefbc7d60733be907c3a1a4))
+- **actions:** change set-label action type ([8d33d08](https://github.com/wmitrus/nextjs-15-boilerplate/commit/8d33d083bb214bbbc84c832660fa76efdc1e7a3c))
+- **actions:** fix command for vercel preview runs sentry-cli from local global installation ([3db8974](https://github.com/wmitrus/nextjs-15-boilerplate/commit/3db8974b3469571a08741d7edbd6183e8e1102f1))
+- **actions:** fix command runs sentry-cli from local global installation ([f53c2c3](https://github.com/wmitrus/nextjs-15-boilerplate/commit/f53c2c3715a92b569f1b769d0eac45e006ec91b8))
+- **actions:** fix config and add lhci-cli to dev deps ([22bccfb](https://github.com/wmitrus/nextjs-15-boilerplate/commit/22bccfbc64fc97c3ede798095d69ad0226e70a4d))
+- **actions:** fix config layout, add checkout action to workflow fot label workflow ([794e4d0](https://github.com/wmitrus/nextjs-15-boilerplate/commit/794e4d0f0f9e2c28359cdb5d342ad423af06b17c))
+- **actions:** fix config name to .lighthouserc.json ([2f1b949](https://github.com/wmitrus/nextjs-15-boilerplate/commit/2f1b949449732351757272c97374e4dc36b77b0d))
+- **actions:** fix previously wrongly changed yml ([31bfbe5](https://github.com/wmitrus/nextjs-15-boilerplate/commit/31bfbe5da21c20158b2d5e47d84e85e7b1b6cb87))
+- **actions:** fix sentry-cli command ([90099a7](https://github.com/wmitrus/nextjs-15-boilerplate/commit/90099a7404464a85309f17ed8ce2642f3d2e9212))
+- **config:** typedRoutes is not experimental any more, add productionBrowserSourceMaps: true ([586b92c](https://github.com/wmitrus/nextjs-15-boilerplate/commit/586b92c17ccd9b86566fa6a2f8d5a1b23704467a))
+
+### Features
+
+- **actions:** aadd typecheck action ([57397c7](https://github.com/wmitrus/nextjs-15-boilerplate/commit/57397c7bb8f4d8b36adc7039379d9ab795495e6e))
+- **actions:** add auto-assign workflow action ([20869cb](https://github.com/wmitrus/nextjs-15-boilerplate/commit/20869cba2fb0e7b86e1c71f620d271d58248c5d9))
+- **actions:** add PR labeler action ([a188b54](https://github.com/wmitrus/nextjs-15-boilerplate/commit/a188b54653e75e3e759a2ee7235fb73fed1e67a0))
+- **actions:** add steps for vercel - Upload Source Maps to Sentry, preview: Run Lighthouse Audit ([eeee329](https://github.com/wmitrus/nextjs-15-boilerplate/commit/eeee3291db82415b9eef605dac8d605b4f180cb4))
+
 # [1.10.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.9.0...v1.10.0) (2025-08-24)
 
 ### Features
