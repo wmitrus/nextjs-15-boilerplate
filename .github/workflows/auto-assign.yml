@@ -3,12 +3,16 @@ name: Auto Assign PRs
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize]
 
 jobs:
   assign:
     runs-on: ubuntu-latest
     steps:
-      - uses: kentaro-m/auto-assign-action@v1.2.1
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Auto-label PRs
+        uses: actions/labeler@v5
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
