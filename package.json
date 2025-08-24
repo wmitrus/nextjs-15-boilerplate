@@ -26,7 +26,8 @@
     "skott": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies",
     "skott:check:only": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies --displayMode=raw",
     "depcheck": "pnpm exec depcheck --config=.depcheck.json",
-    "madge": "pnpm exec madge --circular ./src"
+    "madge": "pnpm exec madge --circular ./src",
+    "lhci": "pnpm exec lhci autorun"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,mjs}": [
@@ -41,6 +42,8 @@
     "@mdx-js/react": "^3.1.0",
     "@sentry/nextjs": "^10.5.0",
     "@t3-oss/env-nextjs": "^0.13.8",
+    "@upstash/ratelimit": "^2.0.6",
+    "@upstash/redis": "^1.35.3",
     "markdown-to-jsx": "^7.7.13",
     "next": "15.5.0",
     "pino": "^9.9.0",
@@ -137,6 +140,7 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@sentry/cli",
       "@tailwindcss/oxide",
       "core-js-pure",
       "esbuild",
