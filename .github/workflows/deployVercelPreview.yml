@@ -83,3 +83,5 @@ jobs:
 
       - name: Run Lighthouse Audit
         run: lhci autorun
+        env:
+          LHCI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
