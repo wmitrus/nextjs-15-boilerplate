@@ -1,3 +1,12 @@
+# [1.10.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.9.0...v1.10.0) (2025-08-24)
+
+### Features
+
+- **sentry:** add server and client config ([954ab6b](https://github.com/wmitrus/nextjs-15-boilerplate/commit/954ab6b5fa503dad54d3e9a54f91cc61f64b84b8))
+- **sentry:** add server and client instrumentation ([73c47f4](https://github.com/wmitrus/nextjs-15-boilerplate/commit/73c47f4323806665e0044bf08066be3ab68e33b8))
+- **sentry:** update nextjs config to work with sentry ([3418562](https://github.com/wmitrus/nextjs-15-boilerplate/commit/341856258fd752b62785af54ac539c10b5ca7d1f))
+- **sentry:** update vercel actions, add sentry config to build steps ([b4bbe01](https://github.com/wmitrus/nextjs-15-boilerplate/commit/b4bbe0176334fcb40d7dde9aa31253f61bd16406))
+
 # [1.9.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.8.0...v1.9.0) (2025-08-24)
 
 ### Features
