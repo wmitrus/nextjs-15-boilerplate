@@ -82,6 +82,4 @@ jobs:
           SENTRY_PROJECT: nextjs-15-boilerplate
 
       - name: Run Lighthouse Audit
-        run: |
-          echo "Auditing ${{ steps.vercel_deploy.outputs.preview_url }}"
-          lhci autorun --collect.url=${{ steps.vercel_deploy.outputs.preview_url }}
+        run: lhci autorun
