@@ -1,7 +1,6 @@
-# .github/labeler.yml
 frontend:
-  - src/app/**/*
+  - 'src/app/**/*'
 backend:
-  - src/lib/**/*
+  - 'src/lib/**/*'
 tests:
-  - tests/**/*
+  - 'tests/**/*'
