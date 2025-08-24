@@ -1,3 +1,9 @@
+# [1.9.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.8.0...v1.9.0) (2025-08-24)
+
+### Features
+
+- **security:** configure middleware, add security headers ([888a5b4](https://github.com/wmitrus/nextjs-15-boilerplate/commit/888a5b428dd0661a2688999e57f38670ac4cea65))
+
 # [1.8.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.7.1...v1.8.0) (2025-08-24)
 
 ### Features
