@@ -9,6 +9,10 @@ jobs:
   label:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/labeler@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Auto-label PRs
+        uses: actions/labeler@v5
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}

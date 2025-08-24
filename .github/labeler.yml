@@ -1,6 +1,11 @@
 frontend:
-  - 'src/app/**/*'
+  - any-of:
+      - 'src/app/**/*'
+
 backend:
-  - 'src/lib/**/*'
+  - any-of:
+      - 'src/lib/**/*'
+
 tests:
-  - 'tests/**/*'
+  - any-of:
+      - 'tests/**/*'
