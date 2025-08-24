@@ -1,0 +1,120 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Renovate configuration for Next.js 15 boilerplate - Daily updates with PR limits",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":separateMajorReleases",
+    ":combinePatchMinorReleases",
+    ":ignoreUnstable",
+    ":prImmediately",
+    ":updateNotScheduled",
+    ":automergeDisabled",
+    ":ignoreModulesAndTests",
+    ":autodetectPinVersions",
+    ":prHourlyLimit2",
+    ":prConcurrentLimit10"
+  ],
+  "schedule": ["every day"],
+  "timezone": "UTC",
+  "prCreation": "immediate",
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 5,
+  "branchConcurrentLimit": 10,
+  "semanticCommits": "enabled",
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "📦 Dependency Dashboard",
+  "dependencyDashboardHeader": "This issue lists Renovate updates and detected dependencies. Read the [Dependency Dashboard](https://docs.renovatebot.com/key-concepts/dashboard/) docs to learn more.",
+  "assignees": [],
+  "reviewers": [],
+  "labels": ["dependencies"],
+  "commitMessagePrefix": "chore:",
+  "commitMessageAction": "update",
+  "commitMessageTopic": "{{depName}}",
+  "commitMessageExtra": "to {{newVersion}}",
+  "prTitle": "{{commitMessagePrefix}} {{commitMessageAction}} {{depName}} {{commitMessageExtra}}",
+  "packageRules": [
+    {
+      "description": "Group all non-major updates together to reduce PR noise",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch"
+    },
+    {
+      "description": "Separate major updates for careful review",
+      "matchUpdateTypes": ["major"],
+      "addLabels": ["major-update"]
+    },
+    {
+      "description": "Auto-merge patch updates for stable packages",
+      "matchUpdateTypes": ["patch"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": false,
+      "addLabels": ["patch-update"]
+    },
+    {
+      "description": "Group React ecosystem updates",
+      "matchPackagePatterns": ["^react", "^@types/react"],
+      "groupName": "React ecosystem",
+      "addLabels": ["react"]
+    },
+    {
+      "description": "Group Next.js ecosystem updates",
+      "matchPackagePatterns": ["^next", "^@next"],
+      "groupName": "Next.js ecosystem",
+      "addLabels": ["nextjs"]
+    },
+    {
+      "description": "Group testing framework updates",
+      "matchPackagePatterns": [
+        "^jest",
+        "^@jest",
+        "^@types/jest",
+        "playwright",
+        "vitest"
+      ],
+      "groupName": "Testing frameworks",
+      "addLabels": ["testing"]
+    },
+    {
+      "description": "Group ESLint and Prettier updates",
+      "matchPackagePatterns": ["eslint", "prettier", "@typescript-eslint"],
+      "groupName": "Code quality tools",
+      "addLabels": ["code-quality"]
+    },
+    {
+      "description": "Group Storybook updates (you mentioned recent upgrade)",
+      "matchPackagePatterns": ["^@storybook", "^storybook"],
+      "groupName": "Storybook",
+      "addLabels": ["storybook"],
+      "schedule": ["every weekend"]
+    },
+    {
+      "description": "Pin Node.js to LTS versions only",
+      "matchPackageNames": ["node", "@types/node"],
+      "allowedVersions": "/^(18|20|22)\\./",
+      "addLabels": ["nodejs"]
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "addLabels": ["security"]
+  },
+  "osvVulnerabilityAlerts": true,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "ignoreDeps": [],
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/vendor/**",
+    "**/examples/**",
+    "**/__tests__/**",
+    "**/test/**",
+    "**/tests/**",
+    "**/.storybook/**"
+  ]
+}
