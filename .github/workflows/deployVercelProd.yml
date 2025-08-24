@@ -61,7 +61,7 @@ jobs:
           SENTRY_PROJECT: nextjs-15-boilerplate
 
       - name: Upload Source Maps to Sentry
-        run: sentry-cli upload-sourcemaps --include .next --url-prefix '~/' --rewrite
+        run: sentry-cli sourcemaps upload .next --url-prefix '~/' --rewrite
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ozi
