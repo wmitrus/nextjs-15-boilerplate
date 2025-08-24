@@ -1,0 +1,11 @@
+frontend:
+  - any-of:
+      - 'src/app/**/*'
+
+backend:
+  - any-of:
+      - 'src/lib/**/*'
+
+tests:
+  - any-of:
+      - 'tests/**/*'

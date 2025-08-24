@@ -1,0 +1,25 @@
+{
+  "ci": {
+    "collect": {
+      "url": [
+        "https://nextjs-15-boilerplate-6ovmygtmm-wojciech-mitruss-projects.vercel.app"
+      ],
+      "numberOfRuns": 3
+    },
+    "upload": {
+      "target": "lhci",
+      "serverBaseUrl": "https://lighthouse.wmitrus.usermd.net",
+      "token": "16cf049f-bced-4a3d-a9fa-bff9784e0e72"
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.2 }],
+        "categories:accessibility": ["warn", { "minScore": 0.2 }],
+        "categories:seo": ["warn", { "minScore": 0.2 }],
+        "unused-javascript": ["warn", { "maxLength": 20 }],
+        "legacy-javascript": ["warn", { "maxLength": 20 }],
+        "bf-cache": "off"
+      }
+    }
+  }
+}
