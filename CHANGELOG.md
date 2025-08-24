@@ -1,3 +1,9 @@
+# [1.8.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.7.1...v1.8.0) (2025-08-24)
+
+### Features
+
+- **ResponseService:** implement generic response service for standarized api responses ([c13c55f](https://github.com/wmitrus/nextjs-15-boilerplate/commit/c13c55f7cf2f7cc955c3e70a24c9be3c18c9ab60))
+
 ## [1.7.1](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.7.0...v1.7.1) (2025-08-23)
 
 ### Bug Fixes
