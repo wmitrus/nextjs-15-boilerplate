@@ -13,6 +13,7 @@
     "lint:fix": "next lint --fix",
     "prepare": "husky",
     "release": "semantic-release",
+    "typecheck": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
     "e2e": "pnpm exec playwright test",
