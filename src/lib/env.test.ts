@@ -16,6 +16,8 @@ jest.mock('@t3-oss/env-nextjs', () => ({
       LOGFLARE_LOG_LEVEL?: string;
       LOGFLARE_API_KEY?: string;
       LOGFLARE_SOURCE_TOKEN?: string;
+      UPSTASH_REDIS_REST_URL?: string;
+      UPSTASH_REDIS_REST_TOKEN?: string;
       CODECOV_TOKEN?: string;
     } = {};
 
@@ -81,6 +83,8 @@ describe('Environment Configuration', () => {
     process.env.LOGFLARE_LOG_LEVEL = 'info';
     process.env.LOGFLARE_API_KEY = 'test-api-key';
     process.env.LOGFLARE_SOURCE_TOKEN = 'test-source-token';
+    process.env.UPSTASH_REDIS_REST_URL = 'https://test-redis.upstash.io';
+    process.env.UPSTASH_REDIS_REST_TOKEN = 'test-redis-token';
     process.env.CODECOV_TOKEN = 'test-codecov-token';
 
     // This should not throw
@@ -107,6 +111,8 @@ describe('Environment Configuration', () => {
     process.env.LOGFLARE_LOG_LEVEL = 'info';
     process.env.LOGFLARE_API_KEY = 'test-api-key';
     process.env.LOGFLARE_SOURCE_TOKEN = 'test-source-atoken';
+    process.env.UPSTASH_REDIS_REST_URL = 'https://test-redis.upstash.io';
+    process.env.UPSTASH_REDIS_REST_TOKEN = 'test-redis-token';
     process.env.CODECOV_TOKEN = 'test-codecov-token';
 
     // This should throw due to invalid LOG_LEVEL
@@ -133,6 +139,8 @@ describe('Environment Configuration', () => {
     process.env.LOGFLARE_LOG_LEVEL = 'info';
     process.env.LOGFLARE_API_KEY = 'test-api-key';
     process.env.LOGFLARE_SOURCE_TOKEN = 'test-source-token';
+    process.env.UPSTASH_REDIS_REST_URL = 'https://test-redis.upstash.io';
+    process.env.UPSTASH_REDIS_REST_TOKEN = 'test-redis-token';
     process.env.CODECOV_TOKEN = 'test-codecov-token';
 
     // Test true case
@@ -170,6 +178,8 @@ describe('Environment Configuration', () => {
     process.env.LOGFLARE_LOG_LEVEL = 'info';
     process.env.LOGFLARE_API_KEY = 'test-api-key';
     process.env.LOGFLARE_SOURCE_TOKEN = 'test-source-token';
+    process.env.UPSTASH_REDIS_REST_URL = 'https://test-redis.upstash.io';
+    process.env.UPSTASH_REDIS_REST_TOKEN = 'test-redis-token';
     process.env.CODECOV_TOKEN = 'test-codecov-token';
 
     // Test true case
@@ -201,6 +211,8 @@ describe('Environment Configuration', () => {
     process.env.LOGFLARE_LOG_LEVEL = 'info';
     process.env.LOGFLARE_API_KEY = 'test-api-key';
     process.env.LOGFLARE_SOURCE_TOKEN = 'test-source-token';
+    process.env.UPSTASH_REDIS_REST_URL = 'https://test-redis.upstash.io';
+    process.env.UPSTASH_REDIS_REST_TOKEN = 'test-redis-token';
     process.env.CODECOV_TOKEN = 'test-codecov-token';
 
     // Test true case

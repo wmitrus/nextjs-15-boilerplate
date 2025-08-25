@@ -24,7 +24,7 @@ export const env = createEnv({
     LOGFLARE_SOURCE_TOKEN: z.string().min(1),
 
     // ✅ Upstash Redis for rate limiting
-    UPSTASH_REDIS_REST_URL: z.string().url(),
+    UPSTASH_REDIS_REST_URL: z.url(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
   },
   client: {
