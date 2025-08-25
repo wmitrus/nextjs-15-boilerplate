@@ -22,6 +22,10 @@ export const env = createEnv({
     LOGFLARE_LOG_LEVEL: z.enum(logLevels),
     LOGFLARE_API_KEY: z.string().min(1),
     LOGFLARE_SOURCE_TOKEN: z.string().min(1),
+
+    // ✅ Upstash Redis for rate limiting
+    UPSTASH_REDIS_REST_URL: z.string().url(),
+    UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
   },
   client: {
     // NEXT_PUBLIC_LOGFLARE_API_KEY: z.string().min(1),
@@ -39,6 +43,10 @@ export const env = createEnv({
     LOGFLARE_LOG_LEVEL: process.env.LOGFLARE_LOG_LEVEL,
     LOGFLARE_API_KEY: process.env.LOGFLARE_API_KEY,
     LOGFLARE_SOURCE_TOKEN: process.env.LOGFLARE_SOURCE_TOKEN,
+
+    // ✅ Upstash runtime values
+    UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+    UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
   },
   // For Next.js >= 13.4.4, you only need to destructure client variables:
   // experimental__runtimeEnv: {
