@@ -7,6 +7,21 @@ on:
 jobs:
   bundle-size:
     runs-on: ubuntu-latest
+    env:
+      # Required environment variables for build
+      NODE_ENV: production
+      LOG_DIR: logs
+      LOG_LEVEL: info
+      FILE_LOG_LEVEL: info
+      CONSOLE_LOG_LEVEL: info
+      LOG_TO_FILE_PROD: '0'
+      LOG_TO_FILE_DEV: '0'
+      LOGFLARE_INTEGRATION_ENABLED: '0'
+      LOGFLARE_LOG_LEVEL: info
+      LOGFLARE_API_KEY: dummy
+      LOGFLARE_SOURCE_TOKEN: dummy
+      UPSTASH_REDIS_REST_URL: https://dummy.upstash.io
+      UPSTASH_REDIS_REST_TOKEN: dummy
     steps:
       - uses: actions/checkout@v4
 
