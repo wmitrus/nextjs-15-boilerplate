@@ -20,6 +20,10 @@
     "ts-jest",
     "ts-node",
     "typescript-eslint",
-    "@lhci/cli"
+    "@lhci/cli",
+    "@size-limit/file",
+    "bundlewatch",
+    "cross-env",
+    "source-map-explorer"
   ]
 }
