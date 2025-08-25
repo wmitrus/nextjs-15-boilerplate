@@ -1,6 +1,7 @@
 frontend:
   - any-of:
       - 'src/app/**/*'
+      - 'src/stories/**/*'
 
 backend:
   - any-of:
@@ -8,4 +9,22 @@ backend:
 
 tests:
   - any-of:
-      - 'tests/**/*'
+      - 'e2e/**/*'
+      - '**/*.test.tsx'
+      - '**/*.test.ts'
+      - 'jest.config.ts'
+      - 'jest.setup.ts'
+      - 'playwright.config.ts'
+
+config:
+  - any-of:
+      - '*.json'
+      - '*.js'
+      - '*.ts'
+      - '.github/**/*'
+      - '.storybook/**/*'
+
+docs:
+  - any-of:
+      - '*.md'
+      - 'docs/**/*'
