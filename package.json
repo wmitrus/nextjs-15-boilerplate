@@ -123,6 +123,7 @@
     "chromatic": "^13.1.3",
     "cross-env": "^10.0.0",
     "cz-conventional-changelog": "^3.3.0",
+    "dotenv": "^17.2.1",
     "dotenv-cli": "^10.0.0",
     "eslint": "^9.34.0",
     "eslint-config-next": "15.5.0",
