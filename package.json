@@ -42,6 +42,28 @@
       "prettier --write"
     ]
   },
+  "size-limit": [
+    {
+      "path": ".next/static/chunks/framework-*.js",
+      "limit": "80 KB"
+    },
+    {
+      "path": ".next/static/chunks/main-*.js",
+      "limit": "70 KB"
+    },
+    {
+      "path": ".next/static/chunks/*vendor*.js",
+      "limit": "200 KB"
+    },
+    {
+      "path": ".next/static/chunks/pages/*.js",
+      "limit": "250 KB"
+    },
+    {
+      "path": ".next/static/chunks/*.css",
+      "limit": "80 KB"
+    }
+  ],
   "dependencies": {
     "@mdx-js/react": "^3.1.0",
     "@sentry/nextjs": "^10.5.0",
