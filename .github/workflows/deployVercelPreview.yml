@@ -81,7 +81,10 @@ jobs:
           SENTRY_ORG: ozi
           SENTRY_PROJECT: nextjs-15-boilerplate
 
+      - name: Wait for deployment to be ready
+        run: sleep 30
+
       - name: Run Lighthouse Audit
-        run: lhci autorun
+        run: lhci autorun --collect.url=${{ steps.vercel_deploy.outputs.preview_url }}
         env:
           LHCI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
