@@ -5,10 +5,17 @@ on:
   pull_request:
     types: [opened]
 
+permissions:
+  pull-requests: write
+  issues: write
+  contents: read
+
 jobs:
   assign:
     runs-on: ubuntu-latest
     steps:
-      - uses: kentaro-m/auto-assign-action@v1.2.1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Auto assign PR
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --add-assignee wmitrus --add-reviewer wmitrus
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
