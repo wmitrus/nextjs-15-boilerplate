@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   transpilePackages: ['msw'],
   allowedDevOrigins: ['127.0.0.1:3000'],
   typedRoutes: true,
+  reactStrictMode: true,
   productionBrowserSourceMaps: true,
 
   experimental: {
@@ -14,6 +15,22 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '1mb', // or '2mb', '10mb', etc.
       allowedOrigins: ['http://localhost:3000'], // for dev or test environments
     },
+  },
+
+  images: {
+    formats: ['image/webp', 'image/avif'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'nextjs-15-boilerplate.vercel.app',
+        pathname: '/images/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/your-cloud-name/**',
+      },
+    ],
   },
 };
 
