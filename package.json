@@ -27,7 +27,11 @@
     "skott:check:only": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies --displayMode=raw",
     "depcheck": "pnpm exec depcheck --config=.depcheck.json",
     "madge": "pnpm exec madge --circular ./src",
-    "lhci": "pnpm exec lhci autorun"
+    "lhci": "pnpm exec lhci autorun",
+    "size": "size-limit",
+    "size:build-check": "next build && size-limit",
+    "analyze": "ANALYZE=true next build",
+    "sme:client": "source-map-explorer '.next/static/chunks/*.js' --html client-sizes.html"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,mjs}": [
