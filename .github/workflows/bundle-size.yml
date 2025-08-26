@@ -39,4 +39,4 @@ jobs:
       - run: pnpm size
       - env:
           BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
-        run: pnpm bundlewatch --config .bundlewatch.config.json
+        run: pnpm bundlewatch:run
