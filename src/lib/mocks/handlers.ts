@@ -36,4 +36,9 @@ export const handlers = [
       { status: 200 },
     );
   }),
+
+  // Ignore Next.js internal requests during E2E tests
+  http.post('*/__nextjs_original-stack-frames', () => {
+    return new HttpResponse(null, { status: 200 });
+  }),
 ];
