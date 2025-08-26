@@ -81,10 +81,15 @@ jobs:
           SENTRY_ORG: ozi
           SENTRY_PROJECT: nextjs-15-boilerplate
 
-      - name: Wait for deployment to be ready
-        run: sleep 30
+      - name: Wait for Vercel preview deployment to be ready
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
+        id: waitForVercel
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 120
+          check_interval: 5
 
       - name: Run Lighthouse Audit
-        run: lhci autorun --collect.url=${{ steps.vercel_deploy.outputs.preview_url }}
+        run: lhci autorun --collect.url=${{ steps.waitForVercel.outputs.url }}
         env:
           LHCI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
