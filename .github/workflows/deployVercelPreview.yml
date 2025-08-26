@@ -74,7 +74,7 @@ jobs:
       - name: Deploy Project Artifacts to Vercel
         id: vercel_deploy
         run: |
-          DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} --no-clipboard)
           echo "preview_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -89,7 +89,19 @@ jobs:
           max_timeout: 120
           check_interval: 5
 
+      - name: Debug deployment URL
+        run: |
+          echo "Deployment URL: ${{ steps.waitForVercel.outputs.url }}"
+          echo "Checking if URL is accessible with bypass header..."
+          curl -I -H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}" -H "x-vercel-set-bypass-cookie: true" ${{ steps.waitForVercel.outputs.url }} || echo "Failed to access URL"
+        env:
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+
       - name: Run Lighthouse Audit
-        run: lhci autorun --collect.url=${{ steps.waitForVercel.outputs.url }}
+        run: |
+          echo "Running Lighthouse audit on URL: ${{ steps.waitForVercel.outputs.url }}"
+          # Add a longer timeout for Lighthouse and include bypass headers
+          lhci autorun --collect.url=${{ steps.waitForVercel.outputs.url }} --collect.settings.maxWaitForLoad=120000 --collect.settings.extraHeaders='{"x-vercel-protection-bypass": "'"${VERCEL_AUTOMATION_BYPASS_SECRET}"'", "x-vercel-set-bypass-cookie": "true"}'
         env:
           LHCI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
