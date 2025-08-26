@@ -7,12 +7,22 @@
     },
     {
       "path": ".next/static/chunks/main-*.js",
-      "maxSize": "70kb",
+      "maxSize": "120kb",
       "compression": "gzip"
     },
     {
-      "path": ".next/static/chunks/*vendor*.js",
-      "maxSize": "200kb",
+      "path": ".next/static/chunks/main-app-*.js",
+      "maxSize": "100kb",
+      "compression": "gzip"
+    },
+    {
+      "path": ".next/static/chunks/polyfills-*.js",
+      "maxSize": "50kb",
+      "compression": "gzip"
+    },
+    {
+      "path": ".next/static/chunks/webpack-*.js",
+      "maxSize": "10kb",
       "compression": "gzip"
     },
     {
@@ -21,7 +31,12 @@
       "compression": "gzip"
     },
     {
-      "path": ".next/static/chunks/*.css",
+      "path": ".next/static/chunks/app/**/*.js",
+      "maxSize": "100kb",
+      "compression": "gzip"
+    },
+    {
+      "path": ".next/static/css/*.css",
       "maxSize": "80kb",
       "compression": "gzip"
     }
