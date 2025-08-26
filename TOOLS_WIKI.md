@@ -172,13 +172,14 @@ This document provides a comprehensive overview of all tools, libraries, and con
 - **Configuration**: `package.json` size-limit section
 - **Script**: `size`, `size:build-check`
 - **Limits**:
-  - Framework chunks: 80KB
-  - Main chunks: 110KB
-  - Polyfills: 50KB
-  - Webpack runtime: 10KB
-  - Pages: 250KB
-  - App chunks: 100KB
-  - CSS: 50KB
+  - Framework chunks: 80KB (gzip)
+  - Main chunks: 120KB (gzip)
+  - Main app chunks: 100KB (gzip)
+  - Polyfills: 50KB (gzip)
+  - Webpack runtime: 10KB (gzip)
+  - Pages: 250KB (gzip)
+  - App chunks: 100KB (gzip)
+  - CSS: 80KB (gzip)
 
 ### Bundlewatch 0.4.1
 
