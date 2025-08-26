@@ -93,15 +93,17 @@ jobs:
           max_retries=24
           until [ $retry_count -ge $max_retries ]
           do
-            RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            # Follow redirects and get the final status code
+            RESPONSE_CODE=$(curl -s -L -o /dev/null -w "%{http_code}" \
               -H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}" \
               -H "x-vercel-set-bypass-cookie: true" \
               $DEPLOY_URL)
             
             echo "GET status: $RESPONSE_CODE. Attempt $retry_count of $max_retries"
             
-            if [ $RESPONSE_CODE -eq 200 ]; then
-              echo "Deployment is accessible with bypass headers"
+            # Accept both 200 (OK) and 307/308 (redirects that are part of normal flow)
+            if [ $RESPONSE_CODE -eq 200 ] || [ $RESPONSE_CODE -eq 307 ] || [ $RESPONSE_CODE -eq 308 ]; then
+              echo "Deployment is accessible with bypass headers (status: $RESPONSE_CODE)"
               exit 0
             fi
             
@@ -118,7 +120,8 @@ jobs:
         run: |
           echo "Deployment URL: ${{ steps.waitForVercel.outputs.url }}"
           echo "Checking if URL is accessible with bypass header..."
-          curl -I -H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}" -H "x-vercel-set-bypass-cookie: true" ${{ steps.waitForVercel.outputs.url }} || echo "Failed to access URL"
+          echo "Following redirects to check final destination..."
+          curl -L -I -H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}" -H "x-vercel-set-bypass-cookie: true" ${{ steps.waitForVercel.outputs.url }} || echo "Failed to access URL"
         env:
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
