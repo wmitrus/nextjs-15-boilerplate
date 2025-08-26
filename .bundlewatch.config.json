@@ -1,0 +1,46 @@
+{
+  "files": [
+    {
+      "path": ".next/static/chunks/framework-*.js",
+      "maxSize": "80kb",
+      "compression": "gzip"
+    },
+    {
+      "path": ".next/static/chunks/main-*.js",
+      "maxSize": "120kb",
+      "compression": "gzip"
+    },
+    {
+      "path": ".next/static/chunks/main-app-*.js",
+      "maxSize": "100kb",
+      "compression": "gzip"
+    },
+    {
+      "path": ".next/static/chunks/polyfills-*.js",
+      "maxSize": "50kb",
+      "compression": "gzip"
+    },
+    {
+      "path": ".next/static/chunks/webpack-*.js",
+      "maxSize": "10kb",
+      "compression": "gzip"
+    },
+    {
+      "path": ".next/static/chunks/pages/*.js",
+      "maxSize": "250kb",
+      "compression": "gzip"
+    },
+    {
+      "path": ".next/static/chunks/app/**/*.js",
+      "maxSize": "100kb",
+      "compression": "gzip"
+    },
+    {
+      "path": ".next/static/css/*.css",
+      "maxSize": "80kb",
+      "compression": "gzip"
+    }
+  ],
+  "defaultCompression": "gzip",
+  "ci": { "trackBranches": ["main", "develop"] }
+}

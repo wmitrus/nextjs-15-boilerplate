@@ -1,0 +1,42 @@
+name: Bundle Size
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  bundle-size:
+    runs-on: ubuntu-latest
+    env:
+      # Required environment variables for build
+      NODE_ENV: production
+      LOG_DIR: logs
+      LOG_LEVEL: info
+      FILE_LOG_LEVEL: info
+      CONSOLE_LOG_LEVEL: info
+      LOG_TO_FILE_PROD: '0'
+      LOG_TO_FILE_DEV: '0'
+      LOGFLARE_INTEGRATION_ENABLED: '0'
+      LOGFLARE_LOG_LEVEL: info
+      LOGFLARE_API_KEY: dummy
+      LOGFLARE_SOURCE_TOKEN: dummy
+      UPSTASH_REDIS_REST_URL: https://dummy.upstash.io
+      UPSTASH_REDIS_REST_TOKEN: dummy
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm size
+      - env:
+          BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
+        run: pnpm bundlewatch --config .bundlewatch.config.json

@@ -1,9 +1,6 @@
 {
   "ci": {
     "collect": {
-      "url": [
-        "https://nextjs-15-boilerplate-6ovmygtmm-wojciech-mitruss-projects.vercel.app"
-      ],
       "numberOfRuns": 3
     },
     "upload": {
