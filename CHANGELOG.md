@@ -1,3 +1,24 @@
+# [1.13.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.12.0...v1.13.0) (2025-08-26)
+
+### Bug Fixes
+
+- **actions:** add dummy required envs to bundle-size workflow ([fd73bfe](https://github.com/wmitrus/nextjs-15-boilerplate/commit/fd73bfeb6c384633714ea7ec99751293c44a276f))
+- **actions:** fix lisghthouse step to auto get preview url ([c24360b](https://github.com/wmitrus/nextjs-15-boilerplate/commit/c24360b1ccf543e2581b74135d1c96400f91f57c))
+- **analyze:** fix analyze script, use @next/bundle-analyzer, fix size-limit thresholds ([d0ac4f6](https://github.com/wmitrus/nextjs-15-boilerplate/commit/d0ac4f6f454988b09a967fd83b646702f81f24f3))
+- **bundlewatch:** fix config and thresholds ([27f165b](https://github.com/wmitrus/nextjs-15-boilerplate/commit/27f165bef3b57e7c52f3984e0fb8516a716ba704))
+- **envs:** update upstash env types accroding to zod@4, and add them to unit tests ([273477b](https://github.com/wmitrus/nextjs-15-boilerplate/commit/273477b2db84a0632e75611f18405a1be51eca7c))
+- **redis:** update redis config in middleware ([41ee14a](https://github.com/wmitrus/nextjs-15-boilerplate/commit/41ee14a81871f99a4fe4ff3b4afa2dcbb94b2211))
+- **scripts:** fix bundlewatch command name ([e16aab3](https://github.com/wmitrus/nextjs-15-boilerplate/commit/e16aab33e6847031b11583e9a7b62b264ea51cf3))
+
+### Features
+
+- **actions:** add bundle-size workflow action with bundlewatch integration ([f907c11](https://github.com/wmitrus/nextjs-15-boilerplate/commit/f907c11c312d13e865e25500bcba30b5b984e127))
+- **bundle-analyzer:** add bundleAnalyzer to next config ([10d94ee](https://github.com/wmitrus/nextjs-15-boilerplate/commit/10d94eedd59b3a615788cd134ac2c3bf11757088))
+- **bundlewatch:** add .bundlewatch.config.json config ([2e72f03](https://github.com/wmitrus/nextjs-15-boilerplate/commit/2e72f03ca0c0fe940a18959050099a56e6347f4c))
+- **scripts:** add scripts realted to bundle analysis ([9b04f65](https://github.com/wmitrus/nextjs-15-boilerplate/commit/9b04f654b442e83387318991dcca73e433a023be))
+- **size-limi:** configure size limit config in package.json ([c0eb1ee](https://github.com/wmitrus/nextjs-15-boilerplate/commit/c0eb1ee833b20c73cdae5bd2e5498e9a11f89de7))
+- **upstash:** add upstashe envs into T3 ([6ba6156](https://github.com/wmitrus/nextjs-15-boilerplate/commit/6ba6156788e76612d8af23c76d6710487cdd5791))
+
 # [1.12.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.11.0...v1.12.0) (2025-08-24)
 
 ### Features
