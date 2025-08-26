@@ -14,10 +14,19 @@ test.describe('Error Handling', () => {
   test('should handle JavaScript errors gracefully', async ({ page }) => {
     const errors: string[] = [];
 
-    // Listen for console errors
+    // Listen for console errors (but ignore middleware warnings)
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
         errors.push(msg.text());
+      } else if (msg.type() === 'warning') {
+        const text = msg.text();
+        // Ignore Redis-related warnings from middleware
+        if (
+          !text.includes('Redis not configured') &&
+          !text.includes('Rate limiting failed')
+        ) {
+          errors.push(text);
+        }
       }
     });
 
