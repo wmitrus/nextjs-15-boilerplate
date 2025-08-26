@@ -90,70 +90,32 @@ jobs:
           echo "Waiting for deployment to be accessible with bypass headers (non-blocking)..."
           echo "Will continue with Lighthouse even if this check fails..."
 
-          # Try to access the URL with bypass headers
-          retry_count=0
-          max_retries=12  # Reduced retries since this is non-blocking
-          until [ $retry_count -ge $max_retries ]
-          do
-            echo "Attempt $retry_count of $max_retries: Checking $DEPLOY_URL"
-            
-            # Try with headers first
-            RESPONSE_CODE=$(curl -s -L --max-redirs 3 -o /dev/null -w "%{http_code}" \
-              -H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}" \
-              -H "x-vercel-set-bypass-cookie: samesitenone" \
-              $DEPLOY_URL 2>&1)
-            
-            # If that fails, try with query parameters
-            if [ $RESPONSE_CODE -ne 200 ]; then
-              echo "Header approach failed, trying query parameters..."
-              RESPONSE_CODE=$(curl -s -L --max-redirs 3 -o /dev/null -w "%{http_code}" \
-                "${DEPLOY_URL}?x-vercel-protection-bypass=${VERCEL_AUTOMATION_BYPASS_SECRET}&x-vercel-set-bypass-cookie=samesitenone" 2>&1)
-            fi
-            
-            CURL_EXIT_CODE=$?
-            
-            # Check if curl succeeded
-            if [ $CURL_EXIT_CODE -ne 0 ]; then
-              echo "Curl failed with exit code $CURL_EXIT_CODE. Response code: $RESPONSE_CODE"
-              if [ $CURL_EXIT_CODE -eq 47 ]; then
-                echo "Too many redirects - checking redirect chain..."
-                # Show redirect chain without following
-                curl -s -I --max-redirs 2 \
-                  -H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}" \
-                  -H "x-vercel-set-bypass-cookie: samesitenone" \
-                  $DEPLOY_URL | grep -E "^(HTTP|location:)" || echo "Failed to get redirect chain"
-              fi
-            else
-              echo "GET status: $RESPONSE_CODE. Attempt $retry_count of $max_retries"
-              
-              # Accept 200 (OK) as success
-              if [ $RESPONSE_CODE -eq 200 ]; then
-                echo "Deployment is accessible with bypass headers (status: $RESPONSE_CODE)"
-                echo "SUCCESS=true" >> $GITHUB_OUTPUT
-                exit 0
-              fi
-            fi
-            
-            retry_count=$[$retry_count+1]
-            sleep 5
-          done
+          # Try to access the URL with bypass headers (ignore errors to prevent workflow failure)
+          echo "Checking if deployment is accessible (errors will be ignored)..."
 
-          echo "Warning: Timeout reached but continuing with Lighthouse: $DEPLOY_URL"
+          # Simple check without following redirects to avoid loops
+          RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}" \
+            -H "x-vercel-set-bypass-cookie: samesitenone" \
+            $DEPLOY_URL 2>/dev/null || echo "0")
+
+          echo "Initial check response code: $RESPONSE_CODE"
+
+          # Always continue regardless of result
+          echo "Warning: Deployment check completed but continuing with Lighthouse anyway: $DEPLOY_URL"
           echo "SUCCESS=false" >> $GITHUB_OUTPUT
-          # Don't exit with error code - let Lighthouse try anyway
-          exit 0
+          exit 0  # Always succeed
         env:
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Debug deployment URL with bypass
         run: |
           echo "Deployment URL: ${{ steps.waitForVercel.outputs.url }}"
-          echo "Checking if URL is accessible with bypass header..."
-          echo "Checking redirect chain (limited to 3 redirects)..."
-          curl -s -I --max-redirs 3 \
+          echo "Running simple accessibility check (ignoring errors)..."
+          curl -s -o /dev/null -w "Status: %{http_code}\n" \
             -H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}" \
             -H "x-vercel-set-bypass-cookie: samesitenone" \
-            ${{ steps.waitForVercel.outputs.url }} | grep -E "^(HTTP|location:)" || echo "Failed to get redirect chain"
+            ${{ steps.waitForVercel.outputs.url }} 2>/dev/null || echo "Check failed (but continuing)"
         env:
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
