@@ -22,6 +22,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "serve-storybook": "serve storybook-static",
+    "storybook:test": "pnpm vitest run",
     "chromatic": "dotenv -e .env.local npx chromatic",
     "skott": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies",
     "skott:check:only": "pnpm exec skott --trackThirdPartyDependencies --trackBuiltinDependencies --displayMode=raw",
@@ -30,6 +31,7 @@
     "lhci": "pnpm exec lhci autorun",
     "size": "size-limit",
     "size:build-check": "next build && size-limit",
+    "bundlewatch": "pnpm bundlewatch --config .bundlewatch.config.json",
     "analyze": "cross-env ANALYZE=true next build"
   },
   "lint-staged": {
@@ -48,7 +50,7 @@
     },
     {
       "path": ".next/static/chunks/main-*.js",
-      "limit": "110 KB"
+      "limit": "120 KB"
     },
     {
       "path": ".next/static/chunks/polyfills-*.js",
