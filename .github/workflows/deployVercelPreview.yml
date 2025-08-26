@@ -81,38 +81,67 @@ jobs:
           SENTRY_ORG: ozi
           SENTRY_PROJECT: nextjs-15-boilerplate
 
-      - name: Wait for Vercel preview deployment with bypass
+      - name: Wait for Vercel preview deployment with bypass (non-blocking)
         id: waitForVercel
         run: |
           DEPLOY_URL=${{ steps.vercel_deploy.outputs.preview_url }}
-          echo "Waiting for deployment to be accessible with bypass headers..."
           echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+
+          echo "Waiting for deployment to be accessible with bypass headers (non-blocking)..."
+          echo "Will continue with Lighthouse even if this check fails..."
 
           # Try to access the URL with bypass headers
           retry_count=0
-          max_retries=24
+          max_retries=12  # Reduced retries since this is non-blocking
           until [ $retry_count -ge $max_retries ]
           do
-            # Follow redirects and get the final status code
-            RESPONSE_CODE=$(curl -s -L -o /dev/null -w "%{http_code}" \
+            echo "Attempt $retry_count of $max_retries: Checking $DEPLOY_URL"
+            
+            # Try with headers first
+            RESPONSE_CODE=$(curl -s -L --max-redirs 3 -o /dev/null -w "%{http_code}" \
               -H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}" \
-              -H "x-vercel-set-bypass-cookie: true" \
-              $DEPLOY_URL)
+              -H "x-vercel-set-bypass-cookie: samesitenone" \
+              $DEPLOY_URL 2>&1)
             
-            echo "GET status: $RESPONSE_CODE. Attempt $retry_count of $max_retries"
+            # If that fails, try with query parameters
+            if [ $RESPONSE_CODE -ne 200 ]; then
+              echo "Header approach failed, trying query parameters..."
+              RESPONSE_CODE=$(curl -s -L --max-redirs 3 -o /dev/null -w "%{http_code}" \
+                "${DEPLOY_URL}?x-vercel-protection-bypass=${VERCEL_AUTOMATION_BYPASS_SECRET}&x-vercel-set-bypass-cookie=samesitenone" 2>&1)
+            fi
             
-            # Accept both 200 (OK) and 307/308 (redirects that are part of normal flow)
-            if [ $RESPONSE_CODE -eq 200 ] || [ $RESPONSE_CODE -eq 307 ] || [ $RESPONSE_CODE -eq 308 ]; then
-              echo "Deployment is accessible with bypass headers (status: $RESPONSE_CODE)"
-              exit 0
+            CURL_EXIT_CODE=$?
+            
+            # Check if curl succeeded
+            if [ $CURL_EXIT_CODE -ne 0 ]; then
+              echo "Curl failed with exit code $CURL_EXIT_CODE. Response code: $RESPONSE_CODE"
+              if [ $CURL_EXIT_CODE -eq 47 ]; then
+                echo "Too many redirects - checking redirect chain..."
+                # Show redirect chain without following
+                curl -s -I --max-redirs 2 \
+                  -H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}" \
+                  -H "x-vercel-set-bypass-cookie: samesitenone" \
+                  $DEPLOY_URL | grep -E "^(HTTP|location:)" || echo "Failed to get redirect chain"
+              fi
+            else
+              echo "GET status: $RESPONSE_CODE. Attempt $retry_count of $max_retries"
+              
+              # Accept 200 (OK) as success
+              if [ $RESPONSE_CODE -eq 200 ]; then
+                echo "Deployment is accessible with bypass headers (status: $RESPONSE_CODE)"
+                echo "SUCCESS=true" >> $GITHUB_OUTPUT
+                exit 0
+              fi
             fi
             
             retry_count=$[$retry_count+1]
             sleep 5
           done
 
-          echo "Error: Timeout reached: Unable to connect to $DEPLOY_URL"
-          exit 1
+          echo "Warning: Timeout reached but continuing with Lighthouse: $DEPLOY_URL"
+          echo "SUCCESS=false" >> $GITHUB_OUTPUT
+          # Don't exit with error code - let Lighthouse try anyway
+          exit 0
         env:
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
@@ -120,16 +149,21 @@ jobs:
         run: |
           echo "Deployment URL: ${{ steps.waitForVercel.outputs.url }}"
           echo "Checking if URL is accessible with bypass header..."
-          echo "Following redirects to check final destination..."
-          curl -L -I -H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}" -H "x-vercel-set-bypass-cookie: true" ${{ steps.waitForVercel.outputs.url }} || echo "Failed to access URL"
+          echo "Checking redirect chain (limited to 3 redirects)..."
+          curl -s -I --max-redirs 3 \
+            -H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}" \
+            -H "x-vercel-set-bypass-cookie: samesitenone" \
+            ${{ steps.waitForVercel.outputs.url }} | grep -E "^(HTTP|location:)" || echo "Failed to get redirect chain"
         env:
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Run Lighthouse Audit with bypass
         run: |
           echo "Running Lighthouse audit on URL: ${{ steps.waitForVercel.outputs.url }}"
+          echo "Deployment check success: ${{ steps.waitForVercel.outputs.SUCCESS }}"
+
           # Add a longer timeout for Lighthouse and include bypass headers
-          lhci autorun --collect.url=${{ steps.waitForVercel.outputs.url }} --collect.settings.maxWaitForLoad=120000 --collect.settings.extraHeaders='{"x-vercel-protection-bypass": "'"${VERCEL_AUTOMATION_BYPASS_SECRET}"'", "x-vercel-set-bypass-cookie": "true"}'
+          lhci autorun --collect.url=${{ steps.waitForVercel.outputs.url }} --collect.settings.maxWaitForLoad=120000 --collect.settings.extraHeaders='{"x-vercel-protection-bypass": "'"${VERCEL_AUTOMATION_BYPASS_SECRET}"'", "x-vercel-set-bypass-cookie": "samesitenone"}'
         env:
           LHCI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
