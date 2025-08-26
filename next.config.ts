@@ -6,7 +6,14 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   serverExternalPackages: ['pino', 'pino-pretty', 'require-in-the-middle'],
   transpilePackages: ['msw'],
-  allowedDevOrigins: ['127.0.0.1:3000'],
+  allowedDevOrigins: [
+    '127.0.0.1:3000',
+    'localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:3000',
+    '127.0.0.1',
+    'localhost',
+  ],
   typedRoutes: true,
   reactStrictMode: true,
   productionBrowserSourceMaps: true,
@@ -43,7 +50,7 @@ const bundleAnalyzer = withBundleAnalyzer({
 // Apply Sentry config only if not analyzing (to preserve source maps)
 const configWithAnalyzer = bundleAnalyzer(nextConfig);
 
-export default process.env.ANALYZE === 'true'
+export default process.env.ANALYZE === 'true' || process.env.NODE_ENV === 'test'
   ? configWithAnalyzer
   : withSentryConfig(configWithAnalyzer, {
       // For all available options, see:
