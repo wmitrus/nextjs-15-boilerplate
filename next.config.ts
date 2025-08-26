@@ -4,7 +4,7 @@ import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ['pino', 'pino-pretty'],
+  serverExternalPackages: ['pino', 'pino-pretty', 'require-in-the-middle'],
   transpilePackages: ['msw'],
   allowedDevOrigins: ['127.0.0.1:3000'],
   typedRoutes: true,
