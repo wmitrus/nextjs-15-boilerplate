@@ -31,7 +31,7 @@
     "lhci": "pnpm exec lhci autorun",
     "size": "size-limit",
     "size:build-check": "next build && size-limit",
-    "bundlewatch": "pnpm bundlewatch --config .bundlewatch.config.json",
+    "bundlewatch:run": "pnpm exec bundlewatch --config .bundlewatch.config.json",
     "analyze": "cross-env ANALYZE=true next build"
   },
   "lint-staged": {
