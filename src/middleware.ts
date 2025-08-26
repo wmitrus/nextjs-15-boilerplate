@@ -5,14 +5,38 @@ import { NextResponse } from 'next/server';
 
 import type { NextRequest } from 'next/server';
 
-// 🔐 Redis setup - with fallback for missing credentials
-const redis =
-  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-    ? new Redis({
-        url: process.env.UPSTASH_REDIS_REST_URL,
-        token: process.env.UPSTASH_REDIS_REST_TOKEN,
-      })
-    : null;
+// 🔐 Redis setup - with fallback for missing or invalid credentials
+const isValidRedisConfig = () => {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  // Check if both values exist and are not dummy/test values
+  return (
+    url &&
+    token &&
+    url !== 'https://dummy.upstash.io' &&
+    token !== 'dummy' &&
+    url.startsWith('https://') &&
+    token.length > 10 // Basic validation for token length
+  );
+};
+
+const redis = isValidRedisConfig()
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL!,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+    })
+  : null;
+
+// Cache the Redis availability check to avoid repeated validation
+const REDIS_AVAILABLE = redis !== null;
+
+// Only log the warning once during startup, not on every request
+if (!REDIS_AVAILABLE && process.env.NODE_ENV !== 'test') {
+  console.warn(
+    'Redis not configured or using dummy credentials, skipping rate limiting',
+  );
+}
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -22,7 +46,7 @@ export async function middleware(req: NextRequest) {
   let response = NextResponse.next();
 
   // 🛡️ Rate limiting - only if Redis is available
-  if (redis) {
+  if (REDIS_AVAILABLE) {
     try {
       // Route-specific rate limits
       let limiterConfig;
@@ -58,10 +82,8 @@ export async function middleware(req: NextRequest) {
       console.warn('Rate limiting failed:', error);
       response = NextResponse.next();
     }
-  } else {
-    // Redis not available (e.g., in development/test), skip rate limiting
-    console.warn('Redis not configured, skipping rate limiting');
   }
+  // Note: Redis not available, rate limiting skipped (warning logged at startup)
 
   // ✅ Security Headers
   response.headers.set('X-Frame-Options', 'DENY');
