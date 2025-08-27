@@ -81,48 +81,16 @@ jobs:
           SENTRY_ORG: ozi
           SENTRY_PROJECT: nextjs-15-boilerplate
 
-      - name: Wait for Vercel preview deployment with bypass (non-blocking)
+      - name: Set deployment URL for Lighthouse
         id: waitForVercel
         run: |
           DEPLOY_URL=${{ steps.vercel_deploy.outputs.preview_url }}
           echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
-
-          echo "Waiting for deployment to be accessible with bypass headers (non-blocking)..."
-          echo "Will continue with Lighthouse even if this check fails..."
-
-          # Try to access the URL with bypass headers (ignore errors to prevent workflow failure)
-          echo "Checking if deployment is accessible (errors will be ignored)..."
-
-          # Simple check without following redirects to avoid loops
-          RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}" \
-            -H "x-vercel-set-bypass-cookie: samesitenone" \
-            $DEPLOY_URL 2>/dev/null || echo "0")
-
-          echo "Initial check response code is: $RESPONSE_CODE"
-
-          # Always continue regardless of result
-          echo "Warning: Deployment check completed but continuing with Lighthouse anyway: $DEPLOY_URL"
-          echo "SUCCESS=false" >> $GITHUB_OUTPUT
-          exit 0  # Always succeed
-        env:
-          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
-
-      - name: Debug deployment URL with bypass
-        run: |
-          echo "Deployment URL: ${{ steps.waitForVercel.outputs.url }}"
-          echo "Running simple accessibility check (ignoring errors)..."
-          curl -s -o /dev/null -w "Status: %{http_code}\n" \
-            -H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}" \
-            -H "x-vercel-set-bypass-cookie: samesitenone" \
-            ${{ steps.waitForVercel.outputs.url }} 2>/dev/null || echo "Check failed (but continuing)"
-        env:
-          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          echo "Using deployment URL for Lighthouse: $DEPLOY_URL"
 
       - name: Run Lighthouse Audit with bypass
         run: |
           echo "Running Lighthouse audit on URL: ${{ steps.waitForVercel.outputs.url }}"
-          echo "Deployment check success: ${{ steps.waitForVercel.outputs.SUCCESS }}"
 
           # Add a longer timeout for Lighthouse and include bypass headers
           lhci autorun --collect.url=${{ steps.waitForVercel.outputs.url }} --collect.settings.maxWaitForLoad=120000 --collect.settings.extraHeaders='{"x-vercel-protection-bypass": "'"${VERCEL_AUTOMATION_BYPASS_SECRET}"'", "x-vercel-set-bypass-cookie": "samesitenone"}'
