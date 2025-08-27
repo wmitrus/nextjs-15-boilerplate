@@ -1,9 +1,6 @@
 import Image from 'next/image';
 
-import logger from '@/lib/logger';
-
 export default function Home() {
-  logger.info('Hello, app!');
   return (
     <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
       <main className="row-start-2 flex flex-col items-center gap-8 sm:items-start">
@@ -39,6 +36,7 @@ export default function Home() {
               alt="Vercel logomark"
               width={20}
               height={20}
+              priority
             />
             Deploy now
           </a>
@@ -65,6 +63,7 @@ export default function Home() {
             alt="File icon"
             width={16}
             height={16}
+            priority
           />
           Learn
         </a>
@@ -80,6 +79,7 @@ export default function Home() {
             alt="Window icon"
             width={16}
             height={16}
+            priority
           />
           Examples
         </a>
@@ -95,6 +95,7 @@ export default function Home() {
             alt="Globe icon"
             width={16}
             height={16}
+            priority
           />
           Go to nextjs.org →
         </a>
