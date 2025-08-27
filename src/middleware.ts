@@ -1,6 +1,4 @@
 // src/middleware.ts
-import { Ratelimit } from '@upstash/ratelimit';
-import { Redis } from '@upstash/redis';
 import { NextResponse } from 'next/server';
 
 import type { NextRequest } from 'next/server';
@@ -21,15 +19,8 @@ const isValidRedisConfig = () => {
   );
 };
 
-const redis = isValidRedisConfig()
-  ? new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL!,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-    })
-  : null;
-
 // Cache the Redis availability check to avoid repeated validation
-const REDIS_AVAILABLE = redis !== null;
+const REDIS_AVAILABLE = isValidRedisConfig();
 
 // Only log the warning once during startup, not on every request
 if (!REDIS_AVAILABLE && process.env.NODE_ENV !== 'test') {
@@ -48,6 +39,15 @@ export async function middleware(req: NextRequest) {
   // 🛡️ Rate limiting - only if Redis is available
   if (REDIS_AVAILABLE) {
     try {
+      // Lazy load Upstash dependencies only when needed
+      const { Ratelimit } = await import('@upstash/ratelimit');
+      const { Redis } = await import('@upstash/redis');
+
+      const redis = new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL!,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+      });
+
       // Route-specific rate limits
       let limiterConfig;
       if (path.startsWith('/api/login')) {
