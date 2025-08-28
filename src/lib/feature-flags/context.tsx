@@ -9,12 +9,7 @@ import React, {
   useState,
 } from 'react';
 
-import type {
-  AppFeatureFlags,
-  FeatureFlag,
-  FeatureFlagContext,
-  FeatureFlagKey,
-} from './types';
+import type { FeatureFlag, FeatureFlagContext, FeatureFlagKey } from './types';
 
 interface FeatureFlagContextValue {
   flags: Record<string, FeatureFlag>;
