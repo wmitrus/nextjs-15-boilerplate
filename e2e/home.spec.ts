@@ -5,38 +5,47 @@ test.describe('Home Page', () => {
     await page.goto('/');
   });
 
-  test('should display the Next.js logo', async ({ page }) => {
-    const logo = page.getByAltText('Next.js logo');
+  test('should display the custom logo', async ({ page }) => {
+    const logo = page.locator('div.h-8.w-8.rounded-lg.bg-indigo-600');
     await expect(logo).toBeVisible();
   });
 
   test('should display the main heading text', async ({ page }) => {
-    await expect(page.getByText('Get started by editing')).toBeVisible();
-    await expect(page.getByText('src/app/page.tsx')).toBeVisible();
+    await expect(page.getByText('Modern Web Development')).toBeVisible();
+    await expect(
+      page.getByText(
+        'A Next.js 15 boilerplate with environment management, feature flags, and multi-tenant support',
+      ),
+    ).toBeVisible();
   });
 
   test('should have working external links', async ({ page }) => {
-    // Test Deploy now button
-    const deployLink = page.getByRole('link', { name: /deploy now/i });
-    await expect(deployLink).toBeVisible();
-    await expect(deployLink).toHaveAttribute('href', /vercel\.com/);
-    await expect(deployLink).toHaveAttribute('target', '_blank');
+    // Test Explore Features button
+    const featuresLink = page.getByRole('link', { name: /explore features/i });
+    await expect(featuresLink).toBeVisible();
+    await expect(featuresLink).toHaveAttribute('href', '#features');
 
-    // Test Read our docs button
-    const docsLink = page.getByRole('link', { name: /read our docs/i });
-    await expect(docsLink).toBeVisible();
-    await expect(docsLink).toHaveAttribute('href', /nextjs\.org\/docs/);
-    await expect(docsLink).toHaveAttribute('target', '_blank');
+    // Test Learn more button
+    const learnMoreLink = page.getByRole('link', { name: /learn more/i });
+    await expect(learnMoreLink).toBeVisible();
+    await expect(learnMoreLink).toHaveAttribute('href', 'https://nextjs.org');
+    await expect(learnMoreLink).toHaveAttribute('target', '_blank');
   });
 
-  test('should have footer links', async ({ page }) => {
-    const learnLink = page.getByRole('link', { name: /learn/i });
-    const examplesLink = page.getByRole('link', { name: /examples/i });
-    const nextjsLink = page.getByRole('link', { name: /go to nextjs\.org/i });
+  test('should have footer content', async ({ page }) => {
+    // Check for footer text content
+    await expect(page.getByText('NextJS 15 Boilerplate')).toBeVisible();
+    await expect(
+      page.getByText(
+        'Built with Next.js 15, TypeScript, and modern web technologies',
+      ),
+    ).toBeVisible();
 
-    await expect(learnLink).toBeVisible();
-    await expect(examplesLink).toBeVisible();
-    await expect(nextjsLink).toBeVisible();
+    // Check for footer logo
+    const footerLogo = page.locator(
+      'footer div.h-6.w-6.rounded-lg.bg-indigo-600',
+    );
+    await expect(footerLogo).toBeVisible();
   });
 
   test('should be responsive', async ({ page }) => {
@@ -48,15 +57,21 @@ test.describe('Home Page', () => {
     await page.setViewportSize({ width: 375, height: 667 });
     await expect(page.locator('main')).toBeVisible();
 
-    // Check if layout adapts (buttons should stack vertically on mobile)
+    // Check if hero section buttons are visible on mobile
     const buttonContainer = page.locator(
-      '.flex.flex-col.items-center.gap-4.sm\\:flex-row',
+      '.flex.items-center.justify-center.gap-x-6',
     );
     await expect(buttonContainer).toBeVisible();
+
+    // Check if feature grid adapts to different screen sizes
+    const featureGrid = page.locator(
+      '.grid.grid-cols-1.gap-8.sm\\:grid-cols-2.lg\\:grid-cols-3',
+    );
+    await expect(featureGrid).toBeVisible();
   });
 
   test('should have proper meta tags', async ({ page }) => {
-    await expect(page).toHaveTitle(/Create Next App/);
+    await expect(page).toHaveTitle(/Next\.js 15 Boilerplate/);
 
     // Check for favicon
     const favicon = page.locator('link[rel="icon"]');

@@ -62,6 +62,7 @@ test.describe('Performance', () => {
     expect(loadTime).toBeLessThan(NETWORK_CONDITIONS_TIMEOUT);
 
     // Content should still be visible
-    await expect(page.getByAltText('Next.js logo')).toBeVisible();
+    const logo = page.locator('div.h-8.w-8.rounded-lg.bg-indigo-600');
+    await expect(logo).toBeVisible();
   });
 });
