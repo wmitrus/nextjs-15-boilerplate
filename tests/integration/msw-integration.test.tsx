@@ -15,9 +15,7 @@ import { server } from '../../src/lib/mocks/server';
 import { TenantProvider } from '../../src/lib/multi-tenant/context';
 
 // Import types
-import type { FeatureFlag } from '../../src/lib/feature-flags/types';
 import type { FeatureFlagContext } from '../../src/lib/feature-flags/types';
-import type { Tenant } from '../../src/lib/multi-tenant/types';
 
 // Test App Component that simulates real app structure
 const TestApp = ({
