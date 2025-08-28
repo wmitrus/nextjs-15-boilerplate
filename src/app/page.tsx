@@ -79,6 +79,8 @@ export default function Home() {
             </a>
             <a
               href="https://nextjs.org"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-sm leading-6 font-semibold text-gray-900"
             >
               Learn more <span aria-hidden="true">→</span>
