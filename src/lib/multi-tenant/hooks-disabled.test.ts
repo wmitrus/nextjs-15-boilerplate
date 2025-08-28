@@ -57,6 +57,9 @@ describe('Multi-Tenant Hooks (Disabled)', () => {
         tenant: null,
         isMultiTenant: false,
         tenantId: 'default',
+        domain: undefined,
+        subdomain: undefined,
+        error: null,
       });
 
       // Should not call headers when multi-tenant is disabled
@@ -85,6 +88,9 @@ describe('Multi-Tenant Hooks (Disabled)', () => {
         tenant: null,
         isMultiTenant: false,
         tenantId: 'default',
+        domain: undefined,
+        subdomain: undefined,
+        error: null,
       });
 
       // Headers should not be called at all
