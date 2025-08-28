@@ -56,6 +56,30 @@ jobs:
       - name: Build Project Artifact
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
+          # Environment configuration
+          APP_ENV: production
+          APP_VERSION: ${{ github.sha }}
+
+          # Feature flags
+          FEATURE_FLAGS_ENABLED: 'true'
+          FEATURE_FLAGS_PROVIDER: 'local'
+
+          # Multi-tenant
+          MULTI_TENANT_ENABLED: 'true'
+          DEFAULT_TENANT_ID: 'default'
+
+          # API configuration
+          API_RATE_LIMIT_ENABLED: 'true'
+          API_RATE_LIMIT_REQUESTS: '100'
+
+          # Public variables
+          NEXT_PUBLIC_APP_ENV: production
+          NEXT_PUBLIC_APP_VERSION: ${{ github.sha }}
+          NEXT_PUBLIC_FEATURE_FLAGS_ENABLED: 'true'
+          NEXT_PUBLIC_MULTI_TENANT_ENABLED: 'true'
+          NEXT_PUBLIC_ANALYTICS_ENABLED: 'true'
+
+          # Sentry
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ozi
           SENTRY_PROJECT: nextjs-15-boilerplate
@@ -72,6 +96,11 @@ jobs:
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
+          # Environment configuration
+          APP_ENV: production
+          APP_VERSION: ${{ github.sha }}
+
+          # Sentry
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ozi
           SENTRY_PROJECT: nextjs-15-boilerplate

@@ -58,6 +58,30 @@ jobs:
       - name: Build Project Artifacts
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
         env:
+          # Environment configuration
+          APP_ENV: preview
+          APP_VERSION: ${{ github.sha }}
+
+          # Feature flags
+          FEATURE_FLAGS_ENABLED: 'true'
+          FEATURE_FLAGS_PROVIDER: 'local'
+
+          # Multi-tenant
+          MULTI_TENANT_ENABLED: 'true'
+          DEFAULT_TENANT_ID: 'preview-tenant'
+
+          # API configuration
+          API_RATE_LIMIT_ENABLED: 'true'
+          API_RATE_LIMIT_REQUESTS: '500'
+
+          # Public variables
+          NEXT_PUBLIC_APP_ENV: preview
+          NEXT_PUBLIC_APP_VERSION: ${{ github.sha }}
+          NEXT_PUBLIC_FEATURE_FLAGS_ENABLED: 'true'
+          NEXT_PUBLIC_MULTI_TENANT_ENABLED: 'true'
+          NEXT_PUBLIC_ANALYTICS_ENABLED: 'true'
+
+          # Sentry
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ozi
           SENTRY_PROJECT: nextjs-15-boilerplate
@@ -77,6 +101,11 @@ jobs:
           DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} --no-clipboard)
           echo "preview_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
         env:
+          # Environment configuration
+          APP_ENV: preview
+          APP_VERSION: ${{ github.sha }}
+
+          # Sentry
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ozi
           SENTRY_PROJECT: nextjs-15-boilerplate
