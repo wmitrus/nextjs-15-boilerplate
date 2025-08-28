@@ -11,6 +11,9 @@ export async function getTenantContext(): Promise<TenantContext> {
       tenant: null,
       isMultiTenant: false,
       tenantId: env.DEFAULT_TENANT_ID,
+      domain: undefined,
+      subdomain: undefined,
+      error: null,
     };
   }
 
@@ -28,6 +31,7 @@ export async function getTenantContext(): Promise<TenantContext> {
     tenantId,
     subdomain,
     domain,
+    error: null,
   };
 }
 

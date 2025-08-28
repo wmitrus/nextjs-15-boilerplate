@@ -126,6 +126,7 @@ describe('Multi-Tenant Hooks', () => {
         tenantId: 'default',
         subdomain: undefined,
         domain: undefined,
+        error: null,
       });
 
       expect(mockHeaders).toHaveBeenCalled();
@@ -156,6 +157,7 @@ describe('Multi-Tenant Hooks', () => {
         tenantId: 'preview-tenant',
         subdomain: 'preview',
         domain: 'preview.example.com',
+        error: null,
       });
     });
 
@@ -181,6 +183,7 @@ describe('Multi-Tenant Hooks', () => {
         tenantId: 'unknown-tenant',
         subdomain: 'unknown',
         domain: 'unknown.example.com',
+        error: null,
       });
     });
 
@@ -206,6 +209,7 @@ describe('Multi-Tenant Hooks', () => {
         tenantId: 'preview-tenant',
         subdomain: undefined,
         domain: 'preview.example.com',
+        error: null,
       });
     });
   });

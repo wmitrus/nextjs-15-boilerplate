@@ -58,12 +58,13 @@ test.describe('Error Handling', () => {
     await page.goto('/');
 
     // Page should still load even if external links fail
-    await expect(page.getByAltText('Next.js logo')).toBeVisible();
+    const logo = page.locator('div.h-8.w-8.rounded-lg.bg-indigo-600');
+    await expect(logo).toBeVisible();
 
     // External links should still be present (even if they would fail when clicked)
-    await expect(page.getByRole('link', { name: /deploy now/i })).toBeVisible();
     await expect(
-      page.getByRole('link', { name: /read our docs/i }),
+      page.getByRole('link', { name: /explore features/i }),
     ).toBeVisible();
+    await expect(page.getByRole('link', { name: /learn more/i })).toBeVisible();
   });
 });
