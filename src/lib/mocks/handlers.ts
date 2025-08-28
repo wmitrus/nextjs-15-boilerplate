@@ -4,7 +4,6 @@ import { getEnvironmentConfig } from '../env';
 import { LocalFeatureFlagProvider } from '../feature-flags/local-provider';
 
 // Import types
-import type { FeatureFlag } from '../feature-flags/types';
 import type { FeatureFlagContext } from '../feature-flags/types';
 import type { Tenant } from '../multi-tenant/types';
 
@@ -297,7 +296,7 @@ export const handlers = [
   }),
 
   // Mock tenant API endpoint for POST requests
-  http.post('/api/tenants/:tenantId', async ({ request, params }) => {
+  http.post('/api/tenants/:tenantId', async ({ params }) => {
     try {
       const { tenantId } = params;
 
