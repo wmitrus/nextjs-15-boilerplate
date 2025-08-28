@@ -25,6 +25,9 @@
     "bundlewatch",
     "cross-env",
     "source-map-explorer",
-    "require-in-the-middle"
+    "require-in-the-middle",
+    "@upstash/ratelimit",
+    "@upstash/redis",
+    "jest-fixed-jsdom"
   ]
 }
