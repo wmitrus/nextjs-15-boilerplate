@@ -219,9 +219,15 @@ importers:
       jest-environment-jsdom:
         specifier: ^30.0.5
         version: 30.0.5
+      jest-fixed-jsdom:
+        specifier: ^0.0.9
+        version: 0.0.9(jest-environment-jsdom@30.0.5)
       jest-json-schema:
         specifier: ^6.1.0
         version: 6.1.0
+      jsdom:
+        specifier: ^26.1.0
+        version: 26.1.0
       lint-staged:
         specifier: ^16.1.5
         version: 16.1.5
@@ -10383,6 +10389,15 @@ packages:
         integrity: sha512-ppYizXdLMSvciGsRsMEnv/5EFpvOdXBaXRBzFUDPWrsfmog4kYrOGWXarLllz6AXan6ZAA/kYokgDWuos1IKDA==,
       }
     engines: { node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0 }
+
+  jest-fixed-jsdom@0.0.9:
+    resolution:
+      {
+        integrity: sha512-KPfqh2+sn5q2B+7LZktwDcwhCpOpUSue8a1I+BcixWLOQoEVyAjAGfH+IYZGoxZsziNojoHGRTC8xRbB1wDD4g==,
+      }
+    engines: { node: '>=18.0.0' }
+    peerDependencies:
+      jest-environment-jsdom: '>=28.0.0'
 
   jest-get-type@27.5.1:
     resolution:
@@ -23506,6 +23521,10 @@ snapshots:
       jest-mock: 30.0.5
       jest-util: 30.0.5
       jest-validate: 30.0.5
+
+  jest-fixed-jsdom@0.0.9(jest-environment-jsdom@30.0.5):
+    dependencies:
+      jest-environment-jsdom: 30.0.5
 
   jest-get-type@27.5.1: {}
 
