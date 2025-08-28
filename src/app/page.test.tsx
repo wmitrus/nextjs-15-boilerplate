@@ -1,8 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
-import logger from '@/lib/logger';
-
 import Page from './page';
 
 jest.mock('@/lib/logger', () => ({
@@ -12,16 +10,44 @@ jest.mock('@/lib/logger', () => ({
   debug: jest.fn(),
 }));
 
+// Mock the multi-tenant module to avoid importing server-side dependencies
+jest.mock('@/lib/multi-tenant', () => ({
+  useTenant: () => ({
+    tenant: null,
+    isMultiTenant: false,
+    tenantId: 'default',
+  }),
+}));
+
+// Mock the feature-flags module
+jest.mock('@/lib/feature-flags', () => ({
+  useFeatureFlag: (flagKey: string) => {
+    // Mock implementation for feature flags
+    const mockFlags: Record<string, { isEnabled: boolean }> = {
+      'new-dashboard': { isEnabled: true },
+      'dark-mode': { isEnabled: false },
+    };
+
+    return mockFlags[flagKey] || { isEnabled: false };
+  },
+}));
+
 describe('Page', () => {
   it('renders a heading', () => {
     render(<Page />);
 
-    const main = screen.getByRole('main');
-    expect(main).toBeInTheDocument();
+    const heading = screen.getByRole('heading', {
+      name: /Modern Web Development/i,
+    });
+    expect(heading).toBeInTheDocument();
   });
 
-  it('logs an info message', () => {
-    logger.info('Test info message');
-    expect(logger.info).toHaveBeenCalledWith('Test info message');
+  it('displays environment information', () => {
+    render(<Page />);
+
+    // Target the header environment badge specifically by its CSS class and exact text
+    const environmentBadge = screen.getByText('DEVELOPMENT');
+    expect(environmentBadge).toBeInTheDocument();
+    expect(environmentBadge).toHaveClass('rounded-full');
   });
 });
