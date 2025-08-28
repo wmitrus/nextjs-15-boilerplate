@@ -1,4 +1,3 @@
-import 'cross-fetch/polyfill';
 import { TextEncoder, TextDecoder } from 'util';
 
 // Polyfill TextEncoder and TextDecoder
