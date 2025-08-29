@@ -30,11 +30,18 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm">
+      <header
+        className="border-b border-gray-200 bg-white/80 backdrop-blur-sm"
+        role="banner"
+      >
         <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="h-8 w-8 rounded-lg bg-indigo-600"></div>
+              <div
+                className="h-8 w-8 rounded-lg bg-indigo-600"
+                aria-hidden="true"
+                role="presentation"
+              ></div>
               <span className="text-xl font-bold text-gray-900">NextJS 15</span>
             </div>
             <div className="flex items-center space-x-4">
@@ -46,11 +53,15 @@ export default function Home() {
                       ? 'bg-yellow-100 text-yellow-800'
                       : 'bg-green-100 text-green-800'
                 }`}
+                aria-label={`Environment: ${environment}`}
               >
                 {environment.toUpperCase()}
               </span>
               {tenant.isMultiTenant && (
-                <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-medium text-purple-800">
+                <span
+                  className="rounded-full bg-purple-100 px-3 py-1 text-xs font-medium text-purple-800"
+                  aria-label={`Tenant: ${tenant.tenant?.name || tenant.tenantId}`}
+                >
                   {tenant.tenant?.name || tenant.tenantId}
                 </span>
               )}
@@ -60,7 +71,11 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <main className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+      <main
+        id="main-content"
+        className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8"
+        role="main"
+      >
         <div className="text-center">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
             Modern Web Development
@@ -141,18 +156,29 @@ export default function Home() {
                     Toggle features dynamically with support for rollout
                     percentages and conditions
                   </p>
-                  <div className="mt-4 space-y-2">
+                  <div
+                    className="mt-4 space-y-2"
+                    role="list"
+                    aria-label="Feature flags status"
+                  >
                     {features.map((feature) => (
                       <div
                         key={feature.name}
                         className="flex items-center justify-between"
+                        role="listitem"
                       >
                         <span className="text-sm text-gray-600">
                           {feature.name}
                         </span>
                         <span
                           className={`h-3 w-3 rounded-full ${feature.enabled ? 'bg-green-500' : 'bg-gray-300'}`}
+                          aria-hidden="true"
+                          role="presentation"
                         ></span>
+                        <span className="sr-only">
+                          {feature.name} is{' '}
+                          {feature.enabled ? 'enabled' : 'disabled'}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -240,11 +266,15 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 bg-white">
+      <footer className="border-t border-gray-200 bg-white" role="contentinfo">
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center justify-between md:flex-row">
             <div className="flex items-center space-x-3">
-              <div className="h-6 w-6 rounded-lg bg-indigo-600"></div>
+              <div
+                className="h-6 w-6 rounded-lg bg-indigo-600"
+                aria-hidden="true"
+                role="presentation"
+              ></div>
               <span className="text-sm font-medium text-gray-900">
                 NextJS 15 Boilerplate
               </span>
