@@ -97,6 +97,7 @@ export const CONFIG = {
       env.NODE_ENV === 'production'
         ? env.LOG_TO_FILE_PROD
         : env.LOG_TO_FILE_DEV,
+    DIR: env.LOG_DIR,
   },
 } as const;
 

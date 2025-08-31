@@ -54,6 +54,12 @@ export function createConsoleTransport(): TransportTargetOptions {
 }
 
 export function createLogflareTransport(): DestinationStream {
+  if (!env.LOGFLARE_API_KEY || !env.LOGFLARE_SOURCE_TOKEN) {
+    throw new Error(
+      'LOGFLARE_API_KEY and LOGFLARE_SOURCE_TOKEN must be set to use Logflare transport',
+    );
+  }
+
   const { stream } = logflarePinoVercel({
     apiKey: env.LOGFLARE_API_KEY,
     sourceToken: env.LOGFLARE_SOURCE_TOKEN,
@@ -63,6 +69,12 @@ export function createLogflareTransport(): DestinationStream {
 }
 
 export function createLogflareWriteStream(): DestinationStream {
+  if (!env.LOGFLARE_API_KEY || !env.LOGFLARE_SOURCE_TOKEN) {
+    throw new Error(
+      'LOGFLARE_API_KEY and LOGFLARE_SOURCE_TOKEN must be set to use Logflare write stream',
+    );
+  }
+
   const stream = createWriteStream({
     apiKey: env.LOGFLARE_API_KEY,
     sourceToken: env.LOGFLARE_SOURCE_TOKEN,
@@ -76,6 +88,12 @@ export function createLogflareWriteStream(): DestinationStream {
 }
 
 export function createLogflareBrowserTransport() {
+  if (!env.LOGFLARE_API_KEY || !env.LOGFLARE_SOURCE_TOKEN) {
+    throw new Error(
+      'LOGFLARE_API_KEY and LOGFLARE_SOURCE_TOKEN must be set to use Logflare browser transport',
+    );
+  }
+
   const { send } = logflarePinoVercel({
     apiKey: env.LOGFLARE_API_KEY,
     sourceToken: env.LOGFLARE_SOURCE_TOKEN,
