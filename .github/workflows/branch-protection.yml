@@ -46,6 +46,9 @@ jobs:
       - name: Build check
         run: pnpm build
 
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+
       - name: Run E2E tests
         run: pnpm e2e
 
@@ -76,9 +79,9 @@ jobs:
       - name: Validate configuration files
         run: |
           # Check if config files exist and are valid TypeScript
-          npx tsc --noEmit config/features.ts
-          npx tsc --noEmit config/tenantConfig.ts
-          npx tsc --noEmit config/index.ts
+          npx tsc --noEmit --project tsconfig.json config/features.ts
+          npx tsc --noEmit --project tsconfig.json config/tenantConfig.ts
+          npx tsc --noEmit --project tsconfig.json config/index.ts
 
       - name: Test environment setup script
         run: |
