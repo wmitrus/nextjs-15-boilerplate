@@ -96,6 +96,7 @@ function getCurrentBranch() {
     return execSync('git branch --show-current', { encoding: 'utf8' }).trim();
   } catch (error) {
     console.warn('Could not determine git branch, defaulting to development');
+    console.warn(error);
     return 'main';
   }
 }
