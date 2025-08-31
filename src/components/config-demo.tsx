@@ -2,14 +2,6 @@
 
 import { useAppConfig, CONFIG } from '@/config';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-
 /**
  * Configuration Demo Component
  * Showcases the new centralized configuration system
@@ -29,12 +21,14 @@ export function ConfigDemo() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {/* Environment Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Environment</CardTitle>
-            <CardDescription>Current environment configuration</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
+        <div className="bg-card rounded-lg border p-6 shadow-sm">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Environment</h3>
+            <p className="text-muted-foreground text-sm">
+              Current environment configuration
+            </p>
+          </div>
+          <div className="space-y-2">
             <div className="flex justify-between">
               <span className="font-medium">Environment:</span>
               <span className="rounded bg-blue-100 px-2 py-1 text-sm">
@@ -65,18 +59,18 @@ export function ConfigDemo() {
                 {appConfig.isPreview ? 'Yes' : 'No'}
               </span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Feature Flags */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Feature Flags</CardTitle>
-            <CardDescription>
+        <div className="bg-card rounded-lg border p-6 shadow-sm">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Feature Flags</h3>
+            <p className="text-muted-foreground text-sm">
               Environment-specific feature toggles
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
+            </p>
+          </div>
+          <div className="space-y-2">
             {Object.entries(appConfig.features).map(([key, value]) => (
               <div key={key} className="flex items-center justify-between">
                 <span className="text-sm font-medium capitalize">
@@ -93,16 +87,18 @@ export function ConfigDemo() {
                 </span>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Tenant Configuration */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Tenant Config</CardTitle>
-            <CardDescription>Multi-tenant configuration</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
+        <div className="bg-card rounded-lg border p-6 shadow-sm">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Tenant Config</h3>
+            <p className="text-muted-foreground text-sm">
+              Multi-tenant configuration
+            </p>
+          </div>
+          <div className="space-y-2">
             <div className="flex justify-between">
               <span className="font-medium">Tenant ID:</span>
               <span className="rounded bg-purple-100 px-2 py-1 text-sm">
@@ -145,18 +141,18 @@ export function ConfigDemo() {
                 )}
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* API Configuration */}
-        <Card>
-          <CardHeader>
-            <CardTitle>API Settings</CardTitle>
-            <CardDescription>
+        <div className="bg-card rounded-lg border p-6 shadow-sm">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">API Settings</h3>
+            <p className="text-muted-foreground text-sm">
               API and rate limiting configuration
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
+            </p>
+          </div>
+          <div className="space-y-2">
             <div className="flex justify-between">
               <span className="font-medium">Rate Limiting:</span>
               <span
@@ -177,16 +173,18 @@ export function ConfigDemo() {
               <span className="font-medium">Window:</span>
               <span className="text-sm">{CONFIG.API.RATE_LIMIT_WINDOW}</span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Logging Configuration */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Logging</CardTitle>
-            <CardDescription>Logging configuration and levels</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
+        <div className="bg-card rounded-lg border p-6 shadow-sm">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Logging</h3>
+            <p className="text-muted-foreground text-sm">
+              Logging configuration and levels
+            </p>
+          </div>
+          <div className="space-y-2">
             <div className="flex justify-between">
               <span className="font-medium">Log Level:</span>
               <span className="rounded bg-yellow-100 px-2 py-1 text-sm">
@@ -213,16 +211,18 @@ export function ConfigDemo() {
                 {CONFIG.LOGGING.TO_FILE ? 'ON' : 'OFF'}
               </span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Base URL */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Application URLs</CardTitle>
-            <CardDescription>Base URL and environment URLs</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
+        <div className="bg-card rounded-lg border p-6 shadow-sm">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold">Application URLs</h3>
+            <p className="text-muted-foreground text-sm">
+              Base URL and environment URLs
+            </p>
+          </div>
+          <div className="space-y-2">
             <div className="flex justify-between">
               <span className="font-medium">Base URL:</span>
               <span className="rounded bg-gray-100 px-2 py-1 font-mono text-sm">
@@ -235,26 +235,23 @@ export function ConfigDemo() {
                 {appConfig.environment.baseUrl}
               </span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Configuration Usage Examples */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Usage Examples</CardTitle>
-          <CardDescription>
+      <div className="bg-card rounded-lg border p-6 shadow-sm">
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold">Usage Examples</h3>
+          <p className="text-muted-foreground text-sm">
             How to use the configuration system in your code
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div>
-              <h4 className="mb-2 font-medium">
-                Import and use configuration:
-              </h4>
-              <pre className="overflow-x-auto rounded bg-gray-100 p-3 text-sm">
-                {`import { CONFIG, useAppConfig, isFeatureEnabled } from '@/config';
+          </p>
+        </div>
+        <div className="space-y-4">
+          <div>
+            <h4 className="mb-2 font-medium">Import and use configuration:</h4>
+            <pre className="overflow-x-auto rounded bg-gray-100 p-3 text-sm">
+              {`import { CONFIG, useAppConfig, isFeatureEnabled } from '@/config';
 
 // Static configuration access
 const apiEnabled = CONFIG.API.RATE_LIMIT_ENABLED;
@@ -264,15 +261,13 @@ const appConfig = useAppConfig();
 
 // Feature flag checking
 const showNewDashboard = isFeatureEnabled('newDashboard');`}
-              </pre>
-            </div>
+            </pre>
+          </div>
 
-            <div>
-              <h4 className="mb-2 font-medium">
-                Environment-specific behavior:
-              </h4>
-              <pre className="overflow-x-auto rounded bg-gray-100 p-3 text-sm">
-                {`// Different behavior per environment
+          <div>
+            <h4 className="mb-2 font-medium">Environment-specific behavior:</h4>
+            <pre className="overflow-x-auto rounded bg-gray-100 p-3 text-sm">
+              {`// Different behavior per environment
 if (appConfig.isProduction) {
   // Production-only code
 } else if (appConfig.isPreview) {
@@ -280,11 +275,10 @@ if (appConfig.isProduction) {
 } else if (appConfig.isDevelopment) {
   // Development tools
 }`}
-              </pre>
-            </div>
+            </pre>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
