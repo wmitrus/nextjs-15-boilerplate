@@ -58,6 +58,30 @@ jobs:
       - name: Build Project Artifacts
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
         env:
+          # Environment configuration
+          APP_ENV: preview
+          APP_VERSION: ${{ github.sha }}
+
+          # Feature flags
+          FEATURE_FLAGS_ENABLED: 'true'
+          FEATURE_FLAGS_PROVIDER: 'local'
+
+          # Multi-tenant
+          MULTI_TENANT_ENABLED: 'true'
+          DEFAULT_TENANT_ID: 'preview-tenant'
+
+          # API configuration
+          API_RATE_LIMIT_ENABLED: 'true'
+          API_RATE_LIMIT_REQUESTS: '500'
+
+          # Public variables
+          NEXT_PUBLIC_APP_ENV: preview
+          NEXT_PUBLIC_APP_VERSION: ${{ github.sha }}
+          NEXT_PUBLIC_FEATURE_FLAGS_ENABLED: 'true'
+          NEXT_PUBLIC_MULTI_TENANT_ENABLED: 'true'
+          NEXT_PUBLIC_ANALYTICS_ENABLED: 'true'
+
+          # Sentry
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ozi
           SENTRY_PROJECT: nextjs-15-boilerplate
@@ -74,17 +98,31 @@ jobs:
       - name: Deploy Project Artifacts to Vercel
         id: vercel_deploy
         run: |
-          DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          DEPLOY_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} --no-clipboard)
           echo "preview_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
         env:
+          # Environment configuration
+          APP_ENV: preview
+          APP_VERSION: ${{ github.sha }}
+
+          # Sentry
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ozi
           SENTRY_PROJECT: nextjs-15-boilerplate
 
-      - name: Wait for deployment to be ready
-        run: sleep 30
+      - name: Set deployment URL for Lighthouse
+        id: waitForVercel
+        run: |
+          DEPLOY_URL=${{ steps.vercel_deploy.outputs.preview_url }}
+          echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+          echo "Using deployment URL for Lighthouse: $DEPLOY_URL"
 
-      - name: Run Lighthouse Audit
-        run: lhci autorun --collect.url=${{ steps.vercel_deploy.outputs.preview_url }}
+      - name: Run Lighthouse Audit with bypass
+        run: |
+          echo "Running Lighthouse audit on URL: ${{ steps.waitForVercel.outputs.url }}"
+
+          # Add a longer timeout for Lighthouse and include bypass headers
+          lhci autorun --collect.url=${{ steps.waitForVercel.outputs.url }} --collect.settings.maxWaitForLoad=120000 --collect.settings.extraHeaders='{"x-vercel-protection-bypass": "'"${VERCEL_AUTOMATION_BYPASS_SECRET}"'", "x-vercel-set-bypass-cookie": "samesitenone"}'
         env:
           LHCI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}

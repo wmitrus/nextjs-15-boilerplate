@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom'
-import { matchers } from 'jest-json-schema'
+import '@testing-library/jest-dom';
+import { matchers } from 'jest-json-schema';
 
-expect.extend(matchers)
+expect.extend(matchers);

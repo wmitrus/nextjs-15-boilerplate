@@ -24,6 +24,10 @@
     "@size-limit/file",
     "bundlewatch",
     "cross-env",
-    "source-map-explorer"
+    "source-map-explorer",
+    "require-in-the-middle",
+    "@upstash/ratelimit",
+    "@upstash/redis",
+    "jest-fixed-jsdom"
   ]
 }

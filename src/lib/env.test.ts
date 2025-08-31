@@ -19,6 +19,30 @@ jest.mock('@t3-oss/env-nextjs', () => ({
       UPSTASH_REDIS_REST_URL?: string;
       UPSTASH_REDIS_REST_TOKEN?: string;
       CODECOV_TOKEN?: string;
+      VERCEL_ENV?: string;
+      VERCEL_URL?: string;
+      APP_ENV?: string;
+      APP_VERSION?: string;
+      FEATURE_FLAGS_ENABLED?: string;
+      FEATURE_FLAGS_PROVIDER?: string;
+      GROWTHBOOK_CLIENT_KEY?: string;
+      LAUNCHDARKLY_SDK_KEY?: string;
+      MULTI_TENANT_ENABLED?: string;
+      DEFAULT_TENANT_ID?: string;
+      TENANT_HEADER_NAME?: string;
+      DATABASE_URL?: string;
+      DATABASE_POOL_SIZE?: string;
+      API_RATE_LIMIT_ENABLED?: string;
+      API_RATE_LIMIT_REQUESTS?: string;
+      API_RATE_LIMIT_WINDOW?: string;
+      CORS_ORIGINS?: string;
+      ALLOWED_HOSTS?: string;
+      NEXT_PUBLIC_APP_ENV?: string;
+      NEXT_PUBLIC_APP_VERSION?: string;
+      NEXT_PUBLIC_VERCEL_URL?: string;
+      NEXT_PUBLIC_FEATURE_FLAGS_ENABLED?: string;
+      NEXT_PUBLIC_MULTI_TENANT_ENABLED?: string;
+      NEXT_PUBLIC_ANALYTICS_ENABLED?: string;
     } = {};
 
     // Process server config
@@ -86,6 +110,25 @@ describe('Environment Configuration', () => {
     process.env.UPSTASH_REDIS_REST_URL = 'https://test-redis.upstash.io';
     process.env.UPSTASH_REDIS_REST_TOKEN = 'test-redis-token';
     process.env.CODECOV_TOKEN = 'test-codecov-token';
+    process.env.VERCEL_ENV = 'development';
+    process.env.VERCEL_URL = 'test.vercel.app';
+    process.env.APP_ENV = 'development';
+    process.env.APP_VERSION = '1.0.0';
+    process.env.FEATURE_FLAGS_ENABLED = 'true';
+    process.env.FEATURE_FLAGS_PROVIDER = 'local';
+    process.env.GROWTHBOOK_CLIENT_KEY = 'test-growthbook-key';
+    process.env.LAUNCHDARKLY_SDK_KEY = 'test-launchdarkly-key';
+    process.env.MULTI_TENANT_ENABLED = 'false';
+    process.env.DEFAULT_TENANT_ID = 'default';
+    process.env.TENANT_HEADER_NAME = 'x-tenant-id';
+    process.env.DATABASE_URL =
+      'postgresql://user:password@localhost:5432/testdb';
+    process.env.DATABASE_POOL_SIZE = '10';
+    process.env.API_RATE_LIMIT_ENABLED = 'true';
+    process.env.API_RATE_LIMIT_REQUESTS = '100';
+    process.env.API_RATE_LIMIT_WINDOW = '15m';
+    process.env.CORS_ORIGINS = '*';
+    process.env.ALLOWED_HOSTS = 'localhost';
 
     // This should not throw
     await expect(async () => {
@@ -114,6 +157,25 @@ describe('Environment Configuration', () => {
     process.env.UPSTASH_REDIS_REST_URL = 'https://test-redis.upstash.io';
     process.env.UPSTASH_REDIS_REST_TOKEN = 'test-redis-token';
     process.env.CODECOV_TOKEN = 'test-codecov-token';
+    process.env.VERCEL_ENV = 'development';
+    process.env.VERCEL_URL = 'test.vercel.app';
+    process.env.APP_ENV = 'development';
+    process.env.APP_VERSION = '1.0.0';
+    process.env.FEATURE_FLAGS_ENABLED = 'true';
+    process.env.FEATURE_FLAGS_PROVIDER = 'local';
+    process.env.GROWTHBOOK_CLIENT_KEY = 'test-growthbook-key';
+    process.env.LAUNCHDARKLY_SDK_KEY = 'test-launchdarkly-key';
+    process.env.MULTI_TENANT_ENABLED = 'false';
+    process.env.DEFAULT_TENANT_ID = 'default';
+    process.env.TENANT_HEADER_NAME = 'x-tenant-id';
+    process.env.DATABASE_URL =
+      'postgresql://user:password@localhost:5432/testdb';
+    process.env.DATABASE_POOL_SIZE = '10';
+    process.env.API_RATE_LIMIT_ENABLED = 'true';
+    process.env.API_RATE_LIMIT_REQUESTS = '100';
+    process.env.API_RATE_LIMIT_WINDOW = '15m';
+    process.env.CORS_ORIGINS = '*';
+    process.env.ALLOWED_HOSTS = 'localhost';
 
     // This should throw due to invalid LOG_LEVEL
     await expect(async () => {
@@ -142,6 +204,25 @@ describe('Environment Configuration', () => {
     process.env.UPSTASH_REDIS_REST_URL = 'https://test-redis.upstash.io';
     process.env.UPSTASH_REDIS_REST_TOKEN = 'test-redis-token';
     process.env.CODECOV_TOKEN = 'test-codecov-token';
+    process.env.VERCEL_ENV = 'development';
+    process.env.VERCEL_URL = 'test.vercel.app';
+    process.env.APP_ENV = 'development';
+    process.env.APP_VERSION = '1.0.0';
+    process.env.FEATURE_FLAGS_ENABLED = 'true';
+    process.env.FEATURE_FLAGS_PROVIDER = 'local';
+    process.env.GROWTHBOOK_CLIENT_KEY = 'test-growthbook-key';
+    process.env.LAUNCHDARKLY_SDK_KEY = 'test-launchdarkly-key';
+    process.env.MULTI_TENANT_ENABLED = 'false';
+    process.env.DEFAULT_TENANT_ID = 'default';
+    process.env.TENANT_HEADER_NAME = 'x-tenant-id';
+    process.env.DATABASE_URL =
+      'postgresql://user:password@localhost:5432/testdb';
+    process.env.DATABASE_POOL_SIZE = '10';
+    process.env.API_RATE_LIMIT_ENABLED = 'true';
+    process.env.API_RATE_LIMIT_REQUESTS = '100';
+    process.env.API_RATE_LIMIT_WINDOW = '15m';
+    process.env.CORS_ORIGINS = '*';
+    process.env.ALLOWED_HOSTS = 'localhost';
 
     // Test true case
     process.env.LOG_TO_FILE_PROD = 'true';
@@ -181,6 +262,25 @@ describe('Environment Configuration', () => {
     process.env.UPSTASH_REDIS_REST_URL = 'https://test-redis.upstash.io';
     process.env.UPSTASH_REDIS_REST_TOKEN = 'test-redis-token';
     process.env.CODECOV_TOKEN = 'test-codecov-token';
+    process.env.VERCEL_ENV = 'development';
+    process.env.VERCEL_URL = 'test.vercel.app';
+    process.env.APP_ENV = 'development';
+    process.env.APP_VERSION = '1.0.0';
+    process.env.FEATURE_FLAGS_ENABLED = 'true';
+    process.env.FEATURE_FLAGS_PROVIDER = 'local';
+    process.env.GROWTHBOOK_CLIENT_KEY = 'test-growthbook-key';
+    process.env.LAUNCHDARKLY_SDK_KEY = 'test-launchdarkly-key';
+    process.env.MULTI_TENANT_ENABLED = 'false';
+    process.env.DEFAULT_TENANT_ID = 'default';
+    process.env.TENANT_HEADER_NAME = 'x-tenant-id';
+    process.env.DATABASE_URL =
+      'postgresql://user:password@localhost:5432/testdb';
+    process.env.DATABASE_POOL_SIZE = '10';
+    process.env.API_RATE_LIMIT_ENABLED = 'true';
+    process.env.API_RATE_LIMIT_REQUESTS = '100';
+    process.env.API_RATE_LIMIT_WINDOW = '15m';
+    process.env.CORS_ORIGINS = '*';
+    process.env.ALLOWED_HOSTS = 'localhost';
 
     // Test true case
     process.env.LOG_TO_FILE_DEV = 'true';
@@ -214,6 +314,25 @@ describe('Environment Configuration', () => {
     process.env.UPSTASH_REDIS_REST_URL = 'https://test-redis.upstash.io';
     process.env.UPSTASH_REDIS_REST_TOKEN = 'test-redis-token';
     process.env.CODECOV_TOKEN = 'test-codecov-token';
+    process.env.VERCEL_ENV = 'development';
+    process.env.VERCEL_URL = 'test.vercel.app';
+    process.env.APP_ENV = 'development';
+    process.env.APP_VERSION = '1.0.0';
+    process.env.FEATURE_FLAGS_ENABLED = 'true';
+    process.env.FEATURE_FLAGS_PROVIDER = 'local';
+    process.env.GROWTHBOOK_CLIENT_KEY = 'test-growthbook-key';
+    process.env.LAUNCHDARKLY_SDK_KEY = 'test-launchdarkly-key';
+    process.env.MULTI_TENANT_ENABLED = 'false';
+    process.env.DEFAULT_TENANT_ID = 'default';
+    process.env.TENANT_HEADER_NAME = 'x-tenant-id';
+    process.env.DATABASE_URL =
+      'postgresql://user:password@localhost:5432/testdb';
+    process.env.DATABASE_POOL_SIZE = '10';
+    process.env.API_RATE_LIMIT_ENABLED = 'true';
+    process.env.API_RATE_LIMIT_REQUESTS = '100';
+    process.env.API_RATE_LIMIT_WINDOW = '15m';
+    process.env.CORS_ORIGINS = '*';
+    process.env.ALLOWED_HOSTS = 'localhost';
 
     // Test true case
     process.env.LOGFLARE_INTEGRATION_ENABLED = 'true';

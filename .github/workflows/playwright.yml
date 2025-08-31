@@ -11,6 +11,8 @@ env:
   LOGFLARE_API_KEY: 'dummy'
   LOGFLARE_SOURCE_TOKEN: 'dummy'
   LOGFLARE_ENDPOINT: 'https://logflare.app/api/logs'
+  UPSTASH_REDIS_REST_URL: 'https://dummy.upstash.io'
+  UPSTASH_REDIS_REST_TOKEN: 'dummy'
   NEXT_PUBLIC_APP_URL: http://localhost:3000
   NODE_ENV: development
 on:
