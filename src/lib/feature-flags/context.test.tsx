@@ -177,8 +177,8 @@ describe('FeatureFlagProvider', () => {
 
   it('uses initial flags when provided', async () => {
     const initialFlags = {
-      'test-flag': {
-        key: 'test-flag',
+      'beta-features': {
+        key: 'beta-features',
         enabled: true,
       },
     };
@@ -242,7 +242,7 @@ describe('FeatureFlagProvider', () => {
   it('throws error when useFeatureFlag is used outside provider', () => {
     const TestComponent = () => {
       try {
-        useFeatureFlag('test-flag');
+        useFeatureFlag('new-dashboard');
         return <div>No error thrown</div>;
       } catch (error) {
         return <div data-testid="error">{(error as Error).message}</div>;
@@ -258,8 +258,8 @@ describe('FeatureFlagProvider', () => {
 
   it('returns default value when flag is enabled but has no value', async () => {
     const flagsWithNoValue = {
-      'enabled-flag-no-value': {
-        key: 'enabled-flag-no-value',
+      'new-dashboard': {
+        key: 'new-dashboard',
         enabled: true,
         value: null, // Explicitly set to null to test the ?? operator
       },
@@ -277,7 +277,7 @@ describe('FeatureFlagProvider', () => {
       const { getValue } = useFeatureFlags();
       return (
         <div data-testid="flag-value">
-          {getValue('enabled-flag-no-value', 'default-value')}
+          {getValue('new-dashboard', 'default-value')}
         </div>
       );
     };
@@ -298,10 +298,10 @@ describe('FeatureFlagProvider', () => {
 
   it('returns flag value when flag is enabled and has a value', async () => {
     const flagsWithValue = {
-      'enabled-flag-with-value': {
-        key: 'enabled-flag-with-value',
+      'subscription-tier': {
+        key: 'subscription-tier',
         enabled: true,
-        value: 'custom-value',
+        value: 'premium',
       },
     };
 
@@ -317,7 +317,7 @@ describe('FeatureFlagProvider', () => {
       const { getValue } = useFeatureFlags();
       return (
         <div data-testid="flag-value">
-          {getValue('enabled-flag-with-value', 'default-value')}
+          {getValue('subscription-tier', 'default-value')}
         </div>
       );
     };
@@ -330,9 +330,7 @@ describe('FeatureFlagProvider', () => {
 
     // Wait for flags to be loaded
     await waitFor(() => {
-      expect(screen.getByTestId('flag-value')).toHaveTextContent(
-        'custom-value',
-      );
+      expect(screen.getByTestId('flag-value')).toHaveTextContent('premium');
     });
   });
 });

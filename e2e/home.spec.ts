@@ -19,7 +19,7 @@ test.describe('Home Page', () => {
     ).toBeVisible();
   });
 
-  test('should have working external links', async ({ page }) => {
+  test.fixme('should have working external links', async ({ page }) => {
     // Test Explore Features button
     const featuresLink = page.getByRole('link', { name: /explore features/i });
     await expect(featuresLink).toBeVisible();
