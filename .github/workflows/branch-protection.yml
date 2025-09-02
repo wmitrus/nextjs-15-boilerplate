@@ -1,0 +1,101 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # Enhanced checks for PRs to main (develop → main)
+  # These are the final quality gates before production
+  main-pr-checks:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [22] # Only test on recommended Node version for PR checks
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+
+      - name: Build check
+        run: pnpm build
+
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+
+      - name: Run E2E tests
+        run: pnpm e2e
+
+      - name: Check bundle size
+        run: pnpm size
+
+  # Validate configuration system
+  config-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Validate configuration files
+        run: |
+          # Check if config files exist and are valid TypeScript
+          npx tsc --noEmit --project tsconfig.json config/features.ts
+          npx tsc --noEmit --project tsconfig.json config/tenantConfig.ts
+          npx tsc --noEmit --project tsconfig.json config/index.ts
+
+      - name: Test environment setup script
+        run: |
+          node scripts/setup-env.js check
+          node scripts/setup-env.js create development
+          node scripts/setup-env.js create preview
+          node scripts/setup-env.js create staging
+          node scripts/setup-env.js create production
+
+      - name: Validate environment files
+        run: |
+          # Check that all environment files were created
+          test -f .env.development
+          test -f .env.preview
+          test -f .env.staging
+          test -f .env.production
+          echo "✅ All environment files created successfully"

@@ -50,24 +50,31 @@ export const env = createEnv({
     API_RATE_LIMIT_WINDOW: z.string().default('15m'),
 
     // Logging configuration
-    LOG_DIR: z.string().min(1),
-    LOG_LEVEL: z.enum(logLevels),
-    FILE_LOG_LEVEL: z.enum(logLevels),
-    CONSOLE_LOG_LEVEL: z.enum(logLevels),
-    LOG_TO_FILE_PROD: z.string().transform((s) => s !== 'false' && s !== '0'),
-    LOG_TO_FILE_DEV: z.string().transform((s) => s !== 'false' && s !== '0'),
+    LOG_DIR: z.string().min(1).default('./logs'),
+    LOG_LEVEL: z.enum(logLevels).default('info'),
+    FILE_LOG_LEVEL: z.enum(logLevels).default('info'),
+    CONSOLE_LOG_LEVEL: z.enum(logLevels).default('info'),
+    LOG_TO_FILE_PROD: z
+      .string()
+      .transform((s) => s !== 'false' && s !== '0')
+      .default(false),
+    LOG_TO_FILE_DEV: z
+      .string()
+      .transform((s) => s !== 'false' && s !== '0')
+      .default(false),
 
     // External integrations
     LOGFLARE_INTEGRATION_ENABLED: z
       .string()
-      .transform((s) => s !== 'false' && s !== '0'),
-    LOGFLARE_LOG_LEVEL: z.enum(logLevels),
-    LOGFLARE_API_KEY: z.string().min(1),
-    LOGFLARE_SOURCE_TOKEN: z.string().min(1),
+      .transform((s) => s !== 'false' && s !== '0')
+      .default(false),
+    LOGFLARE_LOG_LEVEL: z.enum(logLevels).default('info'),
+    LOGFLARE_API_KEY: z.string().optional(),
+    LOGFLARE_SOURCE_TOKEN: z.string().optional(),
 
     // Redis configuration
-    UPSTASH_REDIS_REST_URL: z.url(),
-    UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
+    UPSTASH_REDIS_REST_URL: z.string().optional(),
+    UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
 
     // Security
     CORS_ORIGINS: z.string().default('*'),
