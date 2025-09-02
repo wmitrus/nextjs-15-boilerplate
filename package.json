@@ -35,10 +35,10 @@
     "size:build-check": "next build && size-limit",
     "bundlewatch:run": "pnpm exec bundlewatch --config .bundlewatch.config.json",
     "analyze": "cross-env ANALYZE=true next build",
-    "env:init": "node scripts/setup-env.js init",
-    "env:create": "node scripts/setup-env.js create",
-    "env:all": "node scripts/setup-env.js all",
-    "env:check": "node scripts/setup-env.js check",
+    "env:init": "node scripts/setup-env.mjs init",
+    "env:create": "node scripts/setup-env.mjs create",
+    "env:all": "node scripts/setup-env.mjs all",
+    "env:check": "node scripts/setup-env.mjs check",
     "config:demo": "next dev --turbopack && open http://localhost:3000/config-demo"
   },
   "lint-staged": {
