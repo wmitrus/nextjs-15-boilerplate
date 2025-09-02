@@ -1,3 +1,48 @@
+# [1.14.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.13.0...v1.14.0) (2025-09-02)
+
+### Bug Fixes
+
+- **accessibility:** correct outline class for skip link to improve focus visibility ([0e4b48b](https://github.com/wmitrus/nextjs-15-boilerplate/commit/0e4b48bd847abfb719a88654f6bda4b2c698c497))
+- **action:** add form demos and update CI env configuration ([8c494e5](https://github.com/wmitrus/nextjs-15-boilerplate/commit/8c494e50c50de7a8c65bd6bb551f644a2f1d509a))
+- **actions:** add checkout action to auto-assign playbook ([232a3ef](https://github.com/wmitrus/nextjs-15-boilerplate/commit/232a3ef210dc2f35128cd9e55f324b676c375f4a))
+- **actions:** fix e2e test run ([e6cce57](https://github.com/wmitrus/nextjs-15-boilerplate/commit/e6cce578bcc7da6c5e296211ee7dd3a3cca2680d))
+- **actions:** update envs in playwright playbook ([a21bbdc](https://github.com/wmitrus/nextjs-15-boilerplate/commit/a21bbdcfa6d327ff26b753b12c90963b5ba0cec2))
+- **bundlewatch:** add new script for bundlewatch do package.json and use it in playbook ([ec0d9b5](https://github.com/wmitrus/nextjs-15-boilerplate/commit/ec0d9b55643e8039ef998885a0f63e432062058d))
+- **config:** log error when git branch detection fails ([0973e90](https://github.com/wmitrus/nextjs-15-boilerplate/commit/0973e904a659f88c2eb7873540bf99ba02318f57))
+- **e2e:** add msw handler to ignore Next.js internal requests during E2E tests ([821827f](https://github.com/wmitrus/nextjs-15-boilerplate/commit/821827f288614e02da904feedb140ea578f6981e))
+- **e2e:** add NODE_ENV=test to playwright command in config file ([6efc9c9](https://github.com/wmitrus/nextjs-15-boilerplate/commit/6efc9c992516289158321a22cb4346e15032d4d8))
+- **e2e:** add require-in-the-middle to ignores ([b679c4f](https://github.com/wmitrus/nextjs-15-boilerplate/commit/b679c4f888df981f91381588cd01bc87b5f7fd11))
+- **e2e:** add validation for Redis config, it is needed when run e2e test ([63d4cba](https://github.com/wmitrus/nextjs-15-boilerplate/commit/63d4cba425353bf85315a31fc6f1d9a777d32766))
+- **e2e:** enhance thresholds in order to e2e and prod ([9566063](https://github.com/wmitrus/nextjs-15-boilerplate/commit/956606341f41199b9f6a9035b8da309df80c741c))
+- **pino:** add env validation and error handling ([15df233](https://github.com/wmitrus/nextjs-15-boilerplate/commit/15df2330e42b575ccc2c3858638a2cd2ef10268e))
+- **sentry:** disable tracesSampleRate for test on client side ([3fe6b06](https://github.com/wmitrus/nextjs-15-boilerplate/commit/3fe6b06d2263305b0ab77ec61d268735feb42339))
+- **sentry:** disable tracesSampleRate for test on server side and disable sentry on test env at all ([b3d34dd](https://github.com/wmitrus/nextjs-15-boilerplate/commit/b3d34dd1b008f09347dcb432a46e88c4938f6672))
+- **sentry:** only instrument Sentry in non-test environments ([d1a7d62](https://github.com/wmitrus/nextjs-15-boilerplate/commit/d1a7d62af30e85d4eee9d69fd012f0cfd6eb283d))
+
+### Features
+
+- **accessibility:** enhance accessibility features and improve semantic HTML structure ([82fdaf5](https://github.com/wmitrus/nextjs-15-boilerplate/commit/82fdaf560351d54f925f5d563ae7523e39ad95d3))
+- add comprehensive feature flags system ([f0d49c2](https://github.com/wmitrus/nextjs-15-boilerplate/commit/f0d49c2c5a97529bbb1278343e1ab3f764f7c2cf))
+- **component:** add form demo pages and refactor config demo component ([27ea9ef](https://github.com/wmitrus/nextjs-15-boilerplate/commit/27ea9efa58dcf7fc46acce04cfd220f170d724d3))
+- **config:** add centralized configuration system with env-based feature flags and tenant support ([56105ba](https://github.com/wmitrus/nextjs-15-boilerplate/commit/56105baf9eee4b1b3abf2daef5660914cfd2ca27))
+- **config:** implement centralized configuration system with feature flags and tenant support ([a9c0508](https://github.com/wmitrus/nextjs-15-boilerplate/commit/a9c0508a6ab43db04258f78fdeab875a86aa9a1f))
+- **dependencies:** add clsx and tailwind-merge for improved styling support ([8fd8593](https://github.com/wmitrus/nextjs-15-boilerplate/commit/8fd8593deae91f542bf9f53f366a285ac3d4f504))
+- **env:** enhance environment management system ([deb1f76](https://github.com/wmitrus/nextjs-15-boilerplate/commit/deb1f76ccba1f0a63a8099a5a5d2f1107e1894a2))
+- **forms:** add demo form page with Zod validation and submission handling ([e109655](https://github.com/wmitrus/nextjs-15-boilerplate/commit/e1096553c826292297634acdf4fd9202c7d8031f))
+- **forms:** add ZodForm component with validation and submission handling ([3238940](https://github.com/wmitrus/nextjs-15-boilerplate/commit/32389402739de33495fbc6a8ac0c7849609bbbc8))
+- **forms:** implement Zod form library with customizable field configurations and validation ([fb16cf9](https://github.com/wmitrus/nextjs-15-boilerplate/commit/fb16cf916a56c5de9286d435fc532527274945cd))
+- implement multi-tenant architecture ([5a2ff7f](https://github.com/wmitrus/nextjs-15-boilerplate/commit/5a2ff7fd111d81afea75b09dfd4d60b6f49d06d5))
+- **logger:** add client-safe logger for browser usage ([3a69c0d](https://github.com/wmitrus/nextjs-15-boilerplate/commit/3a69c0d74e672d32292e3883a97de13957ece242))
+- **login:** implement login API with Zod validation and mock user authentication ([46cd2e8](https://github.com/wmitrus/nextjs-15-boilerplate/commit/46cd2e87a0dfd77609167ef40d935ff111410ed9))
+- **login:** implement login page with form validation and response handling ([114fbed](https://github.com/wmitrus/nextjs-15-boilerplate/commit/114fbedbb2d80e60b3fa76deb46aa375b8e788b2))
+- **middleware:** update middleware and API mocking ([48c5699](https://github.com/wmitrus/nextjs-15-boilerplate/commit/48c56996364d7fcad4670f55ef9ec061eeaaa5e0))
+- **navigation:** update call-to-action links to direct users to the login page and explore features ([4652d69](https://github.com/wmitrus/nextjs-15-boilerplate/commit/4652d692e4ca82ce6e63f14fea7d7938a2d7b49a))
+- **testing:** add comprehensive testing infrastructure ([cf4f61e](https://github.com/wmitrus/nextjs-15-boilerplate/commit/cf4f61ee8dd07040aa38aa806414f1061611b660))
+- **ui:** add form and input components with react-hook-form integration ([eb12bc3](https://github.com/wmitrus/nextjs-15-boilerplate/commit/eb12bc3a9bbd95cdb7d37886de17ace10b817d0c))
+- **ui:** add polymorphic element component for flexible html elements ([2650a18](https://github.com/wmitrus/nextjs-15-boilerplate/commit/2650a189d9481fa1c75af51f81661c5c09a77a18))
+- **ui:** update app components and documentation ([58d501c](https://github.com/wmitrus/nextjs-15-boilerplate/commit/58d501c1ac2d7db9a91ffe8585e93f47bf880990))
+- **utils:** add cn utility function for merging tailwind classes ([7ebf000](https://github.com/wmitrus/nextjs-15-boilerplate/commit/7ebf000c21fa56c87694c465519fbeb9152b2cd8))
+
 # [1.13.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.12.0...v1.13.0) (2025-08-26)
 
 ### Bug Fixes
