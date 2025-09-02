@@ -1,12 +1,41 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
+import {
+  FeatureFlagsRequestBody,
+  FeatureFlagsResponseData,
+} from '@/lib/api/feature-flags';
 import { getEnvironmentConfig } from '@/lib/env';
 import { createFeatureFlagContext } from '@/lib/feature-flags/hooks';
 import { getFeatureFlagProvider } from '@/lib/feature-flags/provider';
+import {
+  createServerErrorResponse,
+  createSuccessResponse,
+  createValidationErrorResponse,
+} from '@/lib/responseService';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    // Check if request has content
+    const contentLength = request.headers.get('content-length');
+    const contentType = request.headers.get('content-type');
+
+    let body: FeatureFlagsRequestBody = {};
+
+    // Only try to parse JSON if there's content and it's JSON
+    if (
+      contentLength &&
+      contentLength !== '0' &&
+      contentType?.includes('application/json')
+    ) {
+      try {
+        body = await request.json();
+      } catch {
+        return createValidationErrorResponse({
+          body: ['Invalid JSON format in request body'],
+        });
+      }
+    }
+
     const { userId, tenantId, customProperties } = body;
 
     // Extract context from request
@@ -30,24 +59,20 @@ export async function POST(request: NextRequest) {
     const provider = getFeatureFlagProvider();
     const flags = await provider.getAllFlags(context);
 
-    return NextResponse.json({
-      success: true,
+    const responseData: FeatureFlagsResponseData = {
       flags,
       context: {
         environment: envConfig.environment,
         version: envConfig.version,
       },
-    });
+    };
+
+    return createSuccessResponse(responseData);
   } catch (error) {
     console.error('Feature flags API error:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: `Failed to fetch feature flags: ${errorMessage}`,
-        flags: {},
-      },
-      { status: 500 },
+    return createServerErrorResponse(
+      `Failed to fetch feature flags: ${errorMessage}`,
     );
   }
 }
@@ -77,24 +102,20 @@ export async function GET(request: NextRequest) {
     const provider = getFeatureFlagProvider();
     const flags = await provider.getAllFlags(context);
 
-    return NextResponse.json({
-      success: true,
+    const responseData: FeatureFlagsResponseData = {
       flags,
       context: {
         environment: envConfig.environment,
         version: envConfig.version,
       },
-    });
+    };
+
+    return createSuccessResponse(responseData);
   } catch (error) {
     console.error('Feature flags API error:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: `Failed to fetch feature flags: ${errorMessage}`,
-        flags: {},
-      },
-      { status: 500 },
+    return createServerErrorResponse(
+      `Failed to fetch feature flags: ${errorMessage}`,
     );
   }
 }

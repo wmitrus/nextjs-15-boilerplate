@@ -9,6 +9,8 @@ import React, {
   useState,
 } from 'react';
 
+import { featureFlagsApi, handleApiResponse } from '@/lib/api';
+
 import type { FeatureFlag, FeatureFlagContext, FeatureFlagKey } from './types';
 
 interface FeatureFlagContextValue {
@@ -44,22 +46,18 @@ export function FeatureFlagProvider({
       setIsLoading(true);
       setError(null);
 
-      // In a client component, we need to fetch flags from an API endpoint
-      const response = await fetch('/api/feature-flags', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(context || {}),
-      });
+      // Use the centralized API service
+      const apiResponse = await featureFlagsApi.getFlags(context);
+      const result = handleApiResponse(apiResponse);
 
-      if (response.ok) {
-        const data = await response.json();
-        setFlags(data.flags || {});
+      if (result.isSuccess && result.data) {
+        setFlags(result.data.flags);
+      } else if (result.isServerError) {
+        throw new Error(result.error || 'Server error occurred');
+      } else if (result.isValidationError) {
+        throw new Error('Validation error occurred');
       } else {
-        throw new Error(
-          `Failed to load feature flags: ${response.status} ${response.statusText}`,
-        );
+        throw new Error('Unknown error occurred');
       }
     } catch (error) {
       console.error('Failed to load feature flags:', error);
