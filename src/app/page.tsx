@@ -93,6 +93,12 @@ export default function Home() {
               Sign In
             </a>
             <a
+              href="/form-demo-simple"
+              className="rounded-md border border-gray-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-gray-600"
+            >
+              Form Demo
+            </a>
+            <a
               href="#features"
               className="text-sm leading-6 font-semibold text-gray-900"
             >
