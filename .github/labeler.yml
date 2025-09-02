@@ -2,6 +2,7 @@ frontend:
   - any-of:
       - 'src/app/**/*'
       - 'src/stories/**/*'
+      - 'public/**/*'
 
 backend:
   - any-of:
@@ -18,13 +19,22 @@ tests:
 
 config:
   - any-of:
-      - '*.json'
-      - '*.js'
-      - '*.ts'
+      - 'package.json'
+      - 'tsconfig.json'
+      - 'next.config.js'
+      - 'tailwind.config.ts'
+      - '.eslintrc.json'
+      - '.prettierrc'
       - '.github/**/*'
       - '.storybook/**/*'
+      - 'plop-templates/**/*'
 
 docs:
   - any-of:
       - '*.md'
       - 'docs/**/*'
+
+dependencies:
+  - any-of:
+      - 'package.json'
+      - 'pnpm-lock.yaml'
