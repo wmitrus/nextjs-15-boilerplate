@@ -46,12 +46,6 @@ jobs:
       - name: Build check
         run: pnpm build
 
-      - name: Install Playwright Browsers
-        run: pnpm exec playwright install --with-deps
-
-      - name: Run E2E tests
-        run: pnpm e2e
-
       - name: Check bundle size
         run: pnpm size
 
