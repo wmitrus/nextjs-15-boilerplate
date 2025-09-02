@@ -66,11 +66,15 @@ describe('TenantProvider', () => {
     // Reset mocks before each test
     jest.clearAllMocks();
 
-    // Mock fetch API
+    // Mock fetch API with proper service response format
     global.fetch = jest.fn(() =>
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({ tenant: mockTenant }),
+        json: () =>
+          Promise.resolve({
+            status: 'ok',
+            data: { tenant: mockTenant },
+          }),
       } as Response),
     ) as jest.Mock;
   });
@@ -162,7 +166,15 @@ describe('TenantProvider', () => {
     );
 
     // Verify API was called
-    expect(fetch).toHaveBeenCalledWith('/api/tenants/tenant-123');
+    expect(fetch).toHaveBeenCalledWith(
+      '/api/tenants/tenant-123',
+      expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }),
+    );
   });
 
   it('fetches current tenant when no tenant ID is provided in multi-tenant mode', async () => {
@@ -183,7 +195,15 @@ describe('TenantProvider', () => {
     });
 
     // Verify API was called with 'current'
-    expect(fetch).toHaveBeenCalledWith('/api/tenants/current');
+    expect(fetch).toHaveBeenCalledWith(
+      '/api/tenants/current',
+      expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json',
+        }),
+      }),
+    );
   });
 
   it('handles fetch errors gracefully', async () => {

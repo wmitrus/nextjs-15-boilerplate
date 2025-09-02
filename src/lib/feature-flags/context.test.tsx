@@ -65,11 +65,15 @@ describe('FeatureFlagProvider', () => {
     // Reset mocks before each test
     jest.clearAllMocks();
 
-    // Mock fetch API
+    // Mock fetch API with proper service response format
     global.fetch = jest.fn(() =>
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({ flags: mockFlags }),
+        json: () =>
+          Promise.resolve({
+            status: 'ok',
+            data: { flags: mockFlags },
+          }),
       } as Response),
     ) as jest.Mock;
   });
@@ -269,7 +273,11 @@ describe('FeatureFlagProvider', () => {
     (global.fetch as jest.Mock).mockImplementationOnce(() =>
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({ flags: flagsWithNoValue }),
+        json: () =>
+          Promise.resolve({
+            status: 'ok',
+            data: { flags: flagsWithNoValue },
+          }),
       } as Response),
     );
 
@@ -309,7 +317,11 @@ describe('FeatureFlagProvider', () => {
     (global.fetch as jest.Mock).mockImplementationOnce(() =>
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve({ flags: flagsWithValue }),
+        json: () =>
+          Promise.resolve({
+            status: 'ok',
+            data: { flags: flagsWithValue },
+          }),
       } as Response),
     );
 
