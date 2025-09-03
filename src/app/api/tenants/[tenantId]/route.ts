@@ -16,32 +16,72 @@ const mockTenants: Record<string, Tenant> = {
     domain: 'test.example.com',
     subdomain: 'test',
     settings: {
-      theme: 'light',
-      features: ['feature1', 'feature2'],
+      branding: {
+        logo: '/logos/test-tenant.png',
+        primaryColor: '#007bff',
+        secondaryColor: '#6c757d',
+      },
+      localization: {
+        defaultLanguage: 'en',
+        supportedLanguages: ['en', 'es'],
+        timezone: 'UTC',
+      },
+      security: {
+        allowedDomains: ['test.example.com'],
+        requireMfa: false,
+        sessionTimeout: 3600,
+      },
     },
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
+    features: {
+      analytics: true,
+      customBranding: true,
+      apiAccess: true,
+      advancedReporting: false,
+      integrations: ['stripe', 'mailchimp'],
+      maxUsers: 100,
+      storageLimit: 10737418240, // 10GB in bytes
+    },
+    createdAt: new Date('2024-01-01T00:00:00Z'),
+    updatedAt: new Date('2024-01-01T00:00:00Z'),
   },
   current: {
     id: 'default',
     name: 'Default Tenant',
     domain: 'example.com',
-    subdomain: null,
+    subdomain: undefined,
     settings: {
-      theme: 'light',
-      features: ['feature1'],
+      branding: {
+        primaryColor: '#000000',
+        secondaryColor: '#ffffff',
+      },
+      localization: {
+        defaultLanguage: 'en',
+        supportedLanguages: ['en'],
+        timezone: 'UTC',
+      },
+      security: {
+        requireMfa: false,
+        sessionTimeout: 1800,
+      },
     },
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
+    features: {
+      analytics: false,
+      customBranding: false,
+      apiAccess: false,
+      advancedReporting: false,
+      integrations: [],
+    },
+    createdAt: new Date('2024-01-01T00:00:00Z'),
+    updatedAt: new Date('2024-01-01T00:00:00Z'),
   },
 };
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { tenantId: string } },
+  { params }: { params: Promise<{ tenantId: string }> },
 ) {
   try {
-    const { tenantId } = params;
+    const { tenantId } = await params;
 
     // Find tenant in mock database
     const tenant = mockTenants[tenantId];
