@@ -53,11 +53,16 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright Browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install --with-deps
+        run: |
+          if [ "${{ steps.playwright-cache.outputs.cache-hit }}" != "true" ]; then
+            pnpm exec playwright install --with-deps
+          else
+            # Even with cache, ensure system dependencies are available
+            pnpm exec playwright install-deps
+          fi
 
       - name: Run Playwright smoke tests (Chromium only)
-        run: pnpm exec playwright test --project=chromium --grep="@smoke"
+        run: pnpm exec playwright test --project=smoke
 
       - uses: actions/upload-artifact@v4
         if: failure()
