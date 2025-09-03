@@ -1,6 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
-import { loginSchema, loginResponseSchema } from '@/app/login/validation';
+import { loginSchema } from '@/app/login/validation';
+import { LoginResponseData } from '@/lib/api/auth';
+import {
+  createServerErrorResponse,
+  createSuccessResponse,
+  createValidationErrorResponse,
+} from '@/lib/responseService';
 
 // Mock user database - in a real app, this would be a database
 const mockUsers = [
@@ -26,16 +32,17 @@ export async function POST(request: NextRequest) {
     const validationResult = loginSchema.safeParse(body);
 
     if (!validationResult.success) {
-      const errorMessages = validationResult.error.issues
-        .map((issue) => issue.message)
-        .join(', ');
+      const validationErrors: Record<string, string[]> = {};
 
-      const errorResponse = loginResponseSchema.parse({
-        success: false,
-        message: `Validation failed: ${errorMessages}`,
+      validationResult.error.issues.forEach((issue) => {
+        const field = issue.path.join('.');
+        if (!validationErrors[field]) {
+          validationErrors[field] = [];
+        }
+        validationErrors[field].push(issue.message);
       });
 
-      return NextResponse.json(errorResponse, { status: 400 });
+      return createValidationErrorResponse(validationErrors);
     }
 
     const { email, password } = validationResult.data;
@@ -46,12 +53,9 @@ export async function POST(request: NextRequest) {
     );
 
     if (!user) {
-      const errorResponse = loginResponseSchema.parse({
-        success: false,
-        message: 'Invalid email or password',
+      return createValidationErrorResponse({
+        credentials: ['Invalid email or password'],
       });
-
-      return NextResponse.json(errorResponse, { status: 401 });
     }
 
     // In a real application, you would:
@@ -61,30 +65,23 @@ export async function POST(request: NextRequest) {
     // 4. Implement rate limiting
     // 5. Log authentication attempts
 
-    const successResponse = loginResponseSchema.parse({
-      success: true,
-      message: 'Login successful',
+    const responseData: LoginResponseData = {
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
       },
-    });
+    };
 
-    return NextResponse.json(successResponse, { status: 200 });
+    return createSuccessResponse(responseData);
   } catch (error: unknown) {
     console.error('Login API error:', error);
-
-    const errorResponse = loginResponseSchema.parse({
-      success: false,
-      message: 'Internal server error',
-    });
-
-    return NextResponse.json(errorResponse, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return createServerErrorResponse(`Login failed: ${errorMessage}`);
   }
 }
 
 // Handle unsupported methods
 export async function GET() {
-  return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
+  return createServerErrorResponse('Method not allowed');
 }

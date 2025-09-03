@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Error Handling', () => {
-  test('should handle 404 pages gracefully', async ({ page }) => {
+  test('@smoke should handle 404 pages', async ({ page }) => {
     const response = await page.goto('/non-existent-page');
 
     // Should return 404 status

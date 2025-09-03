@@ -5,19 +5,18 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
+import { authApi, handleApiResponse } from '@/lib/api';
 import logger from '@/lib/logger/client';
 
-import {
-  loginSchema,
-  type LoginFormData,
-  type LoginResponse,
-} from './validation';
+import { loginSchema, type LoginFormData } from './validation';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [loginResponse, setLoginResponse] = useState<LoginResponse | null>(
-    null,
-  );
+  const [loginResponse, setLoginResponse] = useState<{
+    success: boolean;
+    message: string;
+    user?: { id: string; email: string; name: string };
+  } | null>(null);
 
   const {
     register,
@@ -33,23 +32,34 @@ export default function LoginPage() {
     setLoginResponse(null);
 
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      const apiResponse = await authApi.login(data);
+      const result = handleApiResponse(apiResponse);
 
-      const result: LoginResponse = await response.json();
-      setLoginResponse(result);
+      if (result.isSuccess && result.data) {
+        // Handle successful login
+        setLoginResponse({
+          success: true,
+          message: 'Login successful',
+          user: result.data.user,
+        });
 
-      if (result.success) {
-        // Handle successful login (e.g., redirect, store token, etc.)
-        logger.info(
-          `Login successful for user: ${result.user?.email || 'unknown'}`,
-        );
+        logger.info(`Login successful for user: ${result.data.user.email}`);
         reset();
+      } else if (result.isValidationError) {
+        // Handle validation errors
+        const errorMessages = Object.values(result.errors || {})
+          .flat()
+          .join(', ');
+        setLoginResponse({
+          success: false,
+          message: errorMessages || 'Validation failed',
+        });
+      } else if (result.isServerError) {
+        // Handle server errors
+        setLoginResponse({
+          success: false,
+          message: result.error || 'Server error occurred',
+        });
       }
     } catch (error) {
       logger.error(

@@ -143,7 +143,7 @@ Create a `.github/CODEOWNERS` file to automatically request reviews:
 
 # Configuration system
 /config/ @your-username @config-team
-/scripts/setup-env.js @your-username @config-team
+/scripts/setup-env.mjs @your-username @config-team
 
 # Documentation
 /docs/ @your-username @docs-team
