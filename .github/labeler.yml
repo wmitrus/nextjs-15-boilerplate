@@ -1,30 +1,46 @@
 frontend:
-  - any-of:
-      - 'src/app/**/*'
-      - 'src/stories/**/*'
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/app/**/*'
+          - 'src/stories/**/*'
+          - 'public/**/*'
 
 backend:
-  - any-of:
-      - 'src/lib/**/*'
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/lib/**/*'
 
 tests:
-  - any-of:
-      - 'e2e/**/*'
-      - '**/*.test.tsx'
-      - '**/*.test.ts'
-      - 'jest.config.ts'
-      - 'jest.setup.ts'
-      - 'playwright.config.ts'
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'e2e/**/*'
+          - '**/*.test.tsx'
+          - '**/*.test.ts'
+          - 'jest.config.ts'
+          - 'jest.setup.ts'
+          - 'playwright.config.ts'
 
 config:
-  - any-of:
-      - '*.json'
-      - '*.js'
-      - '*.ts'
-      - '.github/**/*'
-      - '.storybook/**/*'
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'package.json'
+          - 'tsconfig.json'
+          - 'next.config.js'
+          - 'tailwind.config.ts'
+          - '.eslintrc.json'
+          - '.prettierrc'
+          - '.github/**/*'
+          - '.storybook/**/*'
+          - 'plop-templates/**/*'
 
 docs:
-  - any-of:
-      - '*.md'
-      - 'docs/**/*'
+  - changed-files:
+      - any-glob-to-any-file:
+          - '*.md'
+          - 'docs/**/*'
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'package.json'
+          - 'pnpm-lock.yaml'

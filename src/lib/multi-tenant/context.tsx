@@ -9,6 +9,8 @@ import React, {
   useCallback,
 } from 'react';
 
+import { tenantApi, handleApiResponse } from '@/lib/api';
+
 import type { TenantContext, Tenant } from './types';
 
 const TenantReactContext = createContext<TenantContext | null>(null);
@@ -40,16 +42,21 @@ export function TenantProvider({
       setIsLoading(true);
       setError(null);
 
-      // In a real implementation, this would fetch tenant data from an API
-      const response = await fetch(`/api/tenants/${tenantId || 'current'}`);
+      // Use the centralized API service
+      const apiResponse = tenantId
+        ? await tenantApi.getTenant(tenantId)
+        : await tenantApi.getCurrentTenant();
 
-      if (response.ok) {
-        const tenantData = await response.json();
-        setTenant(tenantData.tenant);
+      const result = handleApiResponse(apiResponse);
+
+      if (result.isSuccess && result.data) {
+        setTenant(result.data.tenant);
+      } else if (result.isServerError) {
+        throw new Error(result.error || 'Server error occurred');
+      } else if (result.isValidationError) {
+        throw new Error('Validation error occurred');
       } else {
-        throw new Error(
-          `Failed to load tenant: ${response.status} ${response.statusText}`,
-        );
+        throw new Error('Unknown error occurred');
       }
     } catch (error) {
       console.error('Failed to load tenant:', error);

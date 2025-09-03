@@ -61,8 +61,8 @@ export function createLogflareTransport(): DestinationStream {
   }
 
   const { stream } = logflarePinoVercel({
-    apiKey: env.LOGFLARE_API_KEY,
-    sourceToken: env.LOGFLARE_SOURCE_TOKEN,
+    apiKey: env.LOGFLARE_API_KEY as string,
+    sourceToken: env.LOGFLARE_SOURCE_TOKEN as string,
   });
 
   return stream;
@@ -76,8 +76,8 @@ export function createLogflareWriteStream(): DestinationStream {
   }
 
   const stream = createWriteStream({
-    apiKey: env.LOGFLARE_API_KEY,
-    sourceToken: env.LOGFLARE_SOURCE_TOKEN,
+    apiKey: env.LOGFLARE_API_KEY as string,
+    sourceToken: env.LOGFLARE_SOURCE_TOKEN as string,
   });
 
   stream.on('error', (err: Error) => {
@@ -95,8 +95,8 @@ export function createLogflareBrowserTransport() {
   }
 
   const { send } = logflarePinoVercel({
-    apiKey: env.LOGFLARE_API_KEY,
-    sourceToken: env.LOGFLARE_SOURCE_TOKEN,
+    apiKey: env.LOGFLARE_API_KEY as string,
+    sourceToken: env.LOGFLARE_SOURCE_TOKEN as string,
   });
 
   const stream = {
