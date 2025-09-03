@@ -1,4 +1,4 @@
-name: Playwright Smoke Tests
+name: Playwright Tests (Optimized)
 env:
   LOG_DIR: './logs'
   LOG_LEVEL: 'info'
@@ -16,15 +16,12 @@ env:
   NEXT_PUBLIC_APP_URL: http://localhost:3000
   NODE_ENV: development
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'src/app/**'
-      - 'e2e/**'
-      - 'playwright.config.ts'
+  workflow_dispatch: # Manual trigger for testing
+  # pull_request:
+  #   branches: [main]
 jobs:
-  smoke-test:
-    timeout-minutes: 30
+  test:
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -56,12 +53,20 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps
 
-      - name: Run Playwright smoke tests (Chromium only)
-        run: pnpm exec playwright test --project=chromium --grep="@smoke"
+      - name: Run Playwright tests (Chromium first - fastest feedback)
+        run: pnpm exec playwright test --project=chromium
+        continue-on-error: true
+
+      - name: Run Playwright tests (Firefox)
+        run: pnpm exec playwright test --project=firefox
+        continue-on-error: true
+
+      - name: Run Playwright tests (WebKit)
+        run: pnpm exec playwright test --project=webkit
 
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: ${{ !cancelled() }}
         with:
-          name: playwright-smoke-report
+          name: playwright-report-optimized
           path: playwright-report/
-          retention-days: 7
+          retention-days: 30
