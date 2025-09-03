@@ -1,3 +1,9 @@
+# [1.15.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.14.0...v1.15.0) (2025-09-03)
+
+### Features
+
+- **ui:** add form demo link to homepage ([15fee5d](https://github.com/wmitrus/nextjs-15-boilerplate/commit/15fee5db72c045506cd06e8903ba742677a6b449))
+
 # [1.14.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.13.0...v1.14.0) (2025-09-02)
 
 ### Bug Fixes
