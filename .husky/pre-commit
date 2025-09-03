@@ -13,10 +13,22 @@ if [ "$branch" = "main" ]; then
   elif [ "$staged_files" = "CHANGELOG.md" ]; then
     echo "Allowing commit for CHANGELOG.md on the main branch."
   else
-    echo "You can't commit directly to the main branch unless it's from CI/CD or for CHANGELOG.md."
+    echo "You can't commit directly to the main branch unless it's from CI/CD or for CHANGELOG.md. Use a feature branch and create a PR."
     exit 1
   fi
 fi
+
+if [ "$branch" = "develop" ]; then
+  if [ "$is_ci" = "true" ]; then
+    echo "CI/CD environment detected. Allowing commit to the develop branch."
+  elif [ "$staged_files" = "CHANGELOG.md" ]; then
+    echo "Allowing commit for CHANGELOG.md on the develop branch."
+  else
+    echo "You can't commit directly to the develop branch unless it's from CI/CD or for CHANGELOG.md. Use a feature branch and create a PR."
+    exit 1
+  fi
+fi
+
 
 # Run lint-staged
 pnpm exec lint-staged
