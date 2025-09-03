@@ -10,12 +10,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // Base configuration
 const nextConfig: NextConfig = {
-  serverExternalPackages: [
-    'pino',
-    'pino-pretty',
-    'require-in-the-middle',
-    'import-in-the-middle',
-  ],
+  serverExternalPackages: ['pino', 'pino-pretty'],
   transpilePackages: ['msw'],
 
   // Environment-specific allowed origins
