@@ -1,0 +1,86 @@
+name: Branch Policy Enforcement
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  enforce-branch-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR source branch
+        run: |
+          echo "PR source branch: ${{ github.head_ref }}"
+          echo "PR target branch: ${{ github.base_ref }}"
+
+          # Only allow PRs to main from develop branch
+          if [[ "${{ github.base_ref }}" == "main" && "${{ github.head_ref }}" != "develop" ]]; then
+            echo "❌ ERROR: Pull requests to 'main' branch are only allowed from 'develop' branch."
+            echo "Current source branch: ${{ github.head_ref }}"
+            echo ""
+            echo "Please follow the branching strategy:"
+            echo "1. Feature branches → develop (via PR)"
+            echo "2. develop → main (via PR)"
+            echo ""
+            echo "To fix this:"
+            echo "1. Close this PR"
+            echo "2. Merge your changes to 'develop' first"
+            echo "3. Create a new PR from 'develop' to 'main'"
+            exit 1
+          fi
+
+          echo "✅ Branch policy check passed - PR from develop to main is allowed"
+
+  validate-develop-ready:
+    runs-on: ubuntu-latest
+    if: github.head_ref == 'develop'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate develop branch readiness
+        run: |
+          echo "✅ Validating develop branch for merge to main..."
+
+          # Ensure we have both branches
+          git fetch origin main:main 2>/dev/null || echo "Main branch fetched"
+          git fetch origin develop:develop 2>/dev/null || echo "Develop branch fetched"
+
+          # Check if branches exist
+          if ! git rev-parse --verify main >/dev/null 2>&1; then
+            echo "⚠️  Main branch not found, skipping comparison"
+            exit 0
+          fi
+
+          if ! git rev-parse --verify develop >/dev/null 2>&1; then
+            echo "⚠️  Develop branch not found, skipping comparison"
+            exit 0
+          fi
+
+          # Check if develop is ahead of main
+          AHEAD=$(git rev-list --count main..develop 2>/dev/null || echo "0")
+          BEHIND=$(git rev-list --count develop..main 2>/dev/null || echo "0")
+
+          echo "📊 Branch comparison:"
+          echo "  - Develop is $AHEAD commits ahead of main"
+          echo "  - Develop is $BEHIND commits behind main"
+
+          if [[ $AHEAD -eq 0 ]]; then
+            echo "⚠️  WARNING: Develop branch has no new commits compared to main"
+            echo "   Consider if this PR is necessary"
+          else
+            echo "✅ Develop has $AHEAD new commits ready for main"
+          fi
+
+          if [[ $BEHIND -gt 0 ]]; then
+            echo "⚠️  NOTICE: Develop branch is behind main by $BEHIND commits"
+            echo "   Consider rebasing develop on main for a cleaner history"
+          else
+            echo "✅ Develop is up to date with main"
+          fi
+
+          echo "✅ Develop branch validation completed"
