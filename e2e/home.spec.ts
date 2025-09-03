@@ -5,12 +5,12 @@ test.describe('Home Page', () => {
     await page.goto('/');
   });
 
-  test('should display the custom logo', async ({ page }) => {
+  test('@smoke should display the custom logo', async ({ page }) => {
     const logo = page.locator('div.h-8.w-8.rounded-lg.bg-indigo-600');
     await expect(logo).toBeVisible();
   });
 
-  test('should display the main heading text', async ({ page }) => {
+  test('@smoke should display the main heading text', async ({ page }) => {
     await expect(page.getByText('Modern Web Development')).toBeVisible();
     await expect(
       page.getByText(

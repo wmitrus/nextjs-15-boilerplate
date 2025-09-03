@@ -24,7 +24,7 @@
     "e2e:chromium": "pnpm exec playwright test --project=chromium",
     "e2e:firefox": "pnpm exec playwright test --project=firefox",
     "e2e:webkit": "pnpm exec playwright test --project=webkit",
-    "e2e:smoke": "pnpm exec playwright test --grep='@smoke'",
+    "e2e:smoke": "pnpm exec playwright test --project=smoke",
     "e2e:headed": "pnpm exec playwright test --headed",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
