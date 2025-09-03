@@ -10,7 +10,16 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // Base configuration
 const nextConfig: NextConfig = {
-  serverExternalPackages: ['pino', 'pino-0pretty', 'require-in-the-middle'],
+  serverExternalPackages: [
+    'pino',
+    'pino-pretty',
+    'require-in-the-middle',
+    'import-in-the-middle',
+    '@opentelemetry/instrumentation',
+    '@opentelemetry/api',
+    '@opentelemetry/sdk-node',
+    '@opentelemetry/auto-instrumentations-node',
+  ],
   transpilePackages: ['msw'],
 
   // Environment-specific allowed origins

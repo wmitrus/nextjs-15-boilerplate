@@ -24,8 +24,10 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm depcheck madge  @sentry/cli
 
-      - name: Install Dependencies
-        run: pnpm install
+      - name: Clear pnpm cache and install dependencies
+        run: |
+          pnpm store prune
+          pnpm install --frozen-lockfile
 
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
