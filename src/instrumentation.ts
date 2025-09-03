@@ -11,6 +11,7 @@ export async function register() {
     'gstatic.com',
     'github.com/mona.png',
     'collector.eu01.nr-data.net',
+    'telemetry.nextjs.org',
   ];
 
   if (process.env.NEXT_RUNTIME === 'nodejs') {

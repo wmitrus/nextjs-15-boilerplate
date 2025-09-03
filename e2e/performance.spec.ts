@@ -6,7 +6,7 @@ const BASE_TIMEOUT = process.env.CI ? 8000 : 7000;
 const NETWORK_CONDITIONS_TIMEOUT = process.env.CI ? 12000 : 8000;
 
 test.describe('Performance', () => {
-  test('should load within acceptable time', async ({ page }) => {
+  test('@smoke should load within acceptable time', async ({ page }) => {
     const startTime = Date.now();
 
     await page.goto('/');

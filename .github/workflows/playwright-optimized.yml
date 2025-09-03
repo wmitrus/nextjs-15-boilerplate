@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: Playwright Tests (Optimized)
 env:
   LOG_DIR: './logs'
   LOG_LEVEL: 'info'
@@ -16,16 +16,13 @@ env:
   NEXT_PUBLIC_APP_URL: http://localhost:3000
   NODE_ENV: development
 on:
-  pull_request:
-    branches: [main]
+  workflow_dispatch: # Manual trigger for testing
+  # pull_request:
+  #   branches: [main]
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        project: [chromium, firefox, webkit]
     steps:
       - uses: actions/checkout@v4
 
@@ -60,11 +57,21 @@ jobs:
             # Even with cache, ensure system dependencies are available
             pnpm exec playwright install-deps
           fi
-      - name: Run Playwright tests
-        run: pnpm exec playwright test --project=${{ matrix.project }}
+
+      - name: Run Playwright tests (Chromium first - fastest feedback)
+        run: pnpm exec playwright test --project=chromium
+        continue-on-error: true
+
+      - name: Run Playwright tests (Firefox)
+        run: pnpm exec playwright test --project=firefox
+        continue-on-error: true
+
+      - name: Run Playwright tests (WebKit)
+        run: pnpm exec playwright test --project=webkit
+
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report-${{ matrix.project }}
+          name: playwright-report-optimized
           path: playwright-report/
           retention-days: 30

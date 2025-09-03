@@ -143,7 +143,7 @@ jobs:
           SENTRY_PROJECT: nextjs-15-boilerplate
 
       - name: Check environment setup
-        run: node scripts/setup-env.js check
+        run: node scripts/setup-env.mjs check
         env:
           # Environment configuration
           NODE_ENV: test

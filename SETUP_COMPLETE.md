@@ -161,7 +161,7 @@ config/
 └── README.md          # Quick reference
 
 scripts/
-└── setup-env.js       # Environment setup script
+└── setup-env.mjs      # Environment setup script
 
 docs/
 └── CONFIGURATION_SYSTEM.md  # Complete documentation

@@ -2,8 +2,16 @@ import { http, HttpResponse } from 'msw';
 
 import { getEnvironmentConfig } from '../env';
 import { LocalFeatureFlagProvider } from '../feature-flags/local-provider';
+import {
+  createServerErrorResponse,
+  createSuccessResponse,
+  createValidationErrorResponse,
+} from '../responseService';
 
 // Import types
+import type { LoginFormData } from '../../app/login/validation';
+import type { LoginResponseData } from '../api/auth';
+import type { UserProfile, UpdateUserProfileRequest } from '../api/user';
 import type { FeatureFlagContext } from '../feature-flags/types';
 import type { Tenant } from '../multi-tenant/types';
 
@@ -195,7 +203,151 @@ const mockTenants: Record<string, Tenant> = {
 // Initialize the feature flag provider
 featureFlagProvider.initialize().catch(console.error);
 
+// Mock user database for login
+const mockUsers = [
+  {
+    id: '1',
+    email: 'demo@example.com',
+    password: 'demo123',
+    name: 'Demo User',
+  },
+  {
+    id: '2',
+    email: 'admin@example.com',
+    password: 'admin123',
+    name: 'Admin User',
+  },
+];
+
+// Mock user profiles
+const mockUserProfiles: Record<string, UserProfile> = {
+  '1': {
+    id: '1',
+    email: 'demo@example.com',
+    name: 'Demo User',
+    avatar: 'https://example.com/avatar1.jpg',
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-02T00:00:00Z',
+  },
+  '2': {
+    id: '2',
+    email: 'admin@example.com',
+    name: 'Admin User',
+    avatar: 'https://example.com/avatar2.jpg',
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-02T00:00:00Z',
+  },
+};
+
 export const handlers = [
+  // Mock login API endpoint
+  http.post('/api/login', async ({ request }) => {
+    try {
+      const body = (await request.json()) as LoginFormData;
+      const { email, password } = body;
+
+      // Find user in mock database
+      const user = mockUsers.find(
+        (u) => u.email === email && u.password === password,
+      );
+
+      if (!user) {
+        const errorResponse = createValidationErrorResponse({
+          credentials: ['Invalid email or password'],
+        });
+        return HttpResponse.json(errorResponse, { status: 400 });
+      }
+
+      const responseData: LoginResponseData = {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        },
+      };
+
+      const successResponse = createSuccessResponse(responseData);
+      return HttpResponse.json(successResponse, { status: 200 });
+    } catch (error) {
+      console.error('Error in login handler:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      const errorResponse = createServerErrorResponse(
+        `Login failed: ${errorMessage}`,
+      );
+      return HttpResponse.json(errorResponse, { status: 500 });
+    }
+  }),
+
+  // Mock user profile API endpoints
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  http.get('/api/user/profile', ({ request }) => {
+    try {
+      // In a real app, you'd get the user ID from authentication headers/session
+      // For mocking, we'll return the demo user profile
+      const userProfile = mockUserProfiles['1'];
+
+      const successResponse = createSuccessResponse(userProfile);
+      return HttpResponse.json(successResponse, { status: 200 });
+    } catch (error) {
+      console.error('Error in user profile handler:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      const errorResponse = createServerErrorResponse(
+        `Failed to get user profile: ${errorMessage}`,
+      );
+      return HttpResponse.json(errorResponse, { status: 500 });
+    }
+  }),
+
+  http.put('/api/user/profile', async ({ request }) => {
+    try {
+      const body = (await request.json()) as UpdateUserProfileRequest;
+
+      // In a real app, you'd get the user ID from authentication and update the database
+      // For mocking, we'll update and return the demo user profile
+      const currentProfile = mockUserProfiles['1'];
+      const updatedProfile: UserProfile = {
+        ...currentProfile,
+        name: body.name || currentProfile.name,
+        avatar: body.avatar || currentProfile.avatar,
+        updatedAt: new Date().toISOString(),
+      };
+
+      // Update the mock database
+      mockUserProfiles['1'] = updatedProfile;
+
+      const successResponse = createSuccessResponse(updatedProfile);
+      return HttpResponse.json(successResponse, { status: 200 });
+    } catch (error) {
+      console.error('Error in user profile update handler:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      const errorResponse = createServerErrorResponse(
+        `Failed to update user profile: ${errorMessage}`,
+      );
+      return HttpResponse.json(errorResponse, { status: 500 });
+    }
+  }),
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  http.delete('/api/user/account', ({ request }) => {
+    try {
+      // In a real app, you'd delete the user account from the database
+      // For mocking, we'll just return success
+      const successResponse = createSuccessResponse({ success: true });
+      return HttpResponse.json(successResponse, { status: 200 });
+    } catch (error) {
+      console.error('Error in user account deletion handler:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      const errorResponse = createServerErrorResponse(
+        `Failed to delete user account: ${errorMessage}`,
+      );
+      return HttpResponse.json(errorResponse, { status: 500 });
+    }
+  }),
+
   // Mock Logflare API endpoints
   http.post('https://api.logflare.app/logs', ({ request }) => {
     // Only log in development for debugging
@@ -248,18 +400,24 @@ export const handlers = [
       // Get feature flags based on context
       const flags = await featureFlagProvider.getAllFlags(context);
 
-      return HttpResponse.json(
-        {
-          flags,
+      const responseData = {
+        flags,
+        context: {
+          environment: context.environment,
+          version: getEnvironmentConfig().version,
         },
-        { status: 200 },
-      );
+      };
+
+      const successResponse = createSuccessResponse(responseData);
+      return HttpResponse.json(successResponse, { status: 200 });
     } catch (error) {
       console.error('Error in feature flags handler:', error);
-      return HttpResponse.json(
-        { error: 'Failed to load feature flags' },
-        { status: 500 },
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      const errorResponse = createServerErrorResponse(
+        `Failed to load feature flags: ${errorMessage}`,
       );
+      return HttpResponse.json(errorResponse, { status: 500 });
     }
   }),
 
@@ -273,7 +431,8 @@ export const handlers = [
         // In a real implementation, this would determine the current tenant from headers
         // For testing, we'll return the default tenant
         const tenant = mockTenants['default'];
-        return HttpResponse.json({ tenant }, { status: 200 });
+        const successResponse = createSuccessResponse({ tenant });
+        return HttpResponse.json(successResponse, { status: 200 });
       }
 
       // Get tenant by ID
@@ -282,16 +441,22 @@ export const handlers = [
       if (!tenant) {
         // For non-existent tenants, return default tenant data
         const defaultTenant = mockTenants['default'];
-        return HttpResponse.json({ tenant: defaultTenant }, { status: 200 });
+        const successResponse = createSuccessResponse({
+          tenant: defaultTenant,
+        });
+        return HttpResponse.json(successResponse, { status: 200 });
       }
 
-      return HttpResponse.json({ tenant }, { status: 200 });
+      const successResponse = createSuccessResponse({ tenant });
+      return HttpResponse.json(successResponse, { status: 200 });
     } catch (error) {
       console.error('Error in tenant handler:', error);
-      return HttpResponse.json(
-        { error: 'Failed to load tenant' },
-        { status: 500 },
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      const errorResponse = createServerErrorResponse(
+        `Failed to load tenant: ${errorMessage}`,
       );
+      return HttpResponse.json(errorResponse, { status: 500 });
     }
   }),
 
@@ -305,26 +470,28 @@ export const handlers = [
         // In a real implementation, this would determine the current tenant from headers
         // For testing, we'll return the default tenant
         const tenant = mockTenants['default'];
-        return HttpResponse.json({ tenant }, { status: 200 });
+        const successResponse = createSuccessResponse({ tenant });
+        return HttpResponse.json(successResponse, { status: 200 });
       }
 
       // Get tenant by ID
       const tenant = mockTenants[tenantId as string];
 
       if (!tenant) {
-        return HttpResponse.json(
-          { error: 'Tenant not found' },
-          { status: 404 },
-        );
+        const errorResponse = createServerErrorResponse('Tenant not found');
+        return HttpResponse.json(errorResponse, { status: 404 });
       }
 
-      return HttpResponse.json({ tenant }, { status: 200 });
+      const successResponse = createSuccessResponse({ tenant });
+      return HttpResponse.json(successResponse, { status: 200 });
     } catch (error) {
       console.error('Error in tenant handler:', error);
-      return HttpResponse.json(
-        { error: 'Failed to load tenant' },
-        { status: 500 },
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      const errorResponse = createServerErrorResponse(
+        `Failed to load tenant: ${errorMessage}`,
       );
+      return HttpResponse.json(errorResponse, { status: 500 });
     }
   }),
 

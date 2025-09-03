@@ -155,11 +155,14 @@ describe('MSW Integration Tests - Real API Interactions', () => {
   });
 
   it('should handle API errors gracefully', async () => {
-    // Mock API error for feature flags
+    // Mock API error for feature flags using proper service response format
     server.use(
       http.post('/api/feature-flags', () => {
         return new Response(
-          JSON.stringify({ error: 'Internal Server Error' }),
+          JSON.stringify({
+            status: 'server_error',
+            error: 'Internal Server Error',
+          }),
           { status: 500, headers: { 'Content-Type': 'application/json' } },
         );
       }),

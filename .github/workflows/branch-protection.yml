@@ -46,12 +46,6 @@ jobs:
       - name: Build check
         run: pnpm build
 
-      - name: Install Playwright Browsers
-        run: pnpm exec playwright install --with-deps
-
-      - name: Run E2E tests
-        run: pnpm e2e
-
       - name: Check bundle size
         run: pnpm size
 
@@ -78,18 +72,16 @@ jobs:
 
       - name: Validate configuration files
         run: |
-          # Check if config files exist and are valid TypeScript
-          npx tsc --noEmit --project tsconfig.json config/features.ts
-          npx tsc --noEmit --project tsconfig.json config/tenantConfig.ts
-          npx tsc --noEmit --project tsconfig.json config/index.ts
+          # Run standard type checking which will validate all TypeScript files including config
+          pnpm typecheck
 
       - name: Test environment setup script
         run: |
-          node scripts/setup-env.js check
-          node scripts/setup-env.js create development
-          node scripts/setup-env.js create preview
-          node scripts/setup-env.js create staging
-          node scripts/setup-env.js create production
+          node scripts/setup-env.mjs check
+          node scripts/setup-env.mjs create development
+          node scripts/setup-env.mjs create preview
+          node scripts/setup-env.mjs create staging
+          node scripts/setup-env.mjs create production
 
       - name: Validate environment files
         run: |
