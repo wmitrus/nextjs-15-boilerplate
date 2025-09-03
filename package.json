@@ -216,7 +216,9 @@
     ],
     "overrides": {
       "@types/react": "19.1.11",
-      "@types/react-dom": "19.1.7"
+      "@types/react-dom": "19.1.7",
+      "@opentelemetry/instrumentation": "^0.57.2",
+      "@opentelemetry/api": "^1.9.0"
     }
   }
 }

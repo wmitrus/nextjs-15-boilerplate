@@ -15,10 +15,6 @@ const nextConfig: NextConfig = {
     'pino-pretty',
     'require-in-the-middle',
     'import-in-the-middle',
-    '@opentelemetry/instrumentation',
-    '@opentelemetry/api',
-    '@opentelemetry/sdk-node',
-    '@opentelemetry/auto-instrumentations-node',
   ],
   transpilePackages: ['msw'],
 
