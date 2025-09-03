@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: Playwright Smoke Tests
 env:
   LOG_DIR: './logs'
   LOG_LEVEL: 'info'
@@ -18,14 +18,14 @@ env:
 on:
   pull_request:
     branches: [main]
+    paths:
+      - 'src/app/**'
+      - 'e2e/**'
+      - 'playwright.config.ts'
 jobs:
-  test:
-    timeout-minutes: 60
+  smoke-test:
+    timeout-minutes: 30
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        project: [chromium, firefox, webkit]
     steps:
       - uses: actions/checkout@v4
 
@@ -50,14 +50,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install Playwright Browsers
+      - name: Install Playwright Browsers (Chromium only)
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install ${{ matrix.project }} --with-deps
-      - name: Run Playwright tests
-        run: pnpm exec playwright test --project=${{ matrix.project }}
+        run: pnpm exec playwright install chromium --with-deps
+
+      - name: Run Playwright smoke tests (Chromium only)
+        run: pnpm exec playwright test --project=chromium --grep="@smoke"
+
       - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+        if: failure()
         with:
-          name: playwright-report-${{ matrix.project }}
+          name: playwright-smoke-report
           path: playwright-report/
-          retention-days: 30
+          retention-days: 7

@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: Playwright Tests (Sharded)
 env:
   LOG_DIR: './logs'
   LOG_LEVEL: 'info'
@@ -16,8 +16,9 @@ env:
   NEXT_PUBLIC_APP_URL: http://localhost:3000
   NODE_ENV: development
 on:
-  pull_request:
-    branches: [main]
+  workflow_dispatch: # Manual trigger for testing sharded approach
+  # pull_request:
+  #   branches: [main]
 jobs:
   test:
     timeout-minutes: 60
@@ -25,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [chromium, firefox, webkit]
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v4
 
@@ -52,12 +53,14 @@ jobs:
 
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install ${{ matrix.project }} --with-deps
+        run: pnpm exec playwright install --with-deps
+
       - name: Run Playwright tests
-        run: pnpm exec playwright test --project=${{ matrix.project }}
+        run: pnpm exec playwright test --shard=${{ matrix.shard }}/4
+
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report-${{ matrix.project }}
+          name: playwright-report-shard-${{ matrix.shard }}
           path: playwright-report/
           retention-days: 30
