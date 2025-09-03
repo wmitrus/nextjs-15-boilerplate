@@ -1,4 +1,4 @@
-name: PR Checks
+name: Main Branch PR Checks
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  # Enhanced checks for PRs to main (develop → main)
+  # Enhanced checks for PRs to main (develop → main only)
   # These are the final quality gates before production
   main-pr-checks:
     runs-on: ubuntu-latest

@@ -1,0 +1,65 @@
+name: Branch Policy Enforcement
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  enforce-branch-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR source branch
+        run: |
+          echo "PR source branch: ${{ github.head_ref }}"
+          echo "PR target branch: ${{ github.base_ref }}"
+
+          # Only allow PRs to main from develop branch
+          if [[ "${{ github.base_ref }}" == "main" && "${{ github.head_ref }}" != "develop" ]]; then
+            echo "❌ ERROR: Pull requests to 'main' branch are only allowed from 'develop' branch."
+            echo "Current source branch: ${{ github.head_ref }}"
+            echo ""
+            echo "Please follow the branching strategy:"
+            echo "1. Feature branches → develop (via PR)"
+            echo "2. develop → main (via PR)"
+            echo ""
+            echo "To fix this:"
+            echo "1. Close this PR"
+            echo "2. Merge your changes to 'develop' first"
+            echo "3. Create a new PR from 'develop' to 'main'"
+            exit 1
+          fi
+
+          echo "✅ Branch policy check passed"
+
+  validate-develop-branch:
+    runs-on: ubuntu-latest
+    if: github.head_ref == 'develop'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate develop branch state
+        run: |
+          echo "✅ Validating develop branch for merge to main..."
+
+          # Check if develop is ahead of main
+          AHEAD=$(git rev-list --count main..develop)
+          BEHIND=$(git rev-list --count develop..main)
+
+          echo "Develop is $AHEAD commits ahead of main"
+          echo "Develop is $BEHIND commits behind main"
+
+          if [[ $AHEAD -eq 0 ]]; then
+            echo "⚠️  WARNING: Develop branch has no new commits compared to main"
+            echo "Consider if this PR is necessary"
+          fi
+
+          if [[ $BEHIND -gt 0 ]]; then
+            echo "⚠️  WARNING: Develop branch is behind main by $BEHIND commits"
+            echo "Consider rebasing develop on main before merging"
+          fi
+
+          echo "✅ Develop branch validation completed"
