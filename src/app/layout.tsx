@@ -1,5 +1,7 @@
+import { ClerkProvider } from '@clerk/nextjs';
 import { Geist, Geist_Mono } from 'next/font/google';
 
+import { getUserIdForFeatureFlags } from '@/lib/auth';
 import { getEnvironmentConfig } from '@/lib/env';
 import { FeatureFlagProvider } from '@/lib/feature-flags/context';
 import {
@@ -68,10 +70,11 @@ export default async function RootLayout({
   // Get server-side context
   const tenantContext = await getTenantContext();
   const envConfig = getEnvironmentConfig();
+  const userId = await getUserIdForFeatureFlags();
 
-  // Create feature flag context
+  // Create feature flag context with authenticated user
   const featureFlagContext = createFeatureFlagContext(
-    undefined, // userId - would come from auth
+    userId, // Now includes authenticated user ID
     tenantContext.tenantId,
     envConfig.environment,
   );
@@ -80,37 +83,39 @@ export default async function RootLayout({
   const initialFlags = await getAllFeatureFlags(featureFlagContext);
 
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {/* Skip link for keyboard navigation */}
-        <a
-          href="#main-content"
-          className="sr-only z-50 rounded bg-indigo-600 px-4 py-2 text-white focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:outline-2 focus:outline-indigo-500"
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          Skip to main content
-        </a>
-
-        <TenantProvider
-          initialTenant={tenantContext.tenant}
-          tenantId={tenantContext.tenantId}
-          isMultiTenant={tenantContext.isMultiTenant}
-          defaultTenantId={tenantContext.tenantId}
-        >
-          <FeatureFlagProvider
-            context={featureFlagContext}
-            initialFlags={Object.fromEntries(
-              Object.entries(initialFlags).map(([key, enabled]) => [
-                key,
-                { key, enabled, description: `Feature flag: ${key}` },
-              ]),
-            )}
+          {/* Skip link for keyboard navigation */}
+          <a
+            href="#main-content"
+            className="sr-only z-50 rounded bg-indigo-600 px-4 py-2 text-white focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:outline-2 focus:outline-indigo-500"
           >
-            <div className="flex min-h-screen flex-col">{children}</div>
-          </FeatureFlagProvider>
-        </TenantProvider>
-      </body>
-    </html>
+            Skip to main content
+          </a>
+
+          <TenantProvider
+            initialTenant={tenantContext.tenant}
+            tenantId={tenantContext.tenantId}
+            isMultiTenant={tenantContext.isMultiTenant}
+            defaultTenantId={tenantContext.tenantId}
+          >
+            <FeatureFlagProvider
+              context={featureFlagContext}
+              initialFlags={Object.fromEntries(
+                Object.entries(initialFlags).map(([key, enabled]) => [
+                  key,
+                  { key, enabled, description: `Feature flag: ${key}` },
+                ]),
+              )}
+            >
+              <div className="flex min-h-screen flex-col">{children}</div>
+            </FeatureFlagProvider>
+          </TenantProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

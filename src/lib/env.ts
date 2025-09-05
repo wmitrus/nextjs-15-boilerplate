@@ -79,6 +79,9 @@ export const env = createEnv({
     // Security
     CORS_ORIGINS: z.string().default('*'),
     ALLOWED_HOSTS: z.string().optional(),
+
+    // Clerk authentication
+    CLERK_SECRET_KEY: z.string().optional(),
   },
   client: {
     // Public environment variables
@@ -99,6 +102,9 @@ export const env = createEnv({
       .string()
       .transform((s) => s !== 'false' && s !== '0')
       .default(false),
+
+    // Clerk authentication (public)
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().optional(),
   },
   runtimeEnv: {
     // Server environment
@@ -143,6 +149,8 @@ export const env = createEnv({
     CORS_ORIGINS: process.env.CORS_ORIGINS,
     ALLOWED_HOSTS: process.env.ALLOWED_HOSTS,
 
+    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+
     // Client environment
     NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV,
     NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION,
@@ -152,6 +160,9 @@ export const env = createEnv({
     NEXT_PUBLIC_MULTI_TENANT_ENABLED:
       process.env.NEXT_PUBLIC_MULTI_TENANT_ENABLED,
     NEXT_PUBLIC_ANALYTICS_ENABLED: process.env.NEXT_PUBLIC_ANALYTICS_ENABLED,
+
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
   },
 });
 

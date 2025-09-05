@@ -86,6 +86,7 @@
     }
   ],
   "dependencies": {
+    "@clerk/nextjs": "^6.31.8",
     "@hookform/resolvers": "^5.2.1",
     "@mdx-js/react": "^3.1.0",
     "@radix-ui/react-slot": "^1.2.3",

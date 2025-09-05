@@ -1,5 +1,13 @@
 'use client';
 
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs';
+
 import { useFeatureFlag } from '@/lib/feature-flags';
 import { useTenant } from '@/lib/multi-tenant';
 
@@ -65,6 +73,31 @@ export default function Home() {
                   {tenant.tenant?.name || tenant.tenantId}
                 </span>
               )}
+
+              {/* Clerk Authentication */}
+              <SignedOut>
+                <div className="flex items-center space-x-2">
+                  <SignInButton mode="modal">
+                    <button className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                      Sign In
+                    </button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <button className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-gray-600">
+                      Sign Up
+                    </button>
+                  </SignUpButton>
+                </div>
+              </SignedOut>
+              <SignedIn>
+                <UserButton
+                  appearance={{
+                    elements: {
+                      avatarBox: 'h-8 w-8',
+                    },
+                  }}
+                />
+              </SignedIn>
             </div>
           </div>
         </div>
@@ -86,12 +119,21 @@ export default function Home() {
           </p>
 
           <div className="mt-10 flex items-center justify-center gap-x-6">
-            <a
-              href="/login"
-              className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >
-              Sign In
-            </a>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                  Get Started
+                </button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <a
+                href="/dashboard"
+                className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                Go to Dashboard
+              </a>
+            </SignedIn>
             <a
               href="/form-demo-simple"
               className="rounded-md border border-gray-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-gray-600"

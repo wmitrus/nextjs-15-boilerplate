@@ -32,6 +32,23 @@ jest.mock('@/lib/feature-flags', () => ({
   },
 }));
 
+// Mock Clerk components
+jest.mock('@clerk/nextjs', () => ({
+  SignedIn: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="signed-in">{children}</div>
+  ),
+  SignedOut: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="signed-out">{children}</div>
+  ),
+  SignInButton: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="sign-in-button">{children}</div>
+  ),
+  SignUpButton: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="sign-up-button">{children}</div>
+  ),
+  UserButton: () => <div data-testid="user-button">User</div>,
+}));
+
 describe('Page', () => {
   it('renders a heading', () => {
     render(<Page />);
