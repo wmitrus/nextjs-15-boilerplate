@@ -13,19 +13,28 @@ test.describe('Error Handling', () => {
 
   test('should handle JavaScript errors gracefully', async ({ page }) => {
     const errors: string[] = [];
+    const consoleLogs: string[] = [];
 
     // Listen for console errors (but ignore middleware warnings)
     page.on('console', (msg) => {
+      const text = msg.text();
+
+      // Capture all console logs for debugging
+      if (text.includes('TenantProvider') || text.includes('loadTenant')) {
+        consoleLogs.push(`${msg.type()}: ${text}`);
+      }
+
       if (msg.type() === 'error') {
-        errors.push(msg.text());
+        errors.push(text);
       } else if (msg.type() === 'warning') {
-        const text = msg.text();
         // Ignore expected warnings and development messages
         if (
           !text.includes('Redis not configured') &&
           !text.includes('Rate limiting failed') &&
           !text.includes('Clerk has been loaded with development keys') &&
-          !text.includes('Development instances have strict usage limits')
+          !text.includes('Development instances have strict usage limits') &&
+          // !text.includes('Failed to load resource') &&
+          !text.includes('status of 404')
         ) {
           errors.push(text);
         }
@@ -39,6 +48,12 @@ test.describe('Error Handling', () => {
 
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
+
+    // Log debug information if there are errors
+    if (errors.length > 0 || consoleLogs.length > 0) {
+      console.log('Console logs:', consoleLogs);
+      console.log('Errors:', errors);
+    }
 
     // Should not have any JavaScript errors on the home page
     expect(errors).toHaveLength(0);

@@ -38,6 +38,11 @@ export function TenantProvider({
   const [error, setError] = useState<Error | null>(null);
 
   const loadTenant = useCallback(async () => {
+    // Don't attempt to load if multi-tenant is disabled
+    if (!isMultiTenant) {
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null);
@@ -64,12 +69,13 @@ export function TenantProvider({
     } finally {
       setIsLoading(false);
     }
-  }, [tenantId]);
+  }, [tenantId, isMultiTenant]);
 
   useEffect(() => {
     // Skip loading if not multi-tenant or if we already have initial tenant
     if (!isMultiTenant || initialTenant) {
       setIsLoading(false);
+      setError(null); // Clear any previous errors when multi-tenant is disabled
       return;
     }
 
@@ -85,17 +91,17 @@ export function TenantProvider({
   // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo<TenantContext>(
     () => ({
-      tenant,
+      tenant: isMultiTenant ? tenant : initialTenant,
       isMultiTenant,
       tenantId: tenant?.id || tenantId || defaultTenantId,
       domain: undefined,
       subdomain: undefined,
-      error,
+      error: isMultiTenant ? error : null, // Clear error when multi-tenant is disabled
     }),
-    [tenant, isMultiTenant, tenantId, defaultTenantId, error],
+    [tenant, isMultiTenant, tenantId, defaultTenantId, error, initialTenant],
   );
 
-  if (isLoading) {
+  if (isLoading && isMultiTenant) {
     return <div>Loading tenant...</div>;
   }
 

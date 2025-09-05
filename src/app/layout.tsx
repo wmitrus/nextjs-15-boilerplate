@@ -30,6 +30,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+  ),
   title: 'Next.js 15 Boilerplate',
   description:
     'A comprehensive Next.js 15 boilerplate with feature flags and multi-tenant support',
@@ -40,13 +43,6 @@ export const metadata: Metadata = {
     description: 'Modern web development boilerplate with advanced features',
     url: 'https://your-domain.com',
     siteName: 'Next.js 15 Boilerplate',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-      },
-    ],
     locale: 'en_US',
     type: 'website',
   },
