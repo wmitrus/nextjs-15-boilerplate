@@ -1,10 +1,42 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
 
+// Mock user data for test environment
+const mockUser = {
+  id: 'user_test123',
+  username: 'testuser',
+  firstName: 'Test',
+  lastName: 'User',
+  emailAddresses: [
+    {
+      id: 'email_test123',
+      emailAddress: 'test@example.com',
+      verification: {
+        status: 'verified',
+        strategy: 'email_code',
+      },
+    },
+  ],
+  phoneNumbers: [],
+  web3Wallets: [],
+  externalAccounts: [],
+  publicMetadata: {},
+  privateMetadata: {},
+  unsafeMetadata: {},
+  createdAt: new Date(Date.now() - 86400000), // 1 day ago
+  updatedAt: new Date(),
+  lastSignInAt: new Date(Date.now() - 3600000), // 1 hour ago
+};
+
 /**
  * Get the current authenticated user on the server side
  * This is a server-side only function
  */
 export async function getCurrentUser() {
+  // Return mock user in test environment
+  if (process.env.NODE_ENV === 'test') {
+    return mockUser;
+  }
+
   try {
     const user = await currentUser();
     return user;
@@ -14,11 +46,33 @@ export async function getCurrentUser() {
   }
 }
 
+// Mock auth state for test environment
+const mockAuth = {
+  userId: 'user_test123',
+  sessionId: 'sess_test123',
+  orgId: null,
+  orgRole: null,
+  orgSlug: null,
+  sessionClaims: {
+    sub: 'user_test123',
+    iss: 'https://clerk.dev',
+    aud: 'test-audience',
+    exp: Math.floor(Date.now() / 1000) + 3600, // 1 hour from now
+    iat: Math.floor(Date.now() / 1000) - 3600, // 1 hour ago
+    nbf: Math.floor(Date.now() / 1000) - 3600, // 1 hour ago
+  },
+};
+
 /**
  * Get the current user's authentication state on the server side
  * This is a server-side only function
  */
 export async function getAuth() {
+  // Return mock auth state in test environment
+  if (process.env.NODE_ENV === 'test') {
+    return mockAuth;
+  }
+
   try {
     const authState = await auth();
     return authState;

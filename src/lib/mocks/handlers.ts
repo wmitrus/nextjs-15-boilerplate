@@ -7,6 +7,7 @@ import {
   createSuccessResponse,
   createValidationErrorResponse,
 } from '../responseService';
+import { clerkHandlers } from './clerk';
 
 // Import types
 import type { LoginFormData } from '../../app/login/validation';
@@ -499,4 +500,9 @@ export const handlers = [
   http.post('*/__nextjs_original-stack-frames', () => {
     return new HttpResponse(null, { status: 200 });
   }),
+
+  // ============================================================================
+  // CLERK API MOCKS - imported from dedicated clerk.ts file
+  // ============================================================================
+  ...clerkHandlers,
 ];

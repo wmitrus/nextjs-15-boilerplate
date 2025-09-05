@@ -12,6 +12,8 @@ export async function register() {
     'github.com/mona.png',
     'collector.eu01.nr-data.net',
     'telemetry.nextjs.org',
+    // Don't skip Clerk API calls - we want MSW to intercept them in tests
+    // 'api.clerk.dev', // Commented out so MSW can mock Clerk API calls
   ];
 
   if (process.env.NEXT_RUNTIME === 'nodejs') {

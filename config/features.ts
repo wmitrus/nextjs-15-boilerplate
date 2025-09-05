@@ -1,5 +1,3 @@
-import { env } from '@/lib/env';
-
 /**
  * Feature flag configuration
  * Maps feature flags to environment variables for centralized management
@@ -28,9 +26,64 @@ export interface FeatureFlags {
 }
 
 /**
- * Get feature flags based on current environment
+ * Get feature flags based on current environment (client-safe)
  */
 export const getFeatureFlags = (): FeatureFlags => {
+  // Client-safe environment detection using NEXT_PUBLIC_* vars
+  const isDevelopment =
+    typeof window !== 'undefined'
+      ? true // Assume development on client-side for safety
+      : process.env.NODE_ENV === 'development';
+
+  const isPreview = process.env.NEXT_PUBLIC_APP_ENV === 'preview';
+  const isStaging = process.env.NEXT_PUBLIC_APP_ENV === 'staging';
+  const isProduction = process.env.NEXT_PUBLIC_APP_ENV === 'production';
+
+  return {
+    // Core features - client-safe defaults
+    multiTenant: process.env.NEXT_PUBLIC_MULTI_TENANT_ENABLED === 'true',
+    featureFlags: process.env.NEXT_PUBLIC_FEATURE_FLAGS_ENABLED !== 'false', // Default to true
+    analytics: process.env.NEXT_PUBLIC_ANALYTICS_ENABLED === 'true',
+
+    // API features
+    rateLimiting: process.env.NEXT_PUBLIC_API_RATE_LIMIT_ENABLED === 'true',
+
+    // Logging features
+    logflareIntegration:
+      process.env.NEXT_PUBLIC_LOGFLARE_INTEGRATION_ENABLED === 'true',
+    fileLogging: isProduction,
+
+    // Development features
+    debugMode: isDevelopment || isPreview,
+    storybook: isDevelopment || isPreview,
+
+    // Future features - can be controlled via environment variables
+    newDashboard:
+      process.env.NEXT_PUBLIC_FEATURE_NEW_DASHBOARD === 'true' || isPreview,
+    advancedReporting:
+      process.env.NEXT_PUBLIC_FEATURE_ADVANCED_REPORTING === 'true' ||
+      isStaging ||
+      isPreview,
+    betaFeatures:
+      process.env.NEXT_PUBLIC_FEATURE_BETA_FEATURES === 'true' ||
+      isDevelopment ||
+      isPreview,
+  };
+};
+
+/**
+ * Server-side feature flags with full environment access
+ */
+export const getServerFeatureFlags = (): FeatureFlags => {
+  // Import server env only on server-side
+  if (typeof window !== 'undefined') {
+    return getFeatureFlags();
+  }
+
+  // Use dynamic import to avoid bundling on client
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { env } = require('@/lib/env');
+
   const isDevelopment = env.NODE_ENV === 'development';
   const isPreview = env.VERCEL_ENV === 'preview' || env.APP_ENV === 'preview';
   const isStaging = env.APP_ENV === 'staging';
@@ -38,17 +91,19 @@ export const getFeatureFlags = (): FeatureFlags => {
     env.NODE_ENV === 'production' && env.APP_ENV === 'production';
 
   return {
-    // Core features - environment-based defaults with override capability
-    multiTenant: env.MULTI_TENANT_ENABLED,
-    featureFlags: env.FEATURE_FLAGS_ENABLED,
-    analytics: env.NEXT_PUBLIC_ANALYTICS_ENABLED,
+    // Core features - server-side with full env access
+    multiTenant: env.MULTI_TENANT_ENABLED === 'true',
+    featureFlags: env.FEATURE_FLAGS_ENABLED === 'true',
+    analytics: env.NEXT_PUBLIC_ANALYTICS_ENABLED === 'true',
 
-    // API features
-    rateLimiting: env.API_RATE_LIMIT_ENABLED,
+    // API features (server-only)
+    rateLimiting: env.API_RATE_LIMIT_ENABLED === 'true',
 
-    // Logging features
-    logflareIntegration: env.LOGFLARE_INTEGRATION_ENABLED,
-    fileLogging: isProduction ? env.LOG_TO_FILE_PROD : env.LOG_TO_FILE_DEV,
+    // Logging features (server-only)
+    logflareIntegration: env.LOGFLARE_INTEGRATION_ENABLED === 'true',
+    fileLogging: isProduction
+      ? env.LOG_TO_FILE_PROD === 'true'
+      : env.LOG_TO_FILE_DEV === 'true',
 
     // Development features
     debugMode: isDevelopment || isPreview,
@@ -112,9 +167,33 @@ export const environmentFeatures = {
 } as const;
 
 /**
- * Get features for current environment
+ * Get features for current environment (client-safe)
  */
 export const getCurrentEnvironmentFeatures = () => {
-  const currentEnv = env.APP_ENV;
-  return environmentFeatures[currentEnv] || environmentFeatures.development;
+  const currentEnv = process.env.NEXT_PUBLIC_APP_ENV || 'development';
+
+  return (
+    environmentFeatures[currentEnv as keyof typeof environmentFeatures] ||
+    environmentFeatures.development
+  );
+};
+
+/**
+ * Server-side function to get features for current environment
+ */
+export const getServerCurrentEnvironmentFeatures = () => {
+  // Import server env only on server-side
+  if (typeof window !== 'undefined') {
+    return getCurrentEnvironmentFeatures();
+  }
+
+  // Use dynamic import to avoid bundling on client
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { env } = require('@/lib/env');
+
+  const currentEnv = env.APP_ENV || 'development';
+  return (
+    environmentFeatures[currentEnv as keyof typeof environmentFeatures] ||
+    environmentFeatures.development
+  );
 };
