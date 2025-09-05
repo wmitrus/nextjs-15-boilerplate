@@ -40,7 +40,7 @@ test.describe('Authentication', () => {
     // await expect(page.getByText('Welcome')).toBeVisible();
 
     // For now, just verify the page loads
-    expect(page.url()).toContain('localhost:3000');
+    expect(page.url()).toMatch(/(?:localhost|127\.0\.0\.1):3000/);
     // await expect(page.getByText('Welcome')).toBeVisible();
   });
 });

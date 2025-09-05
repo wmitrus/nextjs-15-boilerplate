@@ -20,10 +20,12 @@ test.describe('Error Handling', () => {
         errors.push(msg.text());
       } else if (msg.type() === 'warning') {
         const text = msg.text();
-        // Ignore Redis-related warnings from middleware
+        // Ignore expected warnings and development messages
         if (
           !text.includes('Redis not configured') &&
-          !text.includes('Rate limiting failed')
+          !text.includes('Rate limiting failed') &&
+          !text.includes('Clerk has been loaded with development keys') &&
+          !text.includes('Development instances have strict usage limits')
         ) {
           errors.push(text);
         }
