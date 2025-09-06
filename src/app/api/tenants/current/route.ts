@@ -1,6 +1,7 @@
-import { NextRequest } from 'next/server';
+import { headers } from 'next/headers';
 
 import { TenantResponseData } from '@/lib/api/tenant';
+import { env } from '@/lib/env';
 import {
   createServerErrorResponse,
   createSuccessResponse,
@@ -8,51 +9,15 @@ import {
 
 import type { Tenant } from '@/lib/multi-tenant/types';
 
-// Mock tenant database - in a real app, this would be a database
+// Mock tenant database - REPLACE WITH REAL DATABASE IN PRODUCTION
 const mockTenants: Record<string, Tenant> = {
-  'tenant-123': {
-    id: 'tenant-123',
-    name: 'Test Tenant',
-    domain: 'test.example.com',
-    subdomain: 'test',
-    settings: {
-      branding: {
-        logo: '/logos/test-tenant.png',
-        primaryColor: '#007bff',
-        secondaryColor: '#6c757d',
-      },
-      localization: {
-        defaultLanguage: 'en',
-        supportedLanguages: ['en', 'es'],
-        timezone: 'UTC',
-      },
-      security: {
-        allowedDomains: ['test.example.com'],
-        requireMfa: false,
-        sessionTimeout: 3600,
-      },
-    },
-    features: {
-      analytics: true,
-      customBranding: true,
-      apiAccess: true,
-      advancedReporting: false,
-      integrations: ['stripe', 'mailchimp'],
-      maxUsers: 100,
-      storageLimit: 10737418240, // 10GB in bytes
-    },
-    createdAt: new Date('2024-01-01T00:00:00Z'),
-    updatedAt: new Date('2024-01-01T00:00:00Z'),
-  },
-  current: {
+  default: {
     id: 'default',
     name: 'Default Tenant',
-    domain: 'example.com',
-    subdomain: undefined,
     settings: {
       branding: {
-        primaryColor: '#000000',
-        secondaryColor: '#ffffff',
+        primaryColor: '#3b82f6',
+        secondaryColor: '#64748b',
       },
       localization: {
         defaultLanguage: 'en',
@@ -61,27 +26,59 @@ const mockTenants: Record<string, Tenant> = {
       },
       security: {
         requireMfa: false,
-        sessionTimeout: 1800,
+        sessionTimeout: 3600,
       },
     },
     features: {
-      analytics: false,
+      analytics: true,
       customBranding: false,
-      apiAccess: false,
+      apiAccess: true,
       advancedReporting: false,
-      integrations: [],
+      integrations: ['basic'],
+      maxUsers: 100,
+      storageLimit: 1000,
+    },
+    createdAt: new Date('2024-01-01T00:00:00Z'),
+    updatedAt: new Date('2024-01-01T00:00:00Z'),
+  },
+  'preview-tenant': {
+    id: 'preview-tenant',
+    name: 'Preview Tenant',
+    subdomain: 'preview',
+    settings: {
+      branding: {
+        primaryColor: '#f59e0b',
+        secondaryColor: '#64748b',
+      },
+      localization: {
+        defaultLanguage: 'en',
+        supportedLanguages: ['en', 'es'],
+        timezone: 'UTC',
+      },
+      security: {
+        requireMfa: false,
+        sessionTimeout: 3600,
+      },
+    },
+    features: {
+      analytics: true,
+      customBranding: true,
+      apiAccess: true,
+      advancedReporting: true,
+      integrations: ['basic', 'advanced'],
+      maxUsers: 500,
+      storageLimit: 5000,
     },
     createdAt: new Date('2024-01-01T00:00:00Z'),
     updatedAt: new Date('2024-01-01T00:00:00Z'),
   },
 };
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ tenantId: string }> },
-) {
+export async function GET() {
   try {
-    const { tenantId } = await params;
+    // Get tenant ID from headers (set by middleware)
+    const headersList = await headers();
+    const tenantId = headersList.get('x-tenant-id') || env.DEFAULT_TENANT_ID;
 
     // SECURITY: Validate tenant ID format
     if (!tenantId || typeof tenantId !== 'string' || tenantId.length > 100) {
@@ -106,9 +103,11 @@ export async function GET(
 
     return createSuccessResponse(responseData);
   } catch (error: unknown) {
-    console.error('Tenant API error:', error);
+    console.error('Current tenant API error:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return createServerErrorResponse(`Failed to fetch tenant: ${errorMessage}`);
+    return createServerErrorResponse(
+      `Failed to fetch current tenant: ${errorMessage}`,
+    );
   }
 }
 

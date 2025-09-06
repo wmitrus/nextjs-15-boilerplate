@@ -44,7 +44,13 @@
     "env:create": "node scripts/setup-env.mjs create",
     "env:all": "node scripts/setup-env.mjs all",
     "env:check": "node scripts/setup-env.mjs check",
-    "config:demo": "next dev --turbopack && open http://localhost:3000/config-demo"
+    "config:demo": "next dev --turbopack && open http://localhost:3000/config-demo",
+    "db:start": "podman-compose up -d postgres",
+    "db:stop": "podman-compose stop postgres",
+    "db:down": "podman-compose down",
+    "db:logs": "podman-compose logs -f postgres",
+    "db:restart": "podman-compose restart postgres",
+    "db:shell": "podman-compose exec postgres psql -U postgres -d nextjs_db"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,mjs}": [

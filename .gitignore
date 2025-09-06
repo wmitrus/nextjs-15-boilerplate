@@ -61,3 +61,6 @@ storybook-static/
 
 .lighthouseci
 .zencoder/conversation-summaries
+
+# Docker
+docker-compose.override.yml

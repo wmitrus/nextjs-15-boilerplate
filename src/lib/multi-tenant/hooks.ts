@@ -47,6 +47,12 @@ export async function getTenantId(): Promise<string> {
 
 // Mock function - replace with actual database query
 async function fetchTenant(tenantId: string): Promise<Tenant | null> {
+  // SECURITY: Validate tenant ID before database query
+  if (!isValidTenantId(tenantId)) {
+    console.warn(`Invalid tenant ID attempted: ${tenantId}`);
+    return null;
+  }
+
   // This is a mock implementation
   // In a real app, you would query your database
   const mockTenants: Record<string, Tenant> = {
@@ -116,8 +122,65 @@ async function fetchTenant(tenantId: string): Promise<Tenant | null> {
   return mockTenants[tenantId] || null;
 }
 
+/**
+ * SECURITY: Validate tenant ID format to prevent injection attacks
+ */
+function isValidTenantId(tenantId: string): boolean {
+  // Check basic constraints
+  if (!tenantId || typeof tenantId !== 'string') {
+    return false;
+  }
+
+  // Length constraints
+  if (tenantId.length < 1 || tenantId.length > 100) {
+    return false;
+  }
+
+  // Only allow alphanumeric characters, hyphens, and underscores
+  // Also reject control characters that could be used for injection
+  if (!/^[a-zA-Z0-9_-]+$/.test(tenantId) || /[\r\n\t\0]/.test(tenantId)) {
+    return false;
+  }
+
+  // Prevent reserved names that could cause conflicts
+  const reservedNames = [
+    'api',
+    'www',
+    'admin',
+    'root',
+    'system',
+    'public',
+    'private',
+    'static',
+    'assets',
+    'cdn',
+    'mail',
+    'email',
+    'ftp',
+    'ssh',
+    'localhost',
+    'staging',
+    'prod',
+    'production',
+    'dev',
+    'development',
+  ];
+
+  if (reservedNames.includes(tenantId.toLowerCase())) {
+    return false;
+  }
+
+  return true;
+}
+
 // Utility functions for tenant-specific operations
 export function getTenantDatabaseUrl(tenantId: string): string {
+  // SECURITY: Validate tenant ID before generating database URL
+  if (!isValidTenantId(tenantId)) {
+    console.warn(`Invalid tenant ID for database URL: ${tenantId}`);
+    return env.DATABASE_URL || 'postgresql://localhost:5432';
+  }
+
   // In a multi-tenant setup, you might have separate databases per tenant
   // or use schema-based isolation
   const baseUrl = env.DATABASE_URL || 'postgresql://localhost:5432';
@@ -131,7 +194,16 @@ export function getTenantDatabaseUrl(tenantId: string): string {
 }
 
 export function getTenantCacheKey(tenantId: string, key: string): string {
-  return `tenant:${tenantId}:${key}`;
+  // SECURITY: Validate tenant ID before generating cache key
+  if (!isValidTenantId(tenantId)) {
+    console.warn(`Invalid tenant ID for cache key: ${tenantId}`);
+    tenantId = env.DEFAULT_TENANT_ID;
+  }
+
+  // SECURITY: Sanitize cache key to prevent injection
+  const sanitizedKey = key.replace(/[^a-zA-Z0-9_-]/g, '_');
+
+  return `tenant:${tenantId}:${sanitizedKey}`;
 }
 
 export function isTenantFeatureEnabled(
