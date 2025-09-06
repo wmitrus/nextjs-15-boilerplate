@@ -28,6 +28,7 @@ describe('Feature Flag Provider', () => {
       isDevelopment: true,
       isPreview: false,
       isStaging: false,
+      isTest: false,
       version: '1.0.0',
       baseUrl: 'http://localhost:3000',
     });
