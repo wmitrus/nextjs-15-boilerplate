@@ -1,5 +1,7 @@
 import { ClerkProvider } from '@clerk/nextjs';
+import { unstable_cache } from 'next/cache';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { headers } from 'next/headers';
 
 import { getUserIdForFeatureFlags } from '@/lib/auth';
 import { getEnvironmentConfig } from '@/lib/env';
@@ -9,11 +11,11 @@ import {
   createFeatureFlagContext,
 } from '@/lib/feature-flags/hooks';
 import { TenantProvider } from '@/lib/multi-tenant';
-import { getTenantContext } from '@/lib/multi-tenant/hooks';
+import { getTenantContextWithHeaders } from '@/lib/multi-tenant/hooks';
 
 import type { Metadata } from 'next';
 
-import './globals.css';
+import '@/app/globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -58,25 +60,44 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+// Fetch headers first
+// Note: We can't cache getTenantContextWithHeaders because it uses headers
+// But we can cache feature flags since they don't use headers directly
+
+// Cached feature flags fetcher
+const getCachedFeatureFlags = unstable_cache(
+  async (userId: string | undefined, tenantId: string, environment: string) => {
+    const featureFlagContext = createFeatureFlagContext(
+      userId,
+      tenantId,
+      environment,
+    );
+    return getAllFeatureFlags(featureFlagContext);
+  },
+  ['feature-flags'],
+  {
+    revalidate: 600, // 10 minutes
+    tags: ['feature-flags'],
+  },
+);
+
+export default async function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   // Get server-side context
-  const tenantContext = await getTenantContext();
+  const headersList = await headers();
+  const tenantContext = await getTenantContextWithHeaders(headersList);
   const envConfig = getEnvironmentConfig();
   const userId = await getUserIdForFeatureFlags();
 
-  // Create feature flag context with authenticated user
-  const featureFlagContext = createFeatureFlagContext(
-    userId, // Now includes authenticated user ID
+  // Get cached feature flags
+  const initialFlags = await getCachedFeatureFlags(
+    userId,
     tenantContext.tenantId,
     envConfig.environment,
   );
-
-  // Get initial feature flags
-  const initialFlags = await getAllFeatureFlags(featureFlagContext);
 
   return (
     <ClerkProvider>
@@ -99,7 +120,11 @@ export default async function RootLayout({
             defaultTenantId={tenantContext.tenantId}
           >
             <FeatureFlagProvider
-              context={featureFlagContext}
+              context={{
+                userId,
+                tenantId: tenantContext.tenantId,
+                environment: envConfig.environment,
+              }}
               initialFlags={Object.fromEntries(
                 Object.entries(initialFlags).map(([key, enabled]) => [
                   key,

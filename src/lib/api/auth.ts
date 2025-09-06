@@ -11,7 +11,7 @@
 
 import { apiClient } from './client';
 
-import type { LoginFormData } from '@/app/login/validation';
+import type { LoginFormData } from '@/app/(app)/login/validation';
 import type { ApiResponse } from '@/types/responseService';
 
 /**

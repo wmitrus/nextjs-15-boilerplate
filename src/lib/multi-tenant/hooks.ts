@@ -18,6 +18,24 @@ export async function getTenantContext(): Promise<TenantContext> {
   }
 
   const headersList = await headers();
+  return getTenantContextWithHeaders(headersList);
+}
+
+// Version that accepts headers for caching
+export async function getTenantContextWithHeaders(
+  headersList: Headers,
+): Promise<TenantContext> {
+  if (!env.MULTI_TENANT_ENABLED) {
+    return {
+      tenant: null,
+      isMultiTenant: false,
+      tenantId: env.DEFAULT_TENANT_ID,
+      domain: undefined,
+      subdomain: undefined,
+      error: null,
+    };
+  }
+
   const tenantId = headersList.get('x-tenant-id') || env.DEFAULT_TENANT_ID;
   const subdomain = headersList.get('x-tenant-subdomain') || undefined;
   const domain = headersList.get('x-tenant-domain') || undefined;

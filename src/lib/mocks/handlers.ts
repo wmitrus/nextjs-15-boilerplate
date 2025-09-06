@@ -10,7 +10,7 @@ import {
 import { clerkHandlers } from './clerk';
 
 // Import types
-import type { LoginFormData } from '../../app/login/validation';
+import type { LoginFormData } from '../../app/(app)/login/validation';
 import type { LoginResponseData } from '../api/auth';
 import type { UserProfile, UpdateUserProfileRequest } from '../api/user';
 import type { FeatureFlagContext } from '../feature-flags/types';

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 
-import { loginSchema } from '@/app/login/validation';
+import { loginSchema } from '@/app/(app)/login/validation';
 import { LoginResponseData } from '@/lib/api/auth';
 import {
   createServerErrorResponse,

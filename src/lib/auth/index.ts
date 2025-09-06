@@ -1,4 +1,5 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
+import { unstable_cache } from 'next/cache';
 
 // Mock user data for test environment
 const mockUser = {
@@ -73,6 +74,14 @@ export async function getAuth() {
     return mockAuth;
   }
 
+  // If Clerk is not configured, return undefined to avoid headers() call
+  if (
+    !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+    !process.env.CLERK_SECRET_KEY
+  ) {
+    return { userId: null, sessionId: null };
+  }
+
   try {
     const authState = await auth();
     return authState;
@@ -99,3 +108,16 @@ export async function getUserIdForFeatureFlags(): Promise<string | undefined> {
   const authState = await getAuth();
   return authState.userId || undefined;
 }
+
+// Cached version for use in layouts
+export const getCachedUserIdForFeatureFlags = unstable_cache(
+  async () => {
+    const authState = await getAuth();
+    return authState.userId || undefined;
+  },
+  ['user-id-for-features'],
+  {
+    revalidate: 3600, // 1 hour
+    tags: ['user'],
+  },
+);
