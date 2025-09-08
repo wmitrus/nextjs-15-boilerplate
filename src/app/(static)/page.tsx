@@ -1,35 +1,11 @@
-'use client';
-
+import { Route } from 'next';
 import Link from 'next/link';
 
 export default function StaticHome() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
-      <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm">
-        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div
-                className="h-8 w-8 rounded-lg bg-indigo-600"
-                aria-hidden="true"
-              ></div>
-              <span className="text-xl font-bold text-gray-900">NextJS 15</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/login"
-                className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                Sign In
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Hero Section */}
-      <main className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
             Modern Web Development
@@ -41,7 +17,7 @@ export default function StaticHome() {
 
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Link
-              href="/login"
+              href={'/sign-in' as Route}
               className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
               Get Started
@@ -115,7 +91,7 @@ export default function StaticHome() {
             </dl>
           </div>
         </div>
-      </main>
+      </div>
 
       {/* Footer */}
       <footer className="border-t border-gray-200 bg-white">
