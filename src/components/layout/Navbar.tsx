@@ -1,5 +1,3 @@
-import { Suspense } from 'react';
-
 import { ClerkLoading, SignedIn, SignedOut } from '@clerk/nextjs';
 import { Route } from 'next';
 import Link from 'next/link';

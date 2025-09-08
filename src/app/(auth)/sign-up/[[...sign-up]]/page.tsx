@@ -2,8 +2,6 @@
 
 import { SignUp } from '@clerk/nextjs';
 
-import { HydrationErrorBoundary } from '@/components/error/HydrationErrorBoundary';
-
 function SignUpFallback() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
@@ -23,14 +21,12 @@ function SignUpFallback() {
 
 export default function SignUpPage() {
   return (
-    <HydrationErrorBoundary>
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="w-full max-w-md space-y-8">
-          <div>
-            <SignUp fallback={<SignUpFallback />} />
-          </div>
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="w-full max-w-md space-y-8">
+        <div>
+          <SignUp fallback={<SignUpFallback />} />
         </div>
       </div>
-    </HydrationErrorBoundary>
+    </div>
   );
 }
