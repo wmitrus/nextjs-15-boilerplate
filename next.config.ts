@@ -13,6 +13,7 @@ const isTest = process.env.NODE_ENV === 'test';
 const nextConfig: NextConfig = {
   serverExternalPackages: ['pino', 'pino-pretty'],
   transpilePackages: ['msw'],
+  typedRoutes: true,
 
   // Environment-specific allowed origins
   allowedDevOrigins:
@@ -27,7 +28,6 @@ const nextConfig: NextConfig = {
         ]
       : [],
 
-  typedRoutes: true,
   reactStrictMode: true,
 
   // Source maps only in development and preview
