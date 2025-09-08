@@ -16,9 +16,8 @@ export async function getFeatureFlag(
     return await provider.isEnabled(flagKey, context);
   } catch (error) {
     console.error(`Failed to evaluate feature flag "${flagKey}":`, error);
-    throw new Error(
-      `Failed to evaluate feature flag "${flagKey}": ${error instanceof Error ? error.message : String(error)}`,
-    );
+    // Preserve original error so tests and callers can match exact messages
+    throw error instanceof Error ? error : new Error(String(error));
   }
 }
 
@@ -32,9 +31,8 @@ export async function getFeatureFlagValue<T>(
     return await provider.getValue(flagKey, defaultValue, context);
   } catch (error) {
     console.error(`Failed to get value for feature flag "${flagKey}":`, error);
-    throw new Error(
-      `Failed to get value for feature flag "${flagKey}": ${error instanceof Error ? error.message : String(error)}`,
-    );
+    // Preserve original error
+    throw error instanceof Error ? error : new Error(String(error));
   }
 }
 
@@ -54,9 +52,8 @@ export async function getAllFeatureFlags(
     return result;
   } catch (error) {
     console.error('Failed to get all feature flags:', error);
-    throw new Error(
-      `Failed to get all feature flags: ${error instanceof Error ? error.message : String(error)}`,
-    );
+    // Preserve original error
+    throw error instanceof Error ? error : new Error(String(error));
   }
 }
 
@@ -70,9 +67,8 @@ export async function isFeatureEnabled<K extends FeatureFlagKey>(
     return result as AppFeatureFlags[K];
   } catch (error) {
     console.error(`Failed to check if feature "${flagKey}" is enabled:`, error);
-    throw new Error(
-      `Failed to check if feature "${flagKey}" is enabled: ${error instanceof Error ? error.message : String(error)}`,
-    );
+    // Preserve original error
+    throw error instanceof Error ? error : new Error(String(error));
   }
 }
 
