@@ -102,7 +102,7 @@
     "@upstash/redis": "^1.35.3",
     "clsx": "^2.1.1",
     "markdown-to-jsx": "^7.7.13",
-    "next": "15.5.0",
+    "next": "15.5.2",
     "pino": "^9.9.0",
     "pino-logflare": "^0.5.2",
     "react": "19.1.1",
