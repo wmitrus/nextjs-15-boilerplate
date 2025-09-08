@@ -5,13 +5,10 @@ import { LocalFeatureFlagProvider } from '../feature-flags/local-provider';
 import {
   createServerErrorResponse,
   createSuccessResponse,
-  createValidationErrorResponse,
 } from '../responseService';
 import { clerkHandlers } from './clerk';
 
 // Import types
-import type { LoginFormData } from '../../app/(app)/login/validation';
-import type { LoginResponseData } from '../api/auth';
 import type { UserProfile, UpdateUserProfileRequest } from '../api/user';
 import type { FeatureFlagContext } from '../feature-flags/types';
 import type { Tenant } from '../multi-tenant/types';
@@ -204,22 +201,6 @@ const mockTenants: Record<string, Tenant> = {
 // Initialize the feature flag provider
 featureFlagProvider.initialize().catch(console.error);
 
-// Mock user database for login
-const mockUsers = [
-  {
-    id: '1',
-    email: 'demo@example.com',
-    password: 'demo123',
-    name: 'Demo User',
-  },
-  {
-    id: '2',
-    email: 'admin@example.com',
-    password: 'admin123',
-    name: 'Admin User',
-  },
-];
-
 // Mock user profiles
 const mockUserProfiles: Record<string, UserProfile> = {
   '1': {
@@ -241,45 +222,6 @@ const mockUserProfiles: Record<string, UserProfile> = {
 };
 
 export const handlers = [
-  // Mock login API endpoint
-  http.post('/api/login', async ({ request }) => {
-    try {
-      const body = (await request.json()) as LoginFormData;
-      const { email, password } = body;
-
-      // Find user in mock database
-      const user = mockUsers.find(
-        (u) => u.email === email && u.password === password,
-      );
-
-      if (!user) {
-        const errorResponse = createValidationErrorResponse({
-          credentials: ['Invalid email or password'],
-        });
-        return HttpResponse.json(errorResponse, { status: 400 });
-      }
-
-      const responseData: LoginResponseData = {
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        },
-      };
-
-      const successResponse = createSuccessResponse(responseData);
-      return HttpResponse.json(successResponse, { status: 200 });
-    } catch (error) {
-      console.error('Error in login handler:', error);
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      const errorResponse = createServerErrorResponse(
-        `Login failed: ${errorMessage}`,
-      );
-      return HttpResponse.json(errorResponse, { status: 500 });
-    }
-  }),
-
   // Mock user profile API endpoints
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   http.get('/api/user/profile', ({ request }) => {
