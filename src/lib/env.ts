@@ -47,7 +47,13 @@ export const env = createEnv({
       .transform((s) => s !== 'false' && s !== '0')
       .default(true),
     API_RATE_LIMIT_REQUESTS: z.string().transform(Number).default(100),
-    API_RATE_LIMIT_WINDOW: z.string().default('15m'),
+    API_RATE_LIMIT_WINDOW: z
+      .string()
+      .regex(
+        /^\d+\s*(ms|s|m|h|d)$/,
+        'Invalid duration format. Use format like "15m", "60s", "1h"',
+      )
+      .default('15m'),
 
     // Logging configuration
     LOG_DIR: z.string().min(1).default('./logs'),
