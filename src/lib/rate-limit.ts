@@ -5,14 +5,17 @@ import { env } from './env';
 
 import type { Duration } from '@upstash/ratelimit';
 
-// Initialize Redis client only if Upstash is configured
-const redis =
-  env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN
-    ? new Redis({
-        url: env.UPSTASH_REDIS_REST_URL,
-        token: env.UPSTASH_REDIS_REST_TOKEN,
-      })
-    : undefined;
+// Initialize Redis client only if rate limiting is enabled AND Upstash is configured
+const rateLimitingEnabled =
+  env.API_RATE_LIMIT_ENABLED &&
+  Boolean(env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN);
+
+const redis = rateLimitingEnabled
+  ? new Redis({
+      url: env.UPSTASH_REDIS_REST_URL!,
+      token: env.UPSTASH_REDIS_REST_TOKEN!,
+    })
+  : undefined;
 
 // Create rate limiters for different use cases
 export const loginRateLimit = redis
