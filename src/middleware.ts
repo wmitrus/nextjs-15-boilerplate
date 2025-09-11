@@ -3,24 +3,52 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { createTenantMiddleware } from '@/lib/multi-tenant/middleware';
 import { apiRateLimit, checkRateLimit, getClientIP } from '@/lib/rate-limit';
+import { NONCE_HEADER, buildCSP, createNonce } from '@/lib/security';
+import { createEdgeCsrf } from '@/lib/security/csrf/edge';
 
-// Create the tenant middleware
+// Instantiate middlewares once
 const tenantMiddleware = createTenantMiddleware();
+const csrf = createEdgeCsrf();
 
 export default clerkMiddleware(async (auth, request: NextRequest) => {
+  const pathname = request.nextUrl.pathname;
+  const isAuthOrClerkRoute =
+    pathname.startsWith('/sign-in') ||
+    pathname.startsWith('/sign-up') ||
+    pathname.startsWith('/api/auth') ||
+    pathname.includes('clerk');
+
+  // Generate a per-request nonce and CSP
+  const nonce = createNonce();
+  const csp = buildCSP(nonce, { isAuthOrClerkRoute });
+
   // First apply tenant middleware
   const tenantResponse = tenantMiddleware(request);
 
-  // If tenant middleware returns a response (redirect, etc.), use it
+  // If tenant middleware returns a response (redirect, etc.), attach security headers and return it
   if (tenantResponse && tenantResponse !== NextResponse.next()) {
+    tenantResponse.headers.set('Content-Security-Policy', csp);
+    tenantResponse.headers.set(NONCE_HEADER, nonce);
+    tenantResponse.headers.set(
+      'Referrer-Policy',
+      'strict-origin-when-cross-origin',
+    );
+    tenantResponse.headers.set('X-Content-Type-Options', 'nosniff');
+    if (isAuthOrClerkRoute) {
+      tenantResponse.headers.set('X-Frame-Options', 'DENY');
+      tenantResponse.headers.set(
+        'Permissions-Policy',
+        'camera=(), microphone=(), geolocation=()',
+      );
+    }
     return tenantResponse;
   }
 
   // Apply rate limiting to API routes (excluding Clerk auth routes)
   if (
-    request.nextUrl.pathname.startsWith('/api') &&
-    !request.nextUrl.pathname.startsWith('/api/auth') &&
-    !request.nextUrl.pathname.includes('clerk')
+    pathname.startsWith('/api') &&
+    !pathname.startsWith('/api/auth') &&
+    !pathname.includes('clerk')
   ) {
     const clientIP = getClientIP(request);
     const rateLimitResult = await checkRateLimit(apiRateLimit, clientIP);
@@ -46,19 +74,27 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
     }
   }
 
-  // Add security headers for authentication routes
-  const response = NextResponse.next();
+  // Continue the chain, forwarding nonce via request headers for server components
+  const forwardedHeaders = new Headers(request.headers);
+  forwardedHeaders.set(NONCE_HEADER, nonce);
+  let response = NextResponse.next({ request: { headers: forwardedHeaders } });
 
-  if (
-    request.nextUrl.pathname.startsWith('/sign-in') ||
-    request.nextUrl.pathname.startsWith('/sign-up') ||
-    request.nextUrl.pathname.startsWith('/api/auth') ||
-    request.nextUrl.pathname.includes('clerk')
-  ) {
-    // Add additional security headers for auth routes
+  // Apply CSRF for protected paths
+  response = await csrf.apply(request, response);
+  if (response.status === 403) {
+    // CSRF blocked the request; return as is (already JSON body)
+    return response;
+  }
+
+  // Global security headers
+  response.headers.set('Content-Security-Policy', csp);
+  response.headers.set(NONCE_HEADER, nonce);
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+
+  // Additional hardening for auth-related routes
+  if (isAuthOrClerkRoute) {
     response.headers.set('X-Frame-Options', 'DENY');
-    response.headers.set('X-Content-Type-Options', 'nosniff');
-    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
     response.headers.set(
       'Permissions-Policy',
       'camera=(), microphone=(), geolocation=()',
