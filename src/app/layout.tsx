@@ -1,5 +1,10 @@
 import { ClerkProvider } from '@clerk/nextjs';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { headers } from 'next/headers';
+
+// import DevMocks from '@/components/DevMocks';
+import { NonceProvider } from '@/context/NonceProvider';
+import { NONCE_HEADER } from '@/lib/security';
 
 import type { Metadata } from 'next';
 
@@ -48,11 +53,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Read nonce forwarded by middleware to attach to potential inline usages
+  const hdrs = await headers();
+  const nonce = hdrs.get(NONCE_HEADER) ?? undefined;
+
   return (
     <ClerkProvider
       appearance={{
@@ -67,7 +76,12 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <main className="flex min-h-screen flex-col">{children}</main>
+          {/* Provide nonce to downstream client components via context */}
+          <NonceProvider nonce={nonce}>
+            {/* Start MSW in browser during development */}
+            {/* <DevMocks /> */}
+            <main className="flex min-h-screen flex-col">{children}</main>
+          </NonceProvider>
         </body>
       </html>
     </ClerkProvider>
