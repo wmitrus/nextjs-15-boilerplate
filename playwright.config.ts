@@ -96,6 +96,9 @@ export default defineConfig({
     env: {
       NODE_ENV: 'test',
       APP_ENV: 'test',
+      // Ensure server sees the same origin as Playwright baseURL
+      APP_URL: 'http://127.0.0.1:3000',
+      NEXT_PUBLIC_APP_URL: 'http://127.0.0.1:3000',
       // Disable external integrations in test environment
       LOGFLARE_INTEGRATION_ENABLED: '0',
       SENTRY_ENVIRONMENT: 'test',
