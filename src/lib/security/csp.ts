@@ -42,6 +42,7 @@ export function buildCSP(
   // Allow Next.js framework, nonce-based inline, and strict-dynamic
   // Expand for Clerk routes to permit their domains and iframes
   const isDev = process.env.NODE_ENV !== 'production';
+  const isProd = !isDev;
 
   // Allowlist additions via env (comma-separated)
   const allowExtra = (v?: string) =>
@@ -90,7 +91,8 @@ export function buildCSP(
   const styleSrc = [
     "'self'",
     ...(isDev ? ["'unsafe-inline'"] : [`'nonce-${nonce}'`]),
-    'https:',
+    // In production, avoid broad https: and prefer explicit allowlists
+    ...(isProd ? [] : ['https:']),
     'data:',
     'blob:',
     ...extraStyle,
@@ -103,7 +105,8 @@ export function buildCSP(
 
   const connectSrc = [
     "'self'",
-    'https:',
+    // In production, avoid broad https: and prefer explicit allowlists
+    ...(isProd ? [] : ['https:']),
     // Enable HMR/dev overlay connections
     isDev ? 'ws:' : '',
     isDev ? 'wss:' : '',
