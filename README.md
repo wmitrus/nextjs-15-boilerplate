@@ -20,6 +20,64 @@ This repository provides a well-structured foundation for building high-quality 
 10. [Code Generation](#code-generation)
 11. [Authentication](#authentication)
 
+## Environment & Vercel Setup
+
+1. Local development
+
+- Copy `.env.example` to `.env.local` and fill local values (keep `.env.local` gitignored).
+- Use `APP_URL` and `NEXT_PUBLIC_APP_URL` as `http://localhost:3000`.
+
+2. Vercel environment variables (Dashboard → Settings → Environment Variables)
+
+- Set variables with the right scope: Production and Preview.
+- Do not set `NODE_ENV`.
+- Trigger a redeploy after changes.
+
+3. Required variables
+
+- Production
+  - APP_ENV=production
+  - NEXT_PUBLIC_APP_ENV=production
+  - APP_URL=https://yourdomain.com
+  - NEXT_PUBLIC_APP_URL=https://yourdomain.com
+  - CSRF_SECURE_COOKIES=true
+- Preview
+  - APP_ENV=preview
+  - NEXT_PUBLIC_APP_ENV=preview
+  - APP_URL=https://your-preview.vercel.app
+  - NEXT_PUBLIC_APP_URL=https://your-preview.vercel.app
+  - CSRF_SECURE_COOKIES=true
+
+4. Rate limiting (Upstash)
+
+- Enable: API_RATE_LIMIT_ENABLED=true
+- Provide: UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN (set real values only in Vercel)
+- Optional tuning: API_RATE_LIMIT_REQUESTS=100, API_RATE_LIMIT_WINDOW=15m
+
+5. Clerk (if used)
+
+- NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, CLERK_SECRET_KEY
+- CSP allowlists (browser):
+  - NEXT_PUBLIC_CSP_SCRIPT_EXTRA=https://js.clerk.com
+  - NEXT*PUBLIC_CSP_FRAME_EXTRA=https://*.clerk.com, https://_.clerk.services
+  - NEXT_PUBLIC_CSP_CONNECT_EXTRA=https://api.clerk.com
+
+6. Optional but recommended
+
+- NEXT_PUBLIC_VERCEL_URL=yourdomain.com (or your-preview.vercel.app) to ensure correct absolute URLs during SSR/SSG.
+
+See also:
+
+- `.env.example` for annotated keys and guidance (commit placeholders; set real values in Vercel)
+- `docs/SECURITY_AND_ENVIRONMENT_GUIDE.md` (CSRF, CSP, preview/prod checklists)
+- `docs/CSRF_GUIDE.md` and `docs/CSP_GUIDE.md`
+
+Automation:
+
+- Use `pnpm env:init|create|all|check` to generate/update env files (scripts/setup-env.mjs)
+- E2E rate limit test runs without Upstash via TEST_LOCAL_RATE_LIMIT=1
+- When adding a new feature requiring envs, update `.env.example` only; README links here to avoid duplication
+
 ## Step 01: Project Setup
 
 ### 🏗️ Install Required Dependencies (eslint, prettier)
@@ -200,6 +258,8 @@ For detailed documentation, see:
 - [Advanced Integration Patterns](./docs/ADVANCED_INTEGRATION_PATTERNS.md)
 - [Performance Optimization](./docs/PERFORMANCE_OPTIMIZATION.md)
 - [Security Considerations](./docs/SECURITY_CONSIDERATIONS.md)
+- [CSRF Guide](./docs/CSRF_GUIDE.md)
+- [CSP Guide](./docs/CSP_GUIDE.md)
 - [Testing Strategies](./docs/TESTING_STRATEGIES.md)
 - [Clerk Integration Guide](./docs/CLERK_INTEGRATION.md)
 
