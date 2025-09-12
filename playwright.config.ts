@@ -109,6 +109,10 @@ export default defineConfig({
       // Test user credentials for E2E tests - loaded from .env.test file
       E2E_CLERK_USER_USERNAME: process.env.E2E_CLERK_USER_USERNAME || '',
       E2E_CLERK_USER_PASSWORD: process.env.E2E_CLERK_USER_PASSWORD || '',
+      // Enable local rate limit simulation for E2E without Upstash
+      TEST_LOCAL_RATE_LIMIT: '1',
+      RATE_LIMIT_LOCAL_LIMIT: '3',
+      RATE_LIMIT_LOCAL_WINDOW_MS: '2000',
       // Public environment variables
       NEXT_PUBLIC_APP_ENV: 'test',
       NEXT_PUBLIC_APP_VERSION: '1.0.0-test',
