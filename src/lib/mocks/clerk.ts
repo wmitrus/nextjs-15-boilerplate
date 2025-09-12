@@ -11,7 +11,7 @@ export const mockClerkUser = {
   username: 'testuser',
   first_name: 'Test',
   last_name: 'User',
-  email_addresses: [
+  emailAddresses: [
     {
       id: 'email_test123',
       email_address: 'test@example.com',
@@ -63,7 +63,7 @@ export const mockClerkClient = {
  * Clerk API handlers for MSW
  */
 export const clerkHandlers = [
-  // Mock Clerk's session endpoint
+  // Mock Clerk's session endpoint (.dev and .com in dev/test)
   http.get('https://api.clerk.dev/v1/sessions/:sessionId', ({ params }) => {
     const { sessionId } = params;
 
@@ -79,12 +79,42 @@ export const clerkHandlers = [
 
     return new HttpResponse(null, { status: 404 });
   }),
+  http.get('https://api.clerk.com/v1/sessions/:sessionId', ({ params }) => {
+    const { sessionId } = params;
 
-  // Mock Clerk's user endpoint
+    if (process.env.NODE_ENV === 'development') {
+      return HttpResponse.json(
+        {
+          ...mockClerkSession,
+          id: sessionId,
+        },
+        { status: 200 },
+      );
+    }
+
+    return new HttpResponse(null, { status: 404 });
+  }),
+
+  // Mock Clerk's user endpoint (.dev and .com)
   http.get('https://api.clerk.dev/v1/users/:userId', ({ params }) => {
     const { userId } = params;
 
     if (process.env.NODE_ENV === 'test') {
+      return HttpResponse.json(
+        {
+          ...mockClerkUser,
+          id: userId,
+        },
+        { status: 200 },
+      );
+    }
+
+    return new HttpResponse(null, { status: 404 });
+  }),
+  http.get('https://api.clerk.com/v1/users/:userId', ({ params }) => {
+    const { userId } = params;
+
+    if (process.env.NODE_ENV === 'development') {
       return HttpResponse.json(
         {
           ...mockClerkUser,
@@ -119,10 +149,38 @@ export const clerkHandlers = [
 
     return new HttpResponse(null, { status: 404 });
   }),
+  http.get('https://api.clerk.com/v1/jwks', () => {
+    if (process.env.NODE_ENV === 'development') {
+      return HttpResponse.json(
+        {
+          keys: [
+            {
+              kty: 'RSA',
+              use: 'sig',
+              kid: 'dev-key-id',
+              n: 'dev-modulus',
+              e: 'AQAB',
+              alg: 'RS256',
+            },
+          ],
+        },
+        { status: 200 },
+      );
+    }
+
+    return new HttpResponse(null, { status: 404 });
+  }),
 
   // Mock Clerk's client-side API calls
   http.get('https://api.clerk.dev/v1/client', () => {
     if (process.env.NODE_ENV === 'test') {
+      return HttpResponse.json(mockClerkClient, { status: 200 });
+    }
+
+    return new HttpResponse(null, { status: 404 });
+  }),
+  http.get('https://api.clerk.com/v1/client', () => {
+    if (process.env.NODE_ENV === 'development') {
       return HttpResponse.json(mockClerkClient, { status: 200 });
     }
 
@@ -162,7 +220,7 @@ export const clerkHandlers = [
     return new HttpResponse(null, { status: 404 });
   }),
 
-  // Mock Clerk's session verification endpoint
+  // Mock Clerk's session verification endpoint (.dev and .com)
   http.post(
     'https://api.clerk.dev/v1/sessions/:sessionId/verify',
     ({ params }) => {
@@ -182,14 +240,53 @@ export const clerkHandlers = [
       return new HttpResponse(null, { status: 404 });
     },
   ),
+  http.post(
+    'https://api.clerk.com/v1/sessions/:sessionId/verify',
+    ({ params }) => {
+      const { sessionId } = params;
 
-  // Mock Clerk's token verification endpoint
+      if (process.env.NODE_ENV === 'development') {
+        return HttpResponse.json(
+          {
+            ...mockClerkSession,
+            id: sessionId,
+            status: 'active',
+          },
+          { status: 200 },
+        );
+      }
+
+      return new HttpResponse(null, { status: 404 });
+    },
+  ),
+
+  // Mock Clerk's token verification endpoint (.dev and .com)
   http.post(
     'https://api.clerk.dev/v1/sessions/:sessionId/tokens/:template',
     ({ params }) => {
       const { sessionId, template } = params;
 
       if (process.env.NODE_ENV === 'test') {
+        return HttpResponse.json(
+          {
+            object: 'token',
+            jwt: 'mock.jwt.token',
+            session_id: sessionId,
+            template: template,
+          },
+          { status: 200 },
+        );
+      }
+
+      return new HttpResponse(null, { status: 404 });
+    },
+  ),
+  http.post(
+    'https://api.clerk.com/v1/sessions/:sessionId/tokens/:template',
+    ({ params }) => {
+      const { sessionId, template } = params;
+
+      if (process.env.NODE_ENV === 'development') {
         return HttpResponse.json(
           {
             object: 'token',
@@ -235,10 +332,46 @@ export const clerkHandlers = [
 
     return new HttpResponse(null, { status: 404 });
   }),
+  http.get('https://api.clerk.com/*', ({ request }) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        '[MSW] Intercepted Clerk API GET request (com):',
+        request.url,
+      );
+      return HttpResponse.json(
+        {
+          message: 'Mocked Clerk API response',
+          url: request.url,
+          method: 'GET',
+        },
+        { status: 200 },
+      );
+    }
+
+    return new HttpResponse(null, { status: 404 });
+  }),
 
   http.post('https://api.clerk.dev/*', ({ request }) => {
     if (process.env.NODE_ENV === 'test') {
       console.log('[MSW] Intercepted Clerk API POST request:', request.url);
+      return HttpResponse.json(
+        {
+          message: 'Mocked Clerk API response',
+          url: request.url,
+          method: 'POST',
+        },
+        { status: 200 },
+      );
+    }
+
+    return new HttpResponse(null, { status: 404 });
+  }),
+  http.post('https://api.clerk.com/*', ({ request }) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        '[MSW] Intercepted Clerk API POST request (com):',
+        request.url,
+      );
       return HttpResponse.json(
         {
           message: 'Mocked Clerk API response',
@@ -267,10 +400,46 @@ export const clerkHandlers = [
 
     return new HttpResponse(null, { status: 404 });
   }),
+  http.put('https://api.clerk.com/*', ({ request }) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        '[MSW] Intercepted Clerk API PUT request (com):',
+        request.url,
+      );
+      return HttpResponse.json(
+        {
+          message: 'Mocked Clerk API response',
+          url: request.url,
+          method: 'PUT',
+        },
+        { status: 200 },
+      );
+    }
+
+    return new HttpResponse(null, { status: 404 });
+  }),
 
   http.delete('https://api.clerk.dev/*', ({ request }) => {
     if (process.env.NODE_ENV === 'test') {
       console.log('[MSW] Intercepted Clerk API DELETE request:', request.url);
+      return HttpResponse.json(
+        {
+          message: 'Mocked Clerk API response',
+          url: request.url,
+          method: 'DELETE',
+        },
+        { status: 200 },
+      );
+    }
+
+    return new HttpResponse(null, { status: 404 });
+  }),
+  http.delete('https://api.clerk.com/*', ({ request }) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        '[MSW] Intercepted Clerk API DELETE request (com):',
+        request.url,
+      );
       return HttpResponse.json(
         {
           message: 'Mocked Clerk API response',
