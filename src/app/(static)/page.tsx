@@ -28,6 +28,12 @@ export default function StaticHome() {
             >
               Go to App <span aria-hidden="true">→</span>
             </Link>
+            <Link
+              href="/examples/secure-post"
+              className="text-sm leading-6 font-semibold text-gray-900"
+            >
+              Secure POST Example <span aria-hidden="true">→</span>
+            </Link>
           </div>
         </div>
 
