@@ -44,6 +44,8 @@
     "env:create": "node scripts/setup-env.mjs create",
     "env:all": "node scripts/setup-env.mjs all",
     "env:check": "node scripts/setup-env.mjs check",
+    "env:verify-ci": "node scripts/verify-vercel-env.mjs",
+    "env:scan": "node scripts/check-env-consistency.mjs",
     "config:demo": "next dev --turbopack && open http://localhost:3000/config-demo",
     "db:start": "podman-compose up -d postgres",
     "db:stop": "podman-compose stop postgres",
