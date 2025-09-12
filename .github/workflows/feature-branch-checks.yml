@@ -82,6 +82,9 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Scan env consistency (code vs .env.example)
+        run: pnpm env:scan
+
       - name: Run tests
         run: pnpm test
         env:
