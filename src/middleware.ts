@@ -68,6 +68,10 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
   const forwardedHeaders = new Headers(request.headers);
   forwardedHeaders.set(NONCE_HEADER, nonce);
   let response = NextResponse.next({ request: { headers: forwardedHeaders } });
+  // Merge tenant headers into the main response so downstream can read them
+  for (const [k, v] of tenantResponse.headers) {
+    if (k.startsWith('x-tenant-')) response.headers.set(k, v);
+  }
 
   // Apply CSRF for protected paths
   response = await csrf.apply(request, response);
