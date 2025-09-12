@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { createTenantMiddleware } from '@/lib/multi-tenant/middleware';
 import { apiRateLimit, checkRateLimit, getClientIP } from '@/lib/rate-limit';
+import { localRateLimit } from '@/lib/rate-limit-local';
 import { NONCE_HEADER, buildCSP, createNonce } from '@/lib/security';
 import { createEdgeCsrf } from '@/lib/security/csrf/edge';
 
@@ -33,7 +34,10 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
   ) {
     try {
       const clientIP = getClientIP(request);
-      const rateLimitResult = await checkRateLimit(apiRateLimit, clientIP);
+      const rateLimitResult =
+        process.env.TEST_LOCAL_RATE_LIMIT === '1'
+          ? localRateLimit(clientIP)
+          : await checkRateLimit(apiRateLimit, clientIP);
 
       if (!rateLimitResult.success) {
         return NextResponse.json(
@@ -77,6 +81,8 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
   response.headers.set(NONCE_HEADER, nonce);
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('X-Content-Type-Options', 'nosniff');
+  // TODO(production): Add Strict-Transport-Security when moving to a custom HTTPS domain.
+  // See docs/PRODUCTION_READINESS_CHECKLIST.md for details.
 
   // Additional hardening for auth-related routes
   if (isAuthOrClerkRoute) {
