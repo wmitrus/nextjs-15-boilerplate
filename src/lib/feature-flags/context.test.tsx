@@ -9,6 +9,14 @@ import {
   useFeatureFlags,
 } from './context';
 
+function getUrl(input: RequestInfo | URL): string {
+  if (typeof input === 'string') return input;
+  if (input instanceof Request) return input.url;
+  if (input instanceof URL) return input.toString();
+  const maybe = input as { url?: string };
+  return maybe.url ?? String(input);
+}
+
 // Mock component to test useFeatureFlags hook
 const TestFeatureFlagsComponent = () => {
   const { flags, isLoading, isEnabled, getValue, refresh } = useFeatureFlags();
@@ -65,17 +73,29 @@ describe('FeatureFlagProvider', () => {
     // Reset mocks before each test
     jest.clearAllMocks();
 
-    // Mock fetch API with proper service response format
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
+    // Mock fetch API by endpoint (CSRF vs Feature Flags)
+    global.fetch = jest.fn((input: RequestInfo | URL) => {
+      const url = getUrl(input);
+
+      if (url.includes('/api/security/csrf')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ status: 'ok', data: { token: 'test-token' } }),
+        } as Response);
+      }
+
+      if (url.includes('/api/feature-flags')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ status: 'ok', data: { flags: mockFlags } }),
+        } as Response);
+      }
+
+      return Promise.resolve({
         ok: true,
-        json: () =>
-          Promise.resolve({
-            status: 'ok',
-            data: { flags: mockFlags },
-          }),
-      } as Response),
-    ) as jest.Mock;
+        json: async () => ({}),
+      } as Response);
+    }) as jest.Mock;
   });
 
   afterEach(() => {
@@ -92,19 +112,24 @@ describe('FeatureFlagProvider', () => {
 
     expect(screen.getByTestId('child')).toBeInTheDocument();
 
-    // Wait for flags to be loaded
+    // Wait only for the call to be present, then assert outside
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(
-        '/api/feature-flags',
-        expect.objectContaining({
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({}),
-        }),
+      const call = (fetch as jest.Mock).mock.calls.find(([input]) =>
+        getUrl(input).includes('/api/feature-flags'),
       );
+      expect(Boolean(call)).toBe(true);
     });
+
+    const call = (fetch as jest.Mock).mock.calls.find(([input]) =>
+      getUrl(input).includes('/api/feature-flags'),
+    ) as [RequestInfo | URL, RequestInit] | undefined;
+    expect(call).toBeTruthy();
+    const [, init] = call!;
+    expect(init.method).toBe('POST');
+    expect(init.headers).toEqual(
+      expect.objectContaining({ 'Content-Type': 'application/json' }),
+    );
+    expect(init.body).toBe(JSON.stringify({}));
   });
 
   it('provides feature flags through useFeatureFlags hook', async () => {
@@ -220,10 +245,18 @@ describe('FeatureFlagProvider', () => {
       refreshButton.click();
     });
 
-    // Should call fetch again
+    // Should call feature-flags endpoint again (ignore CSRF calls)
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledTimes(2);
+      const featureCalls = (fetch as jest.Mock).mock.calls.filter(([input]) =>
+        getUrl(input).includes('/api/feature-flags'),
+      );
+      expect(featureCalls.length >= 2).toBe(true);
     });
+
+    const featureCalls = (fetch as jest.Mock).mock.calls.filter(([input]) =>
+      getUrl(input).includes('/api/feature-flags'),
+    );
+    expect(featureCalls.length).toBe(2);
   });
 
   it('throws error when useFeatureFlags is used outside provider', () => {
@@ -269,16 +302,24 @@ describe('FeatureFlagProvider', () => {
       },
     };
 
-    // Mock fetch to return flag without value
-    (global.fetch as jest.Mock).mockImplementationOnce(() =>
-      Promise.resolve({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            status: 'ok',
-            data: { flags: flagsWithNoValue },
-          }),
-      } as Response),
+    // Mock fetch to return flag without value (for /api/feature-flags)
+    (global.fetch as jest.Mock).mockImplementationOnce(
+      (input: RequestInfo | URL) => {
+        const url = getUrl(input);
+        if (url.includes('/api/feature-flags')) {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({
+              status: 'ok',
+              data: { flags: flagsWithNoValue },
+            }),
+          } as Response);
+        }
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({}),
+        } as Response);
+      },
     );
 
     const TestComponent = () => {
@@ -313,16 +354,24 @@ describe('FeatureFlagProvider', () => {
       },
     };
 
-    // Mock fetch to return flag with value
-    (global.fetch as jest.Mock).mockImplementationOnce(() =>
-      Promise.resolve({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            status: 'ok',
-            data: { flags: flagsWithValue },
-          }),
-      } as Response),
+    // Mock fetch to return flag with value (for /api/feature-flags)
+    (global.fetch as jest.Mock).mockImplementationOnce(
+      (input: RequestInfo | URL) => {
+        const url = getUrl(input);
+        if (url.includes('/api/feature-flags')) {
+          return Promise.resolve({
+            ok: true,
+            json: async () => ({
+              status: 'ok',
+              data: { flags: flagsWithValue },
+            }),
+          } as Response);
+        }
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({}),
+        } as Response);
+      },
     );
 
     const TestComponent = () => {

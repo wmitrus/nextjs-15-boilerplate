@@ -24,7 +24,7 @@ export function FeatureFlagDemo() {
           </p>
           {newDashboard.isEnabled && (
             <div className="rounded border-l-4 border-blue-400 bg-blue-50 p-3">
-              🎉 You&apos;re seeing the new dashboard experience!
+              🎉 You&amp;re seeing the new dashboard experience!
             </div>
           )}
         </div>

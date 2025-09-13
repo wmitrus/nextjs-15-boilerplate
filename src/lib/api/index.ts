@@ -21,9 +21,6 @@ export type {
 export { userApi, UserApiService } from './user';
 export type { UserProfile, UpdateUserProfileRequest } from './user';
 
-export { authApi, AuthApiService } from './auth';
-export type { LoginResponseData } from './auth';
-
 export { tenantApi, TenantApiService } from './tenant';
 export type { TenantResponseData } from './tenant';
 

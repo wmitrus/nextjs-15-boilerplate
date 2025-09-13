@@ -7,25 +7,27 @@ import type { NextConfig } from 'next';
 const isDevelopment = process.env.NODE_ENV === 'development';
 const isPreview = process.env.VERCEL_ENV === 'preview';
 const isProduction = process.env.NODE_ENV === 'production';
+const isTest = process.env.NODE_ENV === 'test';
 
 // Base configuration
 const nextConfig: NextConfig = {
   serverExternalPackages: ['pino', 'pino-pretty'],
   transpilePackages: ['msw'],
+  typedRoutes: true,
 
   // Environment-specific allowed origins
-  allowedDevOrigins: isDevelopment
-    ? [
-        '127.0.0.1:3000',
-        'localhost:3000',
-        'http://127.0.0.1:3000',
-        'http://localhost:3000',
-        '127.0.0.1',
-        'localhost',
-      ]
-    : [],
+  allowedDevOrigins:
+    isDevelopment || isTest
+      ? [
+          '127.0.0.1:3000',
+          'localhost:3000',
+          'http://127.0.0.1:3000',
+          'http://localhost:3000',
+          '127.0.0.1',
+          'localhost',
+        ]
+      : [],
 
-  typedRoutes: true,
   reactStrictMode: true,
 
   // Source maps only in development and preview

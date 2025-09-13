@@ -14,7 +14,7 @@ export const env = createEnv({
 
     // Application configuration
     APP_ENV: z
-      .enum(['development', 'staging', 'preview', 'production'])
+      .enum(['development', 'staging', 'preview', 'production', 'test'])
       .default('development'),
     APP_VERSION: z.string().default('1.0.0'),
 
@@ -47,7 +47,13 @@ export const env = createEnv({
       .transform((s) => s !== 'false' && s !== '0')
       .default(true),
     API_RATE_LIMIT_REQUESTS: z.string().transform(Number).default(100),
-    API_RATE_LIMIT_WINDOW: z.string().default('15m'),
+    API_RATE_LIMIT_WINDOW: z
+      .string()
+      .regex(
+        /^\d+\s*(ms|s|m|h|d)$/,
+        'Invalid duration format. Use format like "15m", "60s", "1h"',
+      )
+      .default('15m'),
 
     // Logging configuration
     LOG_DIR: z.string().min(1).default('./logs'),
@@ -79,11 +85,14 @@ export const env = createEnv({
     // Security
     CORS_ORIGINS: z.string().default('*'),
     ALLOWED_HOSTS: z.string().optional(),
+
+    // Clerk authentication
+    CLERK_SECRET_KEY: z.string().optional(),
   },
   client: {
     // Public environment variables
     NEXT_PUBLIC_APP_ENV: z
-      .enum(['development', 'staging', 'preview', 'production'])
+      .enum(['development', 'staging', 'preview', 'production', 'test'])
       .default('development'),
     NEXT_PUBLIC_APP_VERSION: z.string().default('1.0.0'),
     NEXT_PUBLIC_VERCEL_URL: z.string().optional(),
@@ -99,6 +108,9 @@ export const env = createEnv({
       .string()
       .transform((s) => s !== 'false' && s !== '0')
       .default(false),
+
+    // Clerk authentication (public)
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().optional(),
   },
   runtimeEnv: {
     // Server environment
@@ -143,6 +155,8 @@ export const env = createEnv({
     CORS_ORIGINS: process.env.CORS_ORIGINS,
     ALLOWED_HOSTS: process.env.ALLOWED_HOSTS,
 
+    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+
     // Client environment
     NEXT_PUBLIC_APP_ENV: process.env.NEXT_PUBLIC_APP_ENV,
     NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION,
@@ -152,19 +166,51 @@ export const env = createEnv({
     NEXT_PUBLIC_MULTI_TENANT_ENABLED:
       process.env.NEXT_PUBLIC_MULTI_TENANT_ENABLED,
     NEXT_PUBLIC_ANALYTICS_ENABLED: process.env.NEXT_PUBLIC_ANALYTICS_ENABLED,
+
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
   },
 });
 
-// Environment-specific configuration
+// Environment-specific configuration (client-safe)
 export const getEnvironmentConfig = () => {
-  const isProduction = env.NODE_ENV === 'production';
-  const isPreview = env.VERCEL_ENV === 'preview';
-  const isDevelopment = env.NODE_ENV === 'development';
+  // Since NEXT_PUBLIC_* vars are available on both client and server
+  const isProduction = process.env.NEXT_PUBLIC_APP_ENV === 'production';
+  const isPreview = process.env.NEXT_PUBLIC_APP_ENV === 'preview';
+  const isDevelopment =
+    process.env.NEXT_PUBLIC_APP_ENV === 'development' ||
+    !process.env.NEXT_PUBLIC_APP_ENV;
+  const isTest = process.env.NEXT_PUBLIC_APP_ENV === 'test';
 
   return {
     isProduction,
     isPreview,
     isDevelopment,
+    isTest,
+    isStaging: process.env.NEXT_PUBLIC_APP_ENV === 'staging',
+    environment: process.env.NEXT_PUBLIC_APP_ENV || 'development',
+    version: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0-dev',
+    baseUrl:
+      typeof window !== 'undefined'
+        ? window.location.origin
+        : process.env.NEXT_PUBLIC_VERCEL_URL
+          ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+          : 'http://localhost:3000',
+  };
+};
+
+// Server-side environment configuration with full env access
+export const getServerEnvironmentConfig = () => {
+  const isProduction = env.NODE_ENV === 'production';
+  const isPreview = env.VERCEL_ENV === 'preview';
+  const isDevelopment = env.NODE_ENV === 'development';
+  const isTest = env.NODE_ENV === 'test' || env.APP_ENV === 'test';
+
+  return {
+    isProduction,
+    isPreview,
+    isDevelopment,
+    isTest,
     isStaging: env.APP_ENV === 'staging',
     environment: env.APP_ENV,
     version: env.APP_VERSION,

@@ -1,5 +1,3 @@
-import { env } from '@/lib/env';
-
 /**
  * Tenant-specific configuration interface
  * Reserved for future multi-tenant implementations
@@ -43,10 +41,11 @@ export interface TenantConfig {
 }
 
 /**
- * Default tenant configuration
+ * Client-safe default tenant configuration
+ * Does not access server-side environment variables
  */
 export const defaultTenantConfig: TenantConfig = {
-  id: env.DEFAULT_TENANT_ID,
+  id: 'default',
   name: 'Default Tenant',
 
   features: {
@@ -59,7 +58,7 @@ export const defaultTenantConfig: TenantConfig = {
   settings: {
     maxUsers: 100,
     storageLimit: 1024, // MB
-    apiRateLimit: env.API_RATE_LIMIT_REQUESTS,
+    apiRateLimit: 100, // Default fallback
     customDomain: false,
   },
 
@@ -70,11 +69,93 @@ export const defaultTenantConfig: TenantConfig = {
 };
 
 /**
- * Tenant configurations registry
+ * Server-side function to get default tenant config with environment variables
+ * This should only be called on the server side
+ */
+export const getServerDefaultTenantConfig = (): TenantConfig => {
+  // Dynamic import to avoid client-side access
+  let serverEnv: typeof import('@/lib/env').env;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    serverEnv = require('@/lib/env').env;
+  } catch {
+    // Fallback for client-side or when env is not available
+    return defaultTenantConfig;
+  }
+
+  return {
+    ...defaultTenantConfig,
+    id: serverEnv.DEFAULT_TENANT_ID || 'default',
+    settings: {
+      ...defaultTenantConfig.settings,
+      apiRateLimit: serverEnv.API_RATE_LIMIT_REQUESTS || 100,
+    },
+  };
+};
+
+/**
+ * Get tenant configurations registry
  * In a real application, this would likely come from a database
  */
-export const tenantConfigs: Record<string, TenantConfig> = {
-  [env.DEFAULT_TENANT_ID]: defaultTenantConfig,
+export const getTenantConfigs = (): Record<string, TenantConfig> => {
+  const serverDefault = getServerDefaultTenantConfig();
+
+  return {
+    [serverDefault.id]: serverDefault,
+
+    // Example tenant configurations for different environments
+    'preview-tenant': {
+      id: 'preview-tenant',
+      name: 'Preview Tenant',
+      subdomain: 'preview',
+
+      features: {
+        analytics: true,
+        advancedReporting: true,
+        customBranding: true,
+        apiAccess: true,
+      },
+
+      settings: {
+        maxUsers: 50,
+        storageLimit: 512,
+        apiRateLimit: 500,
+        customDomain: false,
+      },
+
+      branding: {
+        primaryColor: '#ff6b35',
+        secondaryColor: '#4a4a4a',
+      },
+    },
+
+    'staging-tenant': {
+      id: 'staging-tenant',
+      name: 'Staging Tenant',
+      subdomain: 'staging',
+
+      features: {
+        analytics: true,
+        advancedReporting: true,
+        customBranding: false,
+        apiAccess: true,
+      },
+
+      settings: {
+        maxUsers: 200,
+        storageLimit: 2048,
+        apiRateLimit: 1000,
+        customDomain: false,
+      },
+    },
+  };
+};
+
+/**
+ * Client-safe tenant configurations (without server env variables)
+ */
+export const clientTenantConfigs: Record<string, TenantConfig> = {
+  [defaultTenantConfig.id]: defaultTenantConfig,
 
   // Example tenant configurations for different environments
   'preview-tenant': {
@@ -124,15 +205,23 @@ export const tenantConfigs: Record<string, TenantConfig> = {
 };
 
 /**
- * Get tenant configuration by ID
+ * Get tenant configuration by ID (client-safe)
  */
 export const getTenantConfig = (tenantId: string): TenantConfig => {
-  return tenantConfigs[tenantId] || defaultTenantConfig;
+  return clientTenantConfigs[tenantId] || defaultTenantConfig;
 };
 
 /**
- * Get current tenant configuration
- * Uses the default tenant ID from environment or multi-tenant context
+ * Get tenant configuration by ID (server-side with env variables)
+ */
+export const getServerTenantConfig = (tenantId: string): TenantConfig => {
+  const configs = getTenantConfigs();
+  return configs[tenantId] || getServerDefaultTenantConfig();
+};
+
+/**
+ * Get current tenant configuration (client-safe)
+ * Uses the default tenant ID or multi-tenant context
  */
 export const getCurrentTenantConfig = (): TenantConfig => {
   // In a real implementation, this would get the tenant ID from:
@@ -141,8 +230,15 @@ export const getCurrentTenantConfig = (): TenantConfig => {
   // - User session
   // - Multi-tenant context
 
-  const currentTenantId = env.DEFAULT_TENANT_ID;
-  return getTenantConfig(currentTenantId);
+  return getTenantConfig(defaultTenantConfig.id);
+};
+
+/**
+ * Get current tenant configuration (server-side)
+ */
+export const getCurrentServerTenantConfig = (): TenantConfig => {
+  const serverDefault = getServerDefaultTenantConfig();
+  return getServerTenantConfig(serverDefault.id);
 };
 
 /**
@@ -170,10 +266,11 @@ export const getTenantSetting = <
 };
 
 /**
- * Environment-specific tenant configurations
+ * Environment-specific tenant configurations (client-safe)
  */
 export const getEnvironmentTenantConfig = () => {
-  const currentEnv = env.APP_ENV;
+  // Use client-safe environment detection
+  const currentEnv = process.env.NEXT_PUBLIC_APP_ENV || 'development';
 
   switch (currentEnv) {
     case 'preview':
@@ -184,5 +281,32 @@ export const getEnvironmentTenantConfig = () => {
     case 'development':
     default:
       return getCurrentTenantConfig();
+  }
+};
+
+/**
+ * Environment-specific tenant configurations (server-side)
+ */
+export const getServerEnvironmentTenantConfig = () => {
+  // Import server env only on server-side
+  if (typeof window !== 'undefined') {
+    return getEnvironmentTenantConfig();
+  }
+
+  // Use dynamic import to avoid bundling on client
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { env } = require('@/lib/env');
+
+  const currentEnv = env.APP_ENV || 'development';
+
+  switch (currentEnv) {
+    case 'preview':
+      return getServerTenantConfig('preview-tenant');
+    case 'staging':
+      return getServerTenantConfig('staging-tenant');
+    case 'production':
+    case 'development':
+    default:
+      return getCurrentServerTenantConfig();
   }
 };

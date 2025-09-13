@@ -12,28 +12,26 @@ import {
   createSuccessResponse,
   createValidationErrorResponse,
 } from '@/lib/responseService';
+import { parseAndSanitizeJson } from '@/lib/security/sanitizeRequest';
 
+// Legacy withCsrf wrapper removed; CSRF is enforced in middleware
 export async function POST(request: NextRequest) {
   try {
     // Check if request has content
     const contentLength = request.headers.get('content-length');
-    const contentType = request.headers.get('content-type');
 
     let body: FeatureFlagsRequestBody = {};
 
-    // Only try to parse JSON if there's content and it's JSON
-    if (
-      contentLength &&
-      contentLength !== '0' &&
-      contentType?.includes('application/json')
-    ) {
-      try {
-        body = await request.json();
-      } catch {
+    // Only try to parse JSON if there's content
+    if (contentLength && contentLength !== '0') {
+      const parsed =
+        await parseAndSanitizeJson<FeatureFlagsRequestBody>(request);
+      if (parsed === null) {
         return createValidationErrorResponse({
           body: ['Invalid JSON format in request body'],
         });
       }
+      body = parsed;
     }
 
     const { userId, tenantId, customProperties } = body;

@@ -80,9 +80,12 @@ pnpm test
 
 **E2E Testing**:
 
-- **Framework**: Playwright
+- **Framework**: Playwright 1.54.2 (default choice for all E2E tests)
 - **Test Location**: e2e/ directory
 - **Configuration**: playwright.config.ts
+- **Browser Support**: Chromium, Firefox, WebKit
+- **Features**: Cross-browser testing, CSRF protection tests, security testing
+- **Environment**: Test server runs with NODE_ENV=test, includes rate limiting disabled and CSRF cookie prefix testing
 - **Run Command**:
 
 ```bash

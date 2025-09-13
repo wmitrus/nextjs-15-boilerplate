@@ -44,7 +44,15 @@
     "env:create": "node scripts/setup-env.mjs create",
     "env:all": "node scripts/setup-env.mjs all",
     "env:check": "node scripts/setup-env.mjs check",
-    "config:demo": "next dev --turbopack && open http://localhost:3000/config-demo"
+    "env:verify-ci": "node scripts/verify-vercel-env.mjs",
+    "env:scan": "node scripts/check-env-consistency.mjs",
+    "config:demo": "next dev --turbopack && open http://localhost:3000/config-demo",
+    "db:start": "podman-compose up -d postgres",
+    "db:stop": "podman-compose stop postgres",
+    "db:down": "podman-compose down",
+    "db:logs": "podman-compose logs -f postgres",
+    "db:restart": "podman-compose restart postgres",
+    "db:shell": "podman-compose exec postgres psql -U postgres -d nextjs_db"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx,mjs}": [
@@ -86,6 +94,8 @@
     }
   ],
   "dependencies": {
+    "@clerk/nextjs": "^6.31.8",
+    "@edge-csrf/core": "2.5.3-cloudflare-rc1",
     "@hookform/resolvers": "^5.2.1",
     "@mdx-js/react": "^3.1.0",
     "@radix-ui/react-slot": "^1.2.3",
@@ -95,17 +105,19 @@
     "@upstash/redis": "^1.35.3",
     "clsx": "^2.1.1",
     "markdown-to-jsx": "^7.7.13",
-    "next": "15.5.0",
+    "next": "15.5.2",
     "pino": "^9.9.0",
     "pino-logflare": "^0.5.2",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "react-hook-form": "^7.62.0",
     "tailwind-merge": "^3.3.1",
+    "xss": "^1.0.15",
     "zod": "^4.1.1"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "4.1.1",
+    "@clerk/testing": "^1.12.4",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@eslint/eslintrc": "^3.3.1",

@@ -308,13 +308,15 @@ describe('Multi-Tenant Hooks', () => {
     it('should handle empty strings', () => {
       const result = getTenantCacheKey('', '');
 
-      expect(result).toBe('tenant::');
+      // Empty tenant ID should fallback to default
+      expect(result).toBe('tenant:default:');
     });
 
     it('should handle special characters in keys', () => {
       const result = getTenantCacheKey('tenant-123', 'user:profile:settings');
 
-      expect(result).toBe('tenant:tenant-123:user:profile:settings');
+      // Special characters should be sanitized to underscores
+      expect(result).toBe('tenant:tenant-123:user_profile_settings');
     });
   });
 

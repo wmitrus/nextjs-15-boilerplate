@@ -43,6 +43,8 @@ jest.mock('@t3-oss/env-nextjs', () => ({
       NEXT_PUBLIC_FEATURE_FLAGS_ENABLED?: string;
       NEXT_PUBLIC_MULTI_TENANT_ENABLED?: string;
       NEXT_PUBLIC_ANALYTICS_ENABLED?: string;
+      CLERK_SECRET_KEY?: string;
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?: string;
     } = {};
 
     // Process server config
@@ -65,8 +67,46 @@ jest.mock('@t3-oss/env-nextjs', () => ({
             );
           }
         } else {
-          // Handle missing required values
-          throw new Error(`Missing required environment variable: ${key}`);
+          // Check if the schema is optional by trying to parse undefined
+          try {
+            const result = schema.parse(undefined);
+            mockEnv[key as keyof typeof mockEnv] = result;
+          } catch {
+            // If parsing undefined fails, it's a required field
+            throw new Error(`Missing required environment variable: ${key}`);
+          }
+        }
+      });
+    }
+
+    // Process client config
+    if (config.client) {
+      Object.keys(config.client).forEach((key) => {
+        const envValue = process.env[key];
+        const schema = config.client[key];
+
+        if (envValue !== undefined) {
+          try {
+            // Parse and validate the value using the schema
+            const result = schema.parse(envValue);
+            mockEnv[key as keyof typeof mockEnv] = result;
+          } catch (error) {
+            // Re-throw validation errors to simulate real behavior
+            const errorMessage =
+              error instanceof Error ? error.message : String(error);
+            throw new Error(
+              `Invalid value for ${key}: ${envValue}. Error: ${errorMessage}`,
+            );
+          }
+        } else {
+          // Check if the schema is optional by trying to parse undefined
+          try {
+            const result = schema.parse(undefined);
+            mockEnv[key as keyof typeof mockEnv] = result;
+          } catch {
+            // If parsing undefined fails, it's a required field
+            throw new Error(`Missing required environment variable: ${key}`);
+          }
         }
       });
     }
@@ -129,6 +169,15 @@ describe('Environment Configuration', () => {
     process.env.API_RATE_LIMIT_WINDOW = '15m';
     process.env.CORS_ORIGINS = '*';
     process.env.ALLOWED_HOSTS = 'localhost';
+    process.env.CLERK_SECRET_KEY = 'test-clerk-secret-key';
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY =
+      'test-clerk-publishable-key';
+    process.env.NEXT_PUBLIC_APP_ENV = 'development';
+    process.env.NEXT_PUBLIC_APP_VERSION = '1.0.0';
+    process.env.NEXT_PUBLIC_VERCEL_URL = 'test.vercel.app';
+    process.env.NEXT_PUBLIC_FEATURE_FLAGS_ENABLED = 'true';
+    process.env.NEXT_PUBLIC_MULTI_TENANT_ENABLED = 'false';
+    process.env.NEXT_PUBLIC_ANALYTICS_ENABLED = 'false';
 
     // This should not throw
     await expect(async () => {
@@ -176,6 +225,9 @@ describe('Environment Configuration', () => {
     process.env.API_RATE_LIMIT_WINDOW = '15m';
     process.env.CORS_ORIGINS = '*';
     process.env.ALLOWED_HOSTS = 'localhost';
+    process.env.CLERK_SECRET_KEY = 'test-clerk-secret-key';
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY =
+      'test-clerk-publishable-key';
 
     // This should throw due to invalid LOG_LEVEL
     await expect(async () => {
@@ -223,6 +275,9 @@ describe('Environment Configuration', () => {
     process.env.API_RATE_LIMIT_WINDOW = '15m';
     process.env.CORS_ORIGINS = '*';
     process.env.ALLOWED_HOSTS = 'localhost';
+    process.env.CLERK_SECRET_KEY = 'test-clerk-secret-key';
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY =
+      'test-clerk-publishable-key';
 
     // Test true case
     process.env.LOG_TO_FILE_PROD = 'true';
@@ -281,6 +336,9 @@ describe('Environment Configuration', () => {
     process.env.API_RATE_LIMIT_WINDOW = '15m';
     process.env.CORS_ORIGINS = '*';
     process.env.ALLOWED_HOSTS = 'localhost';
+    process.env.CLERK_SECRET_KEY = 'test-clerk-secret-key';
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY =
+      'test-clerk-publishable-key';
 
     // Test true case
     process.env.LOG_TO_FILE_DEV = 'true';
@@ -333,6 +391,9 @@ describe('Environment Configuration', () => {
     process.env.API_RATE_LIMIT_WINDOW = '15m';
     process.env.CORS_ORIGINS = '*';
     process.env.ALLOWED_HOSTS = 'localhost';
+    process.env.CLERK_SECRET_KEY = 'test-clerk-secret-key';
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY =
+      'test-clerk-publishable-key';
 
     // Test true case
     process.env.LOGFLARE_INTEGRATION_ENABLED = 'true';

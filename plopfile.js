@@ -240,6 +240,93 @@ module.exports = function (plop) {
     },
   });
 
+  // Env helper generator: add env variable scaffolding and update manifest
+  plop.setGenerator('Env', {
+    description:
+      'Add environment variable placeholders and update required manifest',
+    prompts: async function (inquirer) {
+      const answers = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'key',
+          message: 'Variable key (e.g., MY_FEATURE_FLAG)?',
+        },
+        {
+          type: 'list',
+          name: 'visibility',
+          message: 'Visibility?',
+          choices: [
+            { name: 'Server-only (private)', value: 'server' },
+            { name: 'Public (NEXT_PUBLIC_*)', value: 'public' },
+          ],
+        },
+        {
+          type: 'checkbox',
+          name: 'requiredIn',
+          message: 'Mark as required in environments:',
+          choices: [
+            { name: 'development', value: 'development' },
+            { name: 'preview', value: 'preview' },
+            { name: 'production', value: 'production' },
+          ],
+        },
+        {
+          type: 'input',
+          name: 'defaultValue',
+          message: 'Default placeholder value (optional):',
+          default: '',
+        },
+        {
+          type: 'input',
+          name: 'comment',
+          message: 'Short comment/help (optional):',
+          default: '',
+        },
+      ]);
+
+      // Normalize key for public
+      const key =
+        answers.visibility === 'public' &&
+        !answers.key.startsWith('NEXT_PUBLIC_')
+          ? `NEXT_PUBLIC_${answers.key}`
+          : answers.key;
+
+      return { ...answers, key };
+    },
+    actions: function (data) {
+      const actions = [];
+
+      // 1) Ensure key exists in .env.example with comment
+      actions.push({
+        type: 'modify',
+        path: '.env.example',
+        pattern:
+          /# === Demo feature flags \(if used elsewhere in code\) ===[\s\S]*?FEATURE_BETA_FEATURES="false"/,
+        template: (match) => {
+          const line = `${data.key}="${data.defaultValue || ''}"${data.comment ? `  # ${data.comment}` : ''}`;
+          return `${match}\n${line}`;
+        },
+      });
+
+      // 2) Update config/env.required.json
+      actions.push(function updateManifest() {
+        const manifestPath = path.resolve('config/env.required.json');
+        const text = fs.readFileSync(manifestPath, 'utf8');
+        const json = JSON.parse(text);
+        const add = (env) => {
+          json[env] = json[env] || { required: [] };
+          if (!json[env].required.includes(data.key))
+            json[env].required.push(data.key);
+        };
+        for (const env of data.requiredIn || []) add(env);
+        fs.writeFileSync(manifestPath, JSON.stringify(json, null, 2) + '\n');
+        return `Updated ${manifestPath}`;
+      });
+
+      return actions;
+    },
+  });
+
   // New Page generator
   plop.setGenerator('Page', {
     description: 'Generate a Next.js Page route',
