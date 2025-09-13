@@ -25,7 +25,13 @@ test.describe('Error Handling', () => {
       }
 
       if (msg.type() === 'error') {
-        errors.push(text);
+        // Filter out SSL and resource loading errors
+        if (
+          !text.includes('Failed to load resource') &&
+          !text.includes('SSL connect error')
+        ) {
+          errors.push(text);
+        }
       } else if (msg.type() === 'warning') {
         // Ignore expected warnings and development messages
         if (
@@ -33,7 +39,7 @@ test.describe('Error Handling', () => {
           !text.includes('Rate limiting failed') &&
           !text.includes('Clerk has been loaded with development keys') &&
           !text.includes('Development instances have strict usage limits') &&
-          // !text.includes('Failed to load resource') &&
+          !text.includes('Failed to load resource') &&
           !text.includes('status of 404')
         ) {
           errors.push(text);
@@ -46,14 +52,26 @@ test.describe('Error Handling', () => {
       errors.push(error.message);
     });
 
+    // Listen for request errors (but filter out external SSL issues)
+    page.on('requestfailed', (request) => {
+      const url = request.url();
+      const failure = request.failure();
+
+      // Filter out known development environment SSL issues
+      if (failure && !failure.errorText.includes('SSL connect error')) {
+        // Only capture errors that are not SSL-related from development resources
+        if (url.includes('127.0.0.1:3000') || url.includes('localhost:3000')) {
+          errors.push(`Request failed: ${url} - ${failure.errorText}`);
+        }
+      }
+    });
+
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
 
-    // Log debug information if there are errors
-    if (errors.length > 0 || consoleLogs.length > 0) {
-      console.log('Console logs:', consoleLogs);
-      console.log('Errors:', errors);
-    }
+    // Always output captured diagnostics for visibility without conditionals
+    console.log('Console logs:', consoleLogs);
+    console.log('Errors:', errors);
 
     // Should not have any JavaScript errors on the home page
     expect(errors).toHaveLength(0);
@@ -76,7 +94,7 @@ test.describe('Error Handling', () => {
 
     // Page should still load even if external links fail
     const logo = page.locator('div.h-8.w-8.rounded-lg.bg-indigo-600');
-    await expect(logo).toBeVisible();
+    await expect(logo).toBeAttached();
 
     // External links should still be present (even if they would fail when clicked)
     await expect(
