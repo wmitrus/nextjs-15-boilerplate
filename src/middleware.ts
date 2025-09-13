@@ -28,6 +28,7 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
 
   // Apply rate limiting to API routes (excluding Clerk auth routes)
   if (
+    process.env.DISABLE_RATE_LIMITING !== 'true' &&
     pathname.startsWith('/api') &&
     !pathname.startsWith('/api/auth') &&
     !pathname.includes('clerk')
