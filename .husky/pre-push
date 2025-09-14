@@ -1,2 +1,4 @@
+pnpm typecheck
+skott:check:only
 pnpm depcheck
 pnpm madge
