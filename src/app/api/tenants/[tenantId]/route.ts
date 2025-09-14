@@ -83,6 +83,16 @@ export async function GET(
   try {
     const { tenantId } = await params;
 
+    // SECURITY: Validate tenant ID format
+    if (!tenantId || typeof tenantId !== 'string' || tenantId.length > 100) {
+      return createServerErrorResponse('Invalid tenant ID', 400);
+    }
+
+    // SECURITY: Sanitize tenant ID (alphanumeric, hyphens, underscores only)
+    if (!/^[a-zA-Z0-9_-]+$/.test(tenantId)) {
+      return createServerErrorResponse('Invalid tenant ID format', 400);
+    }
+
     // Find tenant in mock database
     const tenant = mockTenants[tenantId];
 

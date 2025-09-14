@@ -1,17 +1,14 @@
+import { ClerkProvider } from '@clerk/nextjs';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { headers } from 'next/headers';
 
-import { getEnvironmentConfig } from '@/lib/env';
-import { FeatureFlagProvider } from '@/lib/feature-flags/context';
-import {
-  getAllFeatureFlags,
-  createFeatureFlagContext,
-} from '@/lib/feature-flags/hooks';
-import { TenantProvider } from '@/lib/multi-tenant';
-import { getTenantContext } from '@/lib/multi-tenant/hooks';
+// import DevMocks from '@/components/DevMocks';
+import { NonceProvider } from '@/context/NonceProvider';
+import { NONCE_HEADER } from '@/lib/security';
 
 import type { Metadata } from 'next';
 
-import './globals.css';
+import '@/app/globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -28,6 +25,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+  ),
   title: 'Next.js 15 Boilerplate',
   description:
     'A comprehensive Next.js 15 boilerplate with feature flags and multi-tenant support',
@@ -38,13 +38,6 @@ export const metadata: Metadata = {
     description: 'Modern web development boilerplate with advanced features',
     url: 'https://your-domain.com',
     siteName: 'Next.js 15 Boilerplate',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-      },
-    ],
     locale: 'en_US',
     type: 'website',
   },
@@ -65,52 +58,32 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Get server-side context
-  const tenantContext = await getTenantContext();
-  const envConfig = getEnvironmentConfig();
-
-  // Create feature flag context
-  const featureFlagContext = createFeatureFlagContext(
-    undefined, // userId - would come from auth
-    tenantContext.tenantId,
-    envConfig.environment,
-  );
-
-  // Get initial feature flags
-  const initialFlags = await getAllFeatureFlags(featureFlagContext);
+  // Read nonce forwarded by middleware to attach to potential inline usages
+  const hdrs = await headers();
+  const nonce = hdrs.get(NONCE_HEADER) ?? undefined;
 
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {/* Skip link for keyboard navigation */}
-        <a
-          href="#main-content"
-          className="sr-only z-50 rounded bg-indigo-600 px-4 py-2 text-white focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:outline-2 focus:outline-indigo-500"
+    <ClerkProvider
+      appearance={{
+        baseTheme: undefined,
+        variables: {
+          colorPrimary: '#4f46e5',
+        },
+      }}
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+    >
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          Skip to main content
-        </a>
-
-        <TenantProvider
-          initialTenant={tenantContext.tenant}
-          tenantId={tenantContext.tenantId}
-          isMultiTenant={tenantContext.isMultiTenant}
-          defaultTenantId={tenantContext.tenantId}
-        >
-          <FeatureFlagProvider
-            context={featureFlagContext}
-            initialFlags={Object.fromEntries(
-              Object.entries(initialFlags).map(([key, enabled]) => [
-                key,
-                { key, enabled, description: `Feature flag: ${key}` },
-              ]),
-            )}
-          >
-            <div className="flex min-h-screen flex-col">{children}</div>
-          </FeatureFlagProvider>
-        </TenantProvider>
-      </body>
-    </html>
+          {/* Provide nonce to downstream client components via context */}
+          <NonceProvider nonce={nonce}>
+            {/* Start MSW in browser during development */}
+            {/* <DevMocks /> */}
+            <main className="flex min-h-screen flex-col">{children}</main>
+          </NonceProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

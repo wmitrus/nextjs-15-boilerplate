@@ -243,30 +243,38 @@ describe('TenantProvider', () => {
   });
 
   it('handles non-ok response gracefully', async () => {
-    // Mock fetch to return non-ok response
-    (global.fetch as jest.Mock).mockImplementationOnce(() =>
-      Promise.resolve({
-        ok: false,
-        status: 404,
-      } as Response),
-    );
+    // Silence expected error log for this test only
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
+    try {
+      // Mock fetch to return non-ok response
+      (global.fetch as jest.Mock).mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: false,
+          status: 404,
+        } as Response),
+      );
 
-    render(
-      <TenantProvider tenantId="tenant-123" isMultiTenant={true}>
-        <TestTenantComponent />
-      </TenantProvider>,
-    );
+      render(
+        <TenantProvider tenantId="tenant-123" isMultiTenant={true}>
+          <TestTenantComponent />
+        </TenantProvider>,
+      );
 
-    // Should show loading initially
-    expect(screen.getByText('Loading tenant...')).toBeInTheDocument();
+      // Should show loading initially
+      expect(screen.getByText('Loading tenant...')).toBeInTheDocument();
 
-    // Wait for loading to complete
-    await waitFor(() => {
-      expect(screen.getByTestId('tenant-id')).toHaveTextContent('tenant-123');
-    });
+      // Wait for loading to complete
+      await waitFor(() => {
+        expect(screen.getByTestId('tenant-id')).toHaveTextContent('tenant-123');
+      });
 
-    // Should still render with tenant ID but no tenant data
-    expect(screen.getByTestId('tenant-name')).toHaveTextContent('no-tenant');
+      // Should still render with tenant ID but no tenant data
+      expect(screen.getByTestId('tenant-name')).toHaveTextContent('no-tenant');
+    } finally {
+      consoleSpy.mockRestore();
+    }
   });
 
   it('does not fetch when initial tenant is provided', () => {

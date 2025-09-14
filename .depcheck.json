@@ -28,6 +28,7 @@
     "require-in-the-middle",
     "@upstash/ratelimit",
     "@upstash/redis",
-    "jest-fixed-jsdom"
+    "jest-fixed-jsdom",
+    "@hookform/resolvers"
   ]
 }

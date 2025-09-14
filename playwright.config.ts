@@ -5,7 +5,8 @@ import { defineConfig, devices } from '@playwright/test';
  */
 import dotenv from 'dotenv';
 import path from 'path';
-dotenv.config({ path: path.resolve(__dirname, '.env.local') });
+// Load test environment for e2e tests
+dotenv.config({ path: path.resolve(__dirname, '.env.test') });
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -37,24 +38,32 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      name: 'global setup',
+      testMatch: /global\.setup\.ts/,
+    },
+    {
       name: 'smoke',
       grep: /@smoke/,
       use: { ...devices['Desktop Chrome'] },
+      dependencies: ['global setup'],
     },
 
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      dependencies: ['global setup'],
     },
 
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+      dependencies: ['global setup'],
     },
 
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
+      dependencies: ['global setup'],
     },
 
     /* Test against mobile viewports. */
@@ -84,5 +93,30 @@ export default defineConfig({
     url: 'http://127.0.0.1:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    env: {
+      NODE_ENV: 'test',
+      APP_ENV: 'test',
+      // Ensure server sees the same origin as Playwright baseURL
+      APP_URL: 'http://127.0.0.1:3000',
+      NEXT_PUBLIC_APP_URL: 'http://127.0.0.1:3000',
+      // Disable external integrations in test environment
+      LOGFLARE_INTEGRATION_ENABLED: '0',
+      SENTRY_ENVIRONMENT: 'test',
+      // Clerk keys for testing - loaded from .env.test file
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
+        process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || '',
+      CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY || '',
+      // Test user credentials for E2E tests - loaded from .env.test file
+      E2E_CLERK_USER_USERNAME: process.env.E2E_CLERK_USER_USERNAME || '',
+      E2E_CLERK_USER_PASSWORD: process.env.E2E_CLERK_USER_PASSWORD || '',
+      // Disable rate limiting for tests
+      DISABLE_RATE_LIMITING: 'true',
+      // CSRF configuration for testing
+      CSRF_COOKIE_PREFIX: 'foo_',
+      // Public environment variables
+      NEXT_PUBLIC_APP_ENV: 'test',
+      NEXT_PUBLIC_APP_VERSION: '1.0.0-test',
+      NEXT_PUBLIC_API_RATE_LIMIT_ENABLED: 'false',
+    },
   },
 });

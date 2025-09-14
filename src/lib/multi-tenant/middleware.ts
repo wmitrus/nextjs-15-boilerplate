@@ -21,7 +21,7 @@ export function resolveTenant(request: NextRequest): TenantResolutionResult {
 
   // Strategy 1: Header-based resolution
   const headerTenantId = request.headers.get(env.TENANT_HEADER_NAME);
-  if (headerTenantId) {
+  if (headerTenantId && isValidTenantId(headerTenantId)) {
     return {
       tenantId: headerTenantId,
       strategy: 'header',
@@ -32,7 +32,7 @@ export function resolveTenant(request: NextRequest): TenantResolutionResult {
   const host = request.headers.get('host');
   if (host) {
     const subdomain = extractSubdomain(host);
-    if (subdomain && subdomain !== 'www') {
+    if (subdomain && subdomain !== 'www' && isValidTenantId(subdomain)) {
       return {
         tenantId: subdomain,
         strategy: 'subdomain',
@@ -45,7 +45,7 @@ export function resolveTenant(request: NextRequest): TenantResolutionResult {
   // Strategy 3: Path-based resolution
   const pathname = request.nextUrl.pathname;
   const pathMatch = pathname.match(/^\/tenant\/([^\/]+)/);
-  if (pathMatch) {
+  if (pathMatch && isValidTenantId(pathMatch[1])) {
     return {
       tenantId: pathMatch[1],
       strategy: 'path',
@@ -72,6 +72,57 @@ function extractSubdomain(host: string): string | null {
   }
 
   return null;
+}
+
+/**
+ * SECURITY: Validate tenant ID format to prevent injection attacks
+ */
+function isValidTenantId(tenantId: string): boolean {
+  // Check basic constraints
+  if (!tenantId || typeof tenantId !== 'string') {
+    return false;
+  }
+
+  // Length constraints
+  if (tenantId.length < 1 || tenantId.length > 100) {
+    return false;
+  }
+
+  // Only allow alphanumeric characters, hyphens, and underscores
+  // Also reject control characters that could be used for injection
+  if (!/^[a-zA-Z0-9_-]+$/.test(tenantId) || /[\r\n\t\0]/.test(tenantId)) {
+    return false;
+  }
+
+  // Prevent reserved names that could cause conflicts
+  const reservedNames = [
+    'api',
+    'www',
+    'admin',
+    'root',
+    'system',
+    'public',
+    'private',
+    'static',
+    'assets',
+    'cdn',
+    'mail',
+    'email',
+    'ftp',
+    'ssh',
+    'localhost',
+    'staging',
+    'prod',
+    'production',
+    'dev',
+    'development',
+  ];
+
+  if (reservedNames.includes(tenantId.toLowerCase())) {
+    return false;
+  }
+
+  return true;
 }
 
 export function createTenantMiddleware() {

@@ -176,40 +176,34 @@ export function ConfigDemo() {
           </div>
         </div>
 
-        {/* Logging Configuration */}
+        {/* Multi-Tenant Configuration */}
         <div className="bg-card rounded-lg border p-6 shadow-sm">
           <div className="mb-4">
-            <h3 className="text-lg font-semibold">Logging</h3>
+            <h3 className="text-lg font-semibold">Multi-Tenant</h3>
             <p className="text-muted-foreground text-sm">
-              Logging configuration and levels
+              Multi-tenant configuration (client-safe)
             </p>
           </div>
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="font-medium">Log Level:</span>
-              <span className="rounded bg-yellow-100 px-2 py-1 text-sm">
-                {CONFIG.LOGGING.LEVEL}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">File Level:</span>
-              <span className="text-sm">{CONFIG.LOGGING.FILE_LEVEL}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">Console Level:</span>
-              <span className="text-sm">{CONFIG.LOGGING.CONSOLE_LEVEL}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">File Logging:</span>
+              <span className="font-medium">Enabled:</span>
               <span
                 className={`rounded px-2 py-1 text-sm ${
-                  CONFIG.LOGGING.TO_FILE
+                  CONFIG.MULTI_TENANT.ENABLED
                     ? 'bg-green-100 text-green-800'
                     : 'bg-red-100 text-red-800'
                 }`}
               >
-                {CONFIG.LOGGING.TO_FILE ? 'ON' : 'OFF'}
+                {CONFIG.MULTI_TENANT.ENABLED ? 'ON' : 'OFF'}
               </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-medium">Current Tenant:</span>
+              <span className="text-sm">{CONFIG.TENANT.id}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-medium">Tenant Name:</span>
+              <span className="text-sm">{CONFIG.TENANT.name}</span>
             </div>
           </div>
         </div>

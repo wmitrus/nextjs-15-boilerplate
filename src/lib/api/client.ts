@@ -50,6 +50,8 @@ export class ApiError extends Error {
 class ApiClient {
   private baseUrl: string;
   private defaultConfig: RequestInit;
+  private csrfToken: string | null = null;
+  private csrfFetching: Promise<string> | null = null;
 
   constructor(config: ApiRequestConfig = {}) {
     this.baseUrl = config.baseUrl || DEFAULT_CONFIG.baseUrl!;
@@ -57,6 +59,29 @@ class ApiClient {
       ...DEFAULT_CONFIG,
       ...config,
     };
+  }
+
+  // Fetch and cache CSRF token for mutating requests
+  private async getCsrfToken(): Promise<string> {
+    if (this.csrfToken) return this.csrfToken;
+    if (!this.csrfFetching) {
+      this.csrfFetching = fetch('/api/security/csrf', {
+        method: 'GET',
+        credentials: 'include',
+      })
+        .then((r) => r.json())
+        .then((j) => {
+          const token = j?.data?.token || j?.token;
+          this.csrfToken = token || null;
+          this.csrfFetching = null;
+          return this.csrfToken || '';
+        })
+        .catch(() => {
+          this.csrfFetching = null;
+          return '';
+        });
+    }
+    return this.csrfFetching;
   }
 
   /**
@@ -67,13 +92,26 @@ class ApiClient {
     config: ApiRequestConfig = {},
   ): Promise<Response> {
     const url = `${this.baseUrl}${endpoint}`;
+
+    const isMutating =
+      (config.method || 'GET') !== 'GET' &&
+      (config.method || 'GET') !== 'HEAD' &&
+      (config.method || 'GET') !== 'OPTIONS';
+
+    const headers: Record<string, string> = {
+      ...(this.defaultConfig.headers as Record<string, string>),
+      ...(config.headers as Record<string, string>),
+    };
+
+    if (isMutating) {
+      const token = await this.getCsrfToken();
+      if (token) headers['x-csrf-token'] = token;
+    }
+
     const requestConfig = {
       ...this.defaultConfig,
       ...config,
-      headers: {
-        ...this.defaultConfig.headers,
-        ...config.headers,
-      },
+      headers,
     };
 
     // Create abort controller for timeout
@@ -166,6 +204,10 @@ class ApiClient {
       ...config,
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(config.headers as Record<string, string>),
+      },
     });
   }
 
