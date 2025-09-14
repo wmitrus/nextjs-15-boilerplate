@@ -14,10 +14,10 @@ jobs:
     steps:
       - name: 'Generate token'
         id: generate_token
-        uses: tibdex/github-app-token@v1
+        uses: actions/create-github-app-token@v2
         with:
-          app_id: ${{ secrets.SEMANTIC_RELEASE_GITHUB_APP_ID }}
-          private_key: ${{ secrets.SEMANTIC_RELEASE_GITHUB_APP_PRIVATE_KEY }}
+          app-id: ${{ secrets.SEMANTIC_RELEASE_GITHUB_APP_ID }}
+          private-key: ${{ secrets.SEMANTIC_RELEASE_GITHUB_APP_PRIVATE_KEY }}
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
