@@ -19,6 +19,26 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
     pathname.startsWith('/api/auth') ||
     pathname.includes('clerk');
 
+  // Short-circuit CORS preflight requests
+  if (request.method === 'OPTIONS') {
+    const res = new NextResponse(null, { status: 204 });
+    const reqOrigin = request.headers.get('origin') || '';
+    if (reqOrigin) {
+      res.headers.set('Access-Control-Allow-Origin', reqOrigin);
+      res.headers.set('Vary', 'Origin');
+    }
+    res.headers.set(
+      'Access-Control-Allow-Methods',
+      'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+    );
+    res.headers.set(
+      'Access-Control-Allow-Headers',
+      request.headers.get('access-control-request-headers') || '*',
+    );
+    res.headers.set('Access-Control-Allow-Credentials', 'true');
+    return res;
+  }
+
   // Generate a per-request nonce and CSP
   const nonce = createNonce();
   const csp = buildCSP(nonce, { isAuthOrClerkRoute });
