@@ -22,6 +22,21 @@ if (!isCI) {
   }
 }
 
+// Always attempt to load Vercel-pulled env file in CI if present
+// vercel pull --environment=<env> writes .vercel/.env.<env>.local
+const appEnvFromContext =
+  process.env.APP_ENV || process.env.VERCEL_ENV || 'development';
+const vercelEnvName =
+  appEnvFromContext === 'production'
+    ? 'production'
+    : appEnvFromContext === 'preview'
+      ? 'preview'
+      : 'development';
+const vercelEnvPath = path.resolve('.vercel', `.env.${vercelEnvName}.local`);
+if (fs.existsSync(vercelEnvPath)) {
+  dotenv.config({ path: vercelEnvPath });
+}
+
 const manifestPath = path.resolve('config/env.required.json');
 if (!fs.existsSync(manifestPath)) {
   console.error('Missing config/env.required.json');
