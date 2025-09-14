@@ -43,6 +43,12 @@ export function buildCSP(
   // Expand for Clerk routes to permit their domains and iframes
   const isDev = process.env.NODE_ENV !== 'production';
   const isProd = !isDev;
+  // Treat Vercel Preview as a relaxed environment for styles (like dev)
+  const isPreviewEnv =
+    process.env.VERCEL_ENV === 'preview' ||
+    process.env.NEXT_PUBLIC_APP_ENV === 'preview';
+  // Allow inline styles in dev/preview; require nonce in production
+  const allowInlineStyles = isPreviewEnv || isDev;
 
   // Allowlist additions via env (comma-separated)
   const allowExtra = (v?: string) =>
@@ -90,8 +96,21 @@ export function buildCSP(
 
   const styleSrc = [
     "'self'",
-    ...(isDev ? ["'unsafe-inline'"] : [`'nonce-${nonce}'`]),
+    ...(allowInlineStyles ? ["'unsafe-inline'"] : [`'nonce-${nonce}'`]),
     // In production, avoid broad https: and prefer explicit allowlists
+    ...(isProd ? [] : ['https:']),
+    'data:',
+    'blob:',
+    ...extraStyle,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  // Some browsers evaluate style-src-elem separately; mirror logic so that in
+  // preview/dev we allow inline styles, and in production we require nonce
+  const styleSrcElem = [
+    "'self'",
+    ...(allowInlineStyles ? ["'unsafe-inline'"] : [`'nonce-${nonce}'`]),
     ...(isProd ? [] : ['https:']),
     'data:',
     'blob:',
@@ -129,7 +148,7 @@ export function buildCSP(
     `script-src ${scriptSrc}; ` +
     `style-src ${styleSrc}; ` +
     // Some browsers use style-src-elem specifically
-    `style-src-elem ${styleSrc}; ` +
+    `style-src-elem ${styleSrcElem}; ` +
     `img-src ${imgSrc}; ` +
     `font-src ${fontSrc}; ` +
     `connect-src ${connectSrc}; ` +
