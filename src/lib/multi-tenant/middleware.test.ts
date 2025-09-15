@@ -11,11 +11,7 @@
 
 import { NextRequest } from 'next/server';
 
-import {
-  resolveTenant,
-  createTenantMiddleware,
-  type TenantResolutionResult,
-} from './middleware';
+import { resolveTenant, createTenantMiddleware } from './middleware';
 
 // Mock environment
 jest.mock('../env', () => ({
