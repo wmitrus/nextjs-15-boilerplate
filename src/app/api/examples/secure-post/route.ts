@@ -17,7 +17,7 @@ interface DemoPayload {
 
 export async function POST(request: NextRequest) {
   try {
-    logger.info('Processing secure POST request', { url: request.url });
+    logger.info({ url: request.url }, 'Processing secure POST request');
 
     const parsed = await parseAndSanitizeJson<DemoPayload>(request);
     if (parsed === null) {
@@ -29,10 +29,13 @@ export async function POST(request: NextRequest) {
 
     const { name = 'Anonymous', message = '' } = parsed;
 
-    logger.info('Secure POST request processed successfully', {
-      name,
-      messageLength: message.length,
-    });
+    logger.info(
+      {
+        name,
+        messageLength: message.length,
+      },
+      'Secure POST request processed successfully',
+    );
 
     return createSuccessResponse({
       echoed: {
@@ -42,10 +45,13 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    logger.error('Secure POST request failed', {
-      error: msg,
-      url: request.url,
-    });
+    logger.error(
+      {
+        error: msg,
+        url: request.url,
+      },
+      'Secure POST request failed',
+    );
     return createServerErrorResponse(`Secure demo failed: ${msg}`);
   }
 }

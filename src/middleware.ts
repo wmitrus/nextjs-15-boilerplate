@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-debugging-utils */
 import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -20,11 +21,14 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
     pathname.startsWith('/api/auth') ||
     pathname.includes('clerk');
 
-  logger.debug('Middleware processing request', {
-    pathname,
-    method: request.method,
-    userAgent: request.headers.get('user-agent')?.slice(0, 100),
-  });
+  logger.debug(
+    {
+      pathname,
+      method: request.method,
+      userAgent: request.headers.get('user-agent')?.slice(0, 100),
+    },
+    'Middleware processing request',
+  );
 
   // Short-circuit CORS preflight requests
   if (request.method === 'OPTIONS') {
@@ -88,11 +92,14 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
       }
     } catch (e) {
       // Soft-fail rate limiting on environments that don't support fetch keepalive or when Upstash fails
-      logger.warn('[rate-limit] Soft-failed', {
-        error: e,
-        clientIP: getClientIP(request),
-        pathname,
-      });
+      logger.warn(
+        {
+          error: e,
+          clientIP: getClientIP(request),
+          pathname,
+        },
+        '[rate-limit] Soft-failed',
+      );
     }
   }
 
