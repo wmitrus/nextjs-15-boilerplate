@@ -5,36 +5,72 @@ import { ComponentPropsWithoutRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
-type {{pascalCase name}}Props = {} & ComponentPropsWithoutRef<'{{htmlElement}}'>;
+interface {{pascalCase name}}Props extends ComponentPropsWithoutRef<'{{htmlElement}}'> {
+  // Add your component-specific props here
+  // variant?: 'primary' | 'secondary';
+  // size?: 'sm' | 'md' | 'lg';
+}
 
 {{/if}}
-const {{pascalCase name}} = ({ {{#if withChildren}}children, {{/if}}className, ...rest }{{#if isTypeScript}}: {{#if withChildren}}PropsWithChildren<{{/if}}{{pascalCase name}}Props{{#if withChildren}}>{{/if}}{{/if}}){{#if isTypeScript}}: ReactElement{{/if}} => {
-
+const {{pascalCase name}} = ({ 
+  {{#if withChildren}}children,{{/if}}
+  className,
+  ...rest 
+}{{#if isTypeScript}}: {{#if withChildren}}PropsWithChildren<{{/if}}{{pascalCase name}}Props{{#if withChildren}}>{{/if}}{{/if}}){{#if isTypeScript}}: ReactElement{{/if}} => {
   return (
-    <{{htmlElement}} role="{{dashCase name}}" className={cn(['', className])} {...rest}>
-      {{#if withChildren}}{children}{{else}}Content{{/if}}
+    <{{htmlElement}} 
+      className={cn([
+        // Add your base styles here
+        'relative',
+        className
+      ])} 
+      data-testid="{{dashCase name}}"
+      {...rest}
+    >
+      {{#if withChildren}}{children}{{else}}{{pascalCase name}} Component{{/if}}
     </{{htmlElement}}>
   );
-}
+};
+
+{{pascalCase name}}.displayName = '{{pascalCase name}}';
 
 export default {{pascalCase name}};
 {{else}}
-
 {{#if isTypeScript}}
 import { ReactElement } from 'react';
 
-type {{pascalCase name}}Props = {};
+import { cn } from '@/lib/utils';
 
-{{/if}}
-const {{pascalCase name}} = ({}{{#if isTypeScript}}: {{pascalCase name}}Props{{/if}}){{#if isTypeScript}}: ReactElement{{/if}} => {
-
-  return (
-    <div role="{{dashCase name}}">
-      {{pascalCase name}}
-    </div>
-  );
+interface {{pascalCase name}}Props {
+  // Add your component-specific props here
+  className?: string;
+  // variant?: 'primary' | 'secondary';
+  // size?: 'sm' | 'md' | 'lg';
+  {{#if withChildren}}children?: React.ReactNode;{{/if}}
 }
 
-export default {{pascalCase name}};
+{{/if}}
+const {{pascalCase name}} = ({ 
+  {{#if withChildren}}children,{{/if}}
+  className{{#unless isTypeScript}},
+  ...props{{/unless}}
+}{{#if isTypeScript}}: {{pascalCase name}}Props{{/if}}){{#if isTypeScript}}: ReactElement{{/if}} => {
+  return (
+    <div 
+      className={cn([
+        // Add your base styles here
+        'relative',
+        className
+      ])}
+      data-testid="{{dashCase name}}"
+      {{#unless isTypeScript}}{...props}{{/unless}}
+    >
+      {{#if withChildren}}{children}{{else}}{{pascalCase name}} Component{{/if}}
+    </div>
+  );
+};
 
+{{pascalCase name}}.displayName = '{{pascalCase name}}';
+
+export default {{pascalCase name}};
 {{/if}}

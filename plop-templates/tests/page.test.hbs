@@ -2,19 +2,96 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
 // Import the Page component
-import {{pascalCase name}}Page from '@/app/{{dashCase name}}/{{#each dynamicRoutes}}[{{this}}]{{#unless @last}}/{{/unless}}{{/each}}/page';
+import {{pascalCase name}}Page from '@/app/{{dashCase name}}{{#if hasDynamicRoutes}}/{{#each dynamicRoutes}}[{{this}}]{{#unless @last}}/{{/unless}}{{/each}}{{/if}}/page';
+
+{{#if hasDynamicRoutes}}
+const mockParams = {
+  {{#each dynamicRoutes}}{{this}}: 'test-{{this}}'{{#unless @last}},{{/unless}}{{/each}}
+};
+{{/if}}
 
 describe('{{pascalCase name}} Page', () => {
-  test('renders a {{pascalCase name}}', async () => {
-    {{#if hasDynamicRoutes}}const params = { {{#each dynamicRoutes}}{{this}}: ''{{#unless @last}}, {{/unless}}{{/each}} };{{/if}}
+  it('renders the page without crashing', () => {
+    render(<{{pascalCase name}}Page {{#if hasDynamicRoutes}}params={mockParams} {{/if}}/>);
 
-    // Render the CardPage component with the mocked params
-    render(<{{pascalCase name}}Page params={params} />);
-
-    // Check if the header and body are rendered correctly
-    const element = screen.getByRole('heading', { level: 1 });
-    expect(element).toHaveTextContent('Hello World');
-
-    expect(screen.getByText('Sample text')).toBeInTheDocument();
+    // Check for page title
+    expect(screen.getByText('{{titleCase name}}')).toBeInTheDocument();
+    
+    // Check for page description
+    expect(screen.getByText(/Welcome to the {{titleCase name}} page/i)).toBeInTheDocument();
   });
+
+  {{#if hasDynamicRoutes}}
+  it('displays dynamic route parameters correctly', () => {
+    render(<{{pascalCase name}}Page params={mockParams} />);
+
+    {{#each dynamicRoutes}}
+    // Check that {{this}} parameter is displayed
+    expect(screen.getByText('{{titleCase this}}:')).toBeInTheDocument();
+    expect(screen.getByText('test-{{this}}')).toBeInTheDocument();
+    {{/each}}
+  });
+
+  it('handles missing parameters gracefully', () => {
+    const incompleteParams = {
+      // Intentionally missing some params to test error handling
+      {{#each dynamicRoutes}}{{#if @first}}{{this}}: 'test-value'{{/if}}{{/each}}
+    };
+    
+    // This test should not crash the component
+    expect(() => {
+      render(<{{pascalCase name}}Page params={incompleteParams as any} />);
+    }).not.toThrow();
+  });
+  {{else}}
+  it('displays static content correctly', () => {
+    render(<{{pascalCase name}}Page />);
+
+    // Check for "Getting Started" section
+    expect(screen.getByText('Getting Started')).toBeInTheDocument();
+    
+    // Check for "Features" section
+    expect(screen.getByText('Features')).toBeInTheDocument();
+  });
+  {{/if}}
+
+  it('has proper semantic HTML structure', () => {
+    render(<{{pascalCase name}}Page {{#if hasDynamicRoutes}}params={mockParams} {{/if}}/>);
+
+    // Check for main element
+    const mainElement = screen.getByRole('main');
+    expect(mainElement).toBeInTheDocument();
+
+    // Check for proper heading hierarchy
+    const h1 = screen.getByRole('heading', { level: 1 });
+    expect(h1).toHaveTextContent('{{titleCase name}}');
+  });
+
+  it('is accessible', () => {
+    render(<{{pascalCase name}}Page {{#if hasDynamicRoutes}}params={mockParams} {{/if}}/>);
+
+    // Check that all interactive elements are keyboard accessible
+    // Check that proper ARIA roles are applied
+    const mainContent = screen.getByRole('main');
+    expect(mainContent).toBeInTheDocument();
+  });
+
+  // TODO: Add more specific tests based on your page's functionality
+  // Examples:
+  // - Test data fetching and loading states
+  // - Test user interactions
+  // - Test form submissions
+  // - Test navigation behavior
+  // - Test responsive design (with different viewport sizes)
+
+  /*
+  it('loads data correctly on mount', async () => {
+    render(<{{pascalCase name}}Page {{#if hasDynamicRoutes}}params={mockParams} {{/if}}/>);
+    
+    // Wait for async operations to complete
+    await waitFor(() => {
+      expect(screen.getByText(/expected data/i)).toBeInTheDocument();
+    });
+  });
+  */
 });

@@ -1,13 +1,48 @@
-import { ReactNode } from "react"
+{{#if isTypeScript}}import { ReactNode } from 'react'; import { Metadata } from
+  'next/types'; // Layout metadata (will be inherited by child pages) export
+  const metadata: Metadata = { title: { template: '%s |
+  {{titleCase name}}', default: '{{titleCase name}}', }, description: 'Layout
+  for
+  {{titleCase name}}
+  section', }; interface
+  {{pascalCase name}}LayoutProps { children: ReactNode; }
 
-export default function {{pascalCase name}}Layout({
-    children, 
-  }: {
-    children: ReactNode
-  }) {
-    return (
-      <section>
-        {children}
-      </section>
-    )
-  }
+{{/if}}
+export default function
+{{pascalCase name}}Layout({ children }{{#if isTypeScript}}:
+  {{pascalCase name}}LayoutProps{{/if}}) { return (
+<div className='min-h-screen bg-gray-50'>
+  {/* Layout navigation or header specific to
+  {{name}}
+  section */}
+  <div className='bg-white shadow-sm border-b border-gray-200'>
+    <div className='container mx-auto px-4 py-4'>
+      <nav className='flex items-center justify-between'>
+        <h2 className='text-xl font-semibold text-gray-900'>
+          {{titleCase name}}
+          Section
+        </h2>
+        {/* Add navigation items specific to this layout */}
+        <div className='flex space-x-4'>
+          {/* Navigation items */}
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  {/* Main content area */}
+  <div className='flex-1'>
+    {children}
+  </div>
+
+  {/* Optional footer specific to this layout */}
+  <footer className='bg-white border-t border-gray-200 mt-auto'>
+    <div className='container mx-auto px-4 py-4'>
+      <p className='text-sm text-gray-600 text-center'>
+        {{titleCase name}}
+        Section Footer
+      </p>
+    </div>
+  </footer>
+</div>
+); }

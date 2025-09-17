@@ -1,0 +1,107 @@
+{{#if isTypeScript}}import { NextRequest, NextResponse } from 'next/server';{{/if}}
+import logger from '@/lib/logger';
+
+{{#if isTypeScript}}
+interface {{pascalCase name}}MiddlewareOptions {
+  // Add configuration options here
+  enabled?: boolean;
+  // Add other config options as needed
+}
+
+{{/if}}
+/**
+ * {{titleCase name}} Middleware
+ * 
+ * Description: Add your middleware description here
+ * Usage: This middleware can be used in the main middleware chain
+ */
+export function create{{pascalCase name}}Middleware({{#if isTypeScript}}options: {{pascalCase name}}MiddlewareOptions = {}{{/if}}) {
+  {{#if isTypeScript}}const { enabled = true } = options;{{/if}}
+
+  return async function {{camelCase name}}Middleware(
+    request{{#if isTypeScript}}: NextRequest{{/if}},
+    response{{#if isTypeScript}}: NextResponse{{/if}}
+  ){{#if isTypeScript}}: Promise<NextResponse>{{/if}} {
+    {{#unless isTypeScript}}const enabled = true; // Configure as needed{{/unless}}
+    
+    // Skip middleware if disabled
+    if (!enabled) {
+      return response;
+    }
+
+    const pathname = request.nextUrl.pathname;
+    
+    try {
+      logger.debug('{{titleCase name}} middleware processing request', {
+        pathname,
+        method: request.method,
+      });
+
+      // TODO: Implement your middleware logic here
+      // Examples:
+      // - Request validation
+      // - Header manipulation
+      // - Authentication checks
+      // - Rate limiting
+      // - Logging
+      // - Request transformation
+
+      // Example: Add custom headers
+      response.headers.set('X-{{titleCase name}}-Processed', 'true');
+      response.headers.set('X-{{titleCase name}}-Timestamp', new Date().toISOString());
+
+      logger.info('{{titleCase name}} middleware processed successfully', {
+        pathname,
+        method: request.method,
+      });
+
+      return response;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      logger.error('{{titleCase name}} middleware failed', {
+        error: errorMessage,
+        pathname,
+        method: request.method,
+      });
+
+      // Decide whether to continue or return an error response
+      // Option 1: Continue with original response (non-blocking)
+      return response;
+
+      // Option 2: Return error response (blocking)
+      // return NextResponse.json(
+      //   { error: 'Middleware processing failed', success: false },
+      //   { status: 500 }
+      // );
+    }
+  };
+}
+
+// Default instance for easy import
+export const {{camelCase name}}Middleware = create{{pascalCase name}}Middleware();
+
+// Matcher configuration (export this in your main middleware.ts)
+export const {{constantCase name}}_MATCHER = [
+  // Add path patterns this middleware should apply to
+  '/api/:path*',
+  // '/((?!_next/static|_next/image|favicon.ico).*)',
+];
+
+// Usage example in main middleware.ts:
+/*
+import { create{{pascalCase name}}Middleware } from '@/lib/middleware/{{dashCase name}}';
+
+const {{camelCase name}} = create{{pascalCase name}}Middleware({
+  enabled: process.env.NODE_ENV === 'production',
+});
+
+export default async function middleware(request: NextRequest) {
+  let response = NextResponse.next();
+  
+  // Apply {{name}} middleware
+  response = await {{camelCase name}}(request, response);
+  
+  return response;
+}
+*/
