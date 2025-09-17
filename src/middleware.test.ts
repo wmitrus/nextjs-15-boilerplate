@@ -386,11 +386,14 @@ describe('Middleware', () => {
       )) as NextResponse;
 
       expect(response.status).not.toBe(429);
-      expect(loggerSpy).toHaveBeenCalledWith('[rate-limit] Soft-failed', {
-        error,
-        clientIP: '127.0.0.1',
-        pathname: '/api/users',
-      });
+      expect(loggerSpy).toHaveBeenCalledWith(
+        {
+          error,
+          clientIP: '127.0.0.1',
+          pathname: '/api/users',
+        },
+        '[rate-limit] Soft-failed',
+      );
 
       loggerSpy.mockRestore();
     });
