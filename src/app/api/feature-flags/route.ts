@@ -7,6 +7,7 @@ import {
 import { getEnvironmentConfig } from '@/lib/env';
 import { createFeatureFlagContext } from '@/lib/feature-flags/hooks';
 import { getFeatureFlagProvider } from '@/lib/feature-flags/provider';
+import logger from '@/lib/logger';
 import {
   createServerErrorResponse,
   createSuccessResponse,
@@ -17,6 +18,11 @@ import { parseAndSanitizeJson } from '@/lib/security/sanitizeRequest';
 // Legacy withCsrf wrapper removed; CSRF is enforced in middleware
 export async function POST(request: NextRequest) {
   try {
+    logger.info(
+      { contentLength: request.headers.get('content-length') },
+      'Fetching feature flags via POST',
+    );
+
     // Check if request has content
     const contentLength = request.headers.get('content-length');
 
@@ -27,6 +33,7 @@ export async function POST(request: NextRequest) {
       const parsed =
         await parseAndSanitizeJson<FeatureFlagsRequestBody>(request);
       if (parsed === null) {
+        logger.warn('Invalid JSON format in feature flags request body');
         return createValidationErrorResponse({
           body: ['Invalid JSON format in request body'],
         });
@@ -67,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     return createSuccessResponse(responseData);
   } catch (error) {
-    console.error('Feature flags API error:', error);
+    logger.error(error, 'Feature flags POST API error');
     const errorMessage = error instanceof Error ? error.message : String(error);
     return createServerErrorResponse(
       `Failed to fetch feature flags: ${errorMessage}`,
@@ -110,7 +117,7 @@ export async function GET(request: NextRequest) {
 
     return createSuccessResponse(responseData);
   } catch (error) {
-    console.error('Feature flags API error:', error);
+    logger.error(error, 'Feature flags POST API error');
     const errorMessage = error instanceof Error ? error.message : String(error);
     return createServerErrorResponse(
       `Failed to fetch feature flags: ${errorMessage}`,
