@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { csrfFetch } from '@/lib/client/csrfFetch';
+import { apiClient } from '@/lib/api/client';
 
 import type { ApiResponse } from '@/types/responseService';
 
@@ -20,15 +20,11 @@ export default function SecurePostExamplePage() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const res = await csrfFetch('/api/examples/secure-post', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, message }),
-      });
-      const json: SecurePostResponse = await res.json();
-      setResult(json);
+      const response = await apiClient.post<SecurePostData>(
+        '/api/examples/secure-post',
+        { name, message },
+      );
+      setResult(response);
     } finally {
       setSubmitting(false);
     }

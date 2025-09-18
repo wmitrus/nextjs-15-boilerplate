@@ -1,14 +1,67 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
-{{#if type}}import {{pascalCase name}} from '@/components/{{dashCase type}}/{{dashCase name}}/{{pascalCase name}}'
-{{else}}import {{pascalCase name}} from '@/components/{{dashCase name}}/{{pascalCase name}}'{{/if}}
+{{#if type}}import {{pascalCase name}} from '@/components/{{dashCase type}}/{{dashCase name}}/{{pascalCase name}}';
+{{else}}import {{pascalCase name}} from '@/components/{{dashCase name}}/{{pascalCase name}}';{{/if}}
 
-describe('Component', () => {
-  it('renders a {{pascalCase name}}', () => {
-    render(<{{pascalCase name}}></{{pascalCase name}}>);
-
-    const element = screen.getByRole('{{dashCase name}}');
-    expect(element).toBeInTheDocument();
+describe('{{pascalCase name}} Component', () => {
+  it('renders without crashing', () => {
+    render(<{{pascalCase name}} />);
+    expect(screen.getByTestId('{{dashCase name}}')).toBeInTheDocument();
   });
+
+  {{#if withChildren}}
+  it('renders children correctly', () => {
+    const testContent = 'Test content';
+    render(
+      <{{pascalCase name}}>
+        {testContent}
+      </{{pascalCase name}}>
+    );
+    expect(screen.getByText(testContent)).toBeInTheDocument();
+  });
+  {{/if}}
+
+  it('applies custom className correctly', () => {
+    const customClass = 'custom-test-class';
+    render(<{{pascalCase name}} className={customClass} />);
+    const element = screen.getByTestId('{{dashCase name}}');
+    expect(element).toHaveClass(customClass);
+  });
+
+  {{#if (eq componentType "polymorphic")}}
+  it('renders with correct HTML element', () => {
+    render(<{{pascalCase name}} />);
+    const element = screen.getByTestId('{{dashCase name}}');
+    expect(element.tagName.toLowerCase()).toBe('{{htmlElement}}');
+  });
+
+  it('passes through HTML attributes correctly', () => {
+    const testId = 'custom-test-id';
+    render(<{{pascalCase name}} id={testId} />);
+    const element = screen.getByTestId('{{dashCase name}}');
+    expect(element).toHaveAttribute('id', testId);
+  });
+  {{/if}}
+
+  // TODO: Add more specific tests based on your component's functionality
+  // Examples:
+  // - Test different variants/props
+  // - Test user interactions
+  // - Test accessibility features
+  // - Test responsive behavior
+
+  /*
+  it('handles click events correctly', async () => {
+    const user = userEvent.setup();
+    const mockOnClick = jest.fn();
+    
+    render(<{{pascalCase name}} onClick={mockOnClick} />);
+    const element = screen.getByTestId('{{dashCase name}}');
+    
+    await user.click(element);
+    expect(mockOnClick).toHaveBeenCalledTimes(1);
+  });
+  */
 });

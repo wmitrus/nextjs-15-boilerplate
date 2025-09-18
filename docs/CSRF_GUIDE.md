@@ -19,6 +19,19 @@
 
 ### Client-side fetch (recommended)
 
+Use the centralized API client which handles CSRF tokens automatically:
+
+```ts
+import { apiClient } from '@/lib/api/client';
+
+// API client automatically handles CSRF tokens for mutations
+await apiClient.post('/api/examples/secure-post', { name: 'Alice' });
+```
+
+### Legacy approach (not recommended)
+
+If you need to use raw fetch, you can still use the CSRF utility:
+
 ```ts
 import { csrfFetch } from '@/lib/client/csrfFetch';
 

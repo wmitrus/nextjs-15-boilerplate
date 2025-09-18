@@ -1,6 +1,8 @@
+/* eslint-disable testing-library/no-debugging-utils */
 import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
+import edgeLogger from '@/lib/logger/edge';
 import { createTenantMiddleware } from '@/lib/multi-tenant/middleware';
 import { apiRateLimit, checkRateLimit, getClientIP } from '@/lib/rate-limit';
 import { localRateLimit } from '@/lib/rate-limit-local';
@@ -18,6 +20,15 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
     pathname.startsWith('/sign-up') ||
     pathname.startsWith('/api/auth') ||
     pathname.includes('clerk');
+
+  edgeLogger.debug(
+    {
+      pathname,
+      method: request.method,
+      userAgent: request.headers.get('user-agent')?.slice(0, 100),
+    },
+    'Middleware processing request',
+  );
 
   // Short-circuit CORS preflight requests
   if (request.method === 'OPTIONS') {
@@ -81,7 +92,14 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
       }
     } catch (e) {
       // Soft-fail rate limiting on environments that don't support fetch keepalive or when Upstash fails
-      console.warn('[rate-limit] Soft-failed:', e);
+      edgeLogger.warn(
+        {
+          error: e,
+          clientIP: getClientIP(request),
+          pathname,
+        },
+        '[rate-limit] Soft-failed',
+      );
     }
   }
 

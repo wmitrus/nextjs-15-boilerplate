@@ -1,21 +1,100 @@
+{{#if isTypeScript}}import { Metadata } from 'next/types';{{/if}}
+
+{{#if isTypeScript}}
+// Metadata configuration
+export const metadata: Metadata = {
+  title: '{{titleCase name}}',
+  description: 'Description for {{titleCase name}} page',
+  openGraph: {
+    title: '{{titleCase name}}',
+    description: 'Description for {{titleCase name}} page',
+  },
+};
+{{/if}}
+
 {{#if hasDynamicRoutes}}
-export default function Page({ params }{{#if isTypeScript}}: { params: { {{#each dynamicRoutes}}{{this}}: string{{#unless @last}}, {{/unless}}{{/each}} } }{{/if}}) {
+{{#if isTypeScript}}
+interface PageProps {
+  params: { {{#each dynamicRoutes}}{{this}}: string{{#unless @last}}, {{/unless}}{{/each}} };
+}
+
+{{/if}}
+export default function {{pascalCase name}}Page({ params }{{#if isTypeScript}}: PageProps{{/if}}) {
   const { {{#each dynamicRoutes}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} } = params;
 
   return (
-    <div>
-      <h1>Hello World</h1>
-      Sample text
-    </div>
-    );
+    <main className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto">
+        <header className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            {{titleCase name}}
+          </h1>
+          <p className="text-lg text-gray-600">
+            Welcome to the {{titleCase name}} page
+          </p>
+        </header>
+
+        <section className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+          <div className="space-y-4">
+            {{#each dynamicRoutes}}
+            <div>
+              <span className="font-medium text-gray-700">{{titleCase this}}:</span>
+              <span className="ml-2 text-gray-900">{{`{${this}}`}}</span>
+            </div>
+            {{/each}}
+          </div>
+          
+          {/* Add your page content here */}
+          <div className="mt-6">
+            <p className="text-gray-600">
+              This is a dynamic page with the following parameters: {{#each dynamicRoutes}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
+            </p>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
 }
 {{else}}
-export default function Page() {
+export default function {{pascalCase name}}Page() {
   return (
-    <div>
-      <h1>Hello World</h1>
-      Sample text
-    </div>
-    );
+    <main className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto">
+        <header className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            {{titleCase name}}
+          </h1>
+          <p className="text-lg text-gray-600">
+            Welcome to the {{titleCase name}} page
+          </p>
+        </header>
+
+        <section className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+          {/* Add your page content here */}
+          <div className="space-y-4">
+            <p className="text-gray-600">
+              This is your new {{titleCase name}} page. Start building something amazing!
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+              <div className="p-4 bg-gray-50 rounded-md">
+                <h3 className="font-medium text-gray-900 mb-2">Getting Started</h3>
+                <p className="text-sm text-gray-600">
+                  Add your components and logic to this page.
+                </p>
+              </div>
+              
+              <div className="p-4 bg-gray-50 rounded-md">
+                <h3 className="font-medium text-gray-900 mb-2">Features</h3>
+                <p className="text-sm text-gray-600">
+                  Leverage the boilerplate's built-in features like API client, logging, and more.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
 }
 {{/if}}
