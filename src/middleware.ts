@@ -2,7 +2,7 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
-import logger from '@/lib/logger';
+import edgeLogger from '@/lib/logger/edge';
 import { createTenantMiddleware } from '@/lib/multi-tenant/middleware';
 import { apiRateLimit, checkRateLimit, getClientIP } from '@/lib/rate-limit';
 import { localRateLimit } from '@/lib/rate-limit-local';
@@ -21,7 +21,7 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
     pathname.startsWith('/api/auth') ||
     pathname.includes('clerk');
 
-  logger.debug(
+  edgeLogger.debug(
     {
       pathname,
       method: request.method,
@@ -92,7 +92,7 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
       }
     } catch (e) {
       // Soft-fail rate limiting on environments that don't support fetch keepalive or when Upstash fails
-      logger.warn(
+      edgeLogger.warn(
         {
           error: e,
           clientIP: getClientIP(request),
