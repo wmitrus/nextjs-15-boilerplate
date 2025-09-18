@@ -372,9 +372,9 @@ describe('Middleware', () => {
       delete process.env.DISABLE_RATE_LIMITING;
       delete process.env.TEST_LOCAL_RATE_LIMIT;
 
-      // Import logger to get the mocked version
-      const logger = (await import('@/lib/logger')).default;
-      const loggerSpy = jest.spyOn(logger, 'warn').mockImplementation();
+      // Import edge logger (which is used in middleware) to get the mocked version
+      const edgeLogger = (await import('@/lib/logger/edge')).default;
+      const loggerSpy = jest.spyOn(edgeLogger, 'warn').mockImplementation();
       const error = new Error('Redis connection failed');
       mockedCheckRateLimit.mockRejectedValue(error);
 
