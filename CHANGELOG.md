@@ -1,3 +1,22 @@
+# [1.17.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.16.0...v1.17.0) (2025-09-18)
+
+### Bug Fixes
+
+- **test:** conditionally load .env.test outside CI ([e52d0cb](https://github.com/wmitrus/nextjs-15-boilerplate/commit/e52d0cbfb6064d5ca8ebf3ffb30c997d8dd89da5))
+
+### Features
+
+- **api:** add logging to current tenant endpoint ([b952e96](https://github.com/wmitrus/nextjs-15-boilerplate/commit/b952e96a54b386dee07d736fb9151d98216612ab))
+- **api:** add logging to feature flags endpoints ([de0216d](https://github.com/wmitrus/nextjs-15-boilerplate/commit/de0216dd11ba3ed211222145f4b1b8fa95b6e022))
+- **api:** add logging to secure post endpoint ([98d998a](https://github.com/wmitrus/nextjs-15-boilerplate/commit/98d998ac373d0ef9a49550af4ab26b43e90da2f1))
+- **api:** add unauthorized response function ([5bb5036](https://github.com/wmitrus/nextjs-15-boilerplate/commit/5bb5036a210b2aff1c56b3e92caa87badf9c4670))
+- **api:** make config optional in createApiClient ([e372d36](https://github.com/wmitrus/nextjs-15-boilerplate/commit/e372d361b2a91aa5e61da65512b2a1b08e13df3b))
+- **logging:** add browser-compatible pino logger ([d93f182](https://github.com/wmitrus/nextjs-15-boilerplate/commit/d93f1826f1c29ce015c6c82b1c8417eaed9e0aec))
+- **logging:** add edge runtime compatible logger ([59df7df](https://github.com/wmitrus/nextjs-15-boilerplate/commit/59df7df587b51bf6a4051ea6559516db8c4586fa))
+- **middleware:** add logging for requests and rate limiting ([129a147](https://github.com/wmitrus/nextjs-15-boilerplate/commit/129a147a16560cc78b9a3be9a443b51dbaa0397d))
+- **plop:** add generators for hooks, middleware, and utilities ([43203b4](https://github.com/wmitrus/nextjs-15-boilerplate/commit/43203b48fdba6c514cd5cc495a3a992f9779fde4))
+- **sentry:** add client-side instrumentation ([a095b5a](https://github.com/wmitrus/nextjs-15-boilerplate/commit/a095b5a17c8c92b7d03dc71d4514458cc718525e))
+
 # [1.16.0](https://github.com/wmitrus/nextjs-15-boilerplate/compare/v1.15.0...v1.16.0) (2025-09-14)
 
 ### Bug Fixes
