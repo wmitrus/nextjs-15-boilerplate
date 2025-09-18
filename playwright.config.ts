@@ -6,8 +6,9 @@ import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
 // Load test environment for e2e tests
-dotenv.config({ path: path.resolve(__dirname, '.env.test') });
-
+if (process.env.CI !== 'true') {
+  dotenv.config({ path: path.resolve(__dirname, '.env.test') });
+}
 /**
  * See https://playwright.dev/docs/test-configuration.
  */

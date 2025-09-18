@@ -64,6 +64,19 @@ export function createServerErrorResponse(
 }
 
 /**
+ * Creates an unauthorized response (401)
+ */
+export function createUnauthorizedResponse(
+  error: string = 'Unauthorized',
+): NextResponse {
+  const response: ServerErrorResponse = {
+    status: 'server_error',
+    error,
+  };
+  return NextResponse.json(response, { status: 401 });
+}
+
+/**
  * Creates a redirect response
  */
 export function createRedirectResponse(

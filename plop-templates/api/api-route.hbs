@@ -1,19 +1,128 @@
-import { NextResponse } from "next/server";
-{{#if isTypeScript}}import { NextRequest } from "next/server";{{/if}}
+{{#if isTypeScript}}import { NextRequest } from 'next/server';{{/if}}
+import { z } from 'zod';
 
-{{#if hasDynamicRoutes}}   
+import logger from '@/lib/logger';
+import {
+  createServerErrorResponse,
+  createSuccessResponse,
+  createValidationErrorResponse,
+} from '@/lib/responseService';
+import { parseAndSanitizeJson } from '@/lib/security/sanitizeRequest';
+
+{{#if (includes (join methods ',') 'POST PUT PATCH')}}
+// Schema for request validation - update as needed
+const RequestSchema = z.object({
+  // Add your fields here
+  // name: z.string().min(1, 'Name is required'),
+  // email: z.string().email('Invalid email format'),
+});
+
+type RequestPayload = z.infer<typeof RequestSchema>;
+{{/if}}
+
+{{#if hasDynamicRoutes}}
 {{#each methods}} 
-  export async function {{this.type}}(_req{{#if ../isTypeScript}}: NextRequest{{/if}}, { params }{{#if ../isTypeScript}}: { params: { {{#each dynamicRoutes}}{{this}}: string{{#unless @last}}, {{/unless}}{{/each}} } }{{/if}}) {
-    const { {{#each dynamicRoutes}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} } = params
-    return NextResponse.json({ data: "", success: true });
+export async function {{this.type}}(
+  {{#if (not (eq this.type 'GET'))}}request{{#if ../isTypeScript}}: NextRequest{{/if}},{{else}}_request{{#if ../isTypeScript}}: NextRequest{{/if}},{{/if}}
+  { params }{{#if ../isTypeScript}}: { params: { {{#each dynamicRoutes}}{{this}}: string{{#unless @last}}, {{/unless}}{{/each}} } }{{/if}}
+) {
+  try {
+    const { {{#each dynamicRoutes}}{{this}}{{#unless @last}}, {{/unless}}{{/each}} } = params;
+    
+    logger.info('Processing {{this.type}} request for {{../name}}', {
+      {{#each dynamicRoutes}}{{this}},{{/each}}
+    });
+
+    {{#if (or (eq this.type 'POST') (eq this.type 'PUT') (eq this.type 'PATCH'))}}
+    // Parse and validate request body
+    const parsed = await parseAndSanitizeJson<RequestPayload>(request);
+    if (parsed === null) {
+      logger.warn('Invalid JSON format in request body');
+      return createValidationErrorResponse({
+        body: ['Invalid JSON format in request body'],
+      });
+    }
+
+    // Validate with schema
+    const validation = RequestSchema.safeParse(parsed);
+    if (!validation.success) {
+      logger.warn('Request validation failed', { errors: validation.error.errors });
+      return createValidationErrorResponse({
+        body: validation.error.errors.map(err => `${err.path.join('.')}: ${err.message}`),
+      });
+    }
+
+    const validatedData = validation.data;
+    {{/if}}
+
+    // TODO: Implement your business logic here
+    const result = {
+      {{#each ../dynamicRoutes}}{{this}},{{/each}}
+      {{#if (or (eq this.type 'POST') (eq this.type 'PUT') (eq this.type 'PATCH'))}}data: validatedData,{{/if}}
+      message: '{{this.type}} operation successful',
+    };
+
+    logger.info('{{this.type}} request processed successfully for {{../name}}', {
+      {{#each ../dynamicRoutes}}{{this}},{{/each}}
+    });
+
+    return createSuccessResponse(result{{#if (eq this.type 'POST')}}, 201{{/if}});
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error('{{this.type}} request failed for {{../name}}', {
+      error: errorMessage,
+      {{#each ../dynamicRoutes}}{{this}},{{/each}}
+    });
+    return createServerErrorResponse(`{{this.type}} operation failed: ${errorMessage}`);
   }
+}
 
 {{/each}} 
 {{else}}
 {{#each methods}} 
-  export async function {{this.type}}(_req{{#if ../isTypeScript}}: NextRequest{{/if}}) {
-    return NextResponse.json({ data: "", success: true });
+export async function {{this.type}}({{#if (not (eq this.type 'GET'))}}request{{#if ../isTypeScript}}: NextRequest{{/if}}{{else}}_request{{#if ../isTypeScript}}: NextRequest{{/if}}{{/if}}) {
+  try {
+    logger.info('Processing {{this.type}} request for {{../name}}');
+
+    {{#if (or (eq this.type 'POST') (eq this.type 'PUT') (eq this.type 'PATCH'))}}
+    // Parse and validate request body
+    const parsed = await parseAndSanitizeJson<RequestPayload>(request);
+    if (parsed === null) {
+      logger.warn('Invalid JSON format in request body');
+      return createValidationErrorResponse({
+        body: ['Invalid JSON format in request body'],
+      });
+    }
+
+    // Validate with schema
+    const validation = RequestSchema.safeParse(parsed);
+    if (!validation.success) {
+      logger.warn('Request validation failed', { errors: validation.error.errors });
+      return createValidationErrorResponse({
+        body: validation.error.errors.map(err => `${err.path.join('.')}: ${err.message}`),
+      });
+    }
+
+    const validatedData = validation.data;
+    {{/if}}
+
+    // TODO: Implement your business logic here
+    const result = {
+      {{#if (or (eq this.type 'POST') (eq this.type 'PUT') (eq this.type 'PATCH'))}}data: validatedData,{{/if}}
+      message: '{{this.type}} operation successful',
+    };
+
+    logger.info('{{this.type}} request processed successfully for {{../name}}');
+
+    return createSuccessResponse(result{{#if (eq this.type 'POST')}}, 201{{/if}});
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error('{{this.type}} request failed for {{../name}}', {
+      error: errorMessage,
+    });
+    return createServerErrorResponse(`{{this.type}} operation failed: ${errorMessage}`);
   }
+}
 
 {{/each}}
 {{/if}}

@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 
 import { TenantResponseData } from '@/lib/api/tenant';
 import { env } from '@/lib/env';
+import logger from '@/lib/logger';
 import {
   createServerErrorResponse,
   createSuccessResponse,
@@ -76,17 +77,21 @@ const mockTenants: Record<string, Tenant> = {
 
 export async function GET() {
   try {
+    logger.info('Fetching current tenant');
+
     // Get tenant ID from headers (set by middleware)
     const headersList = await headers();
     const tenantId = headersList.get('x-tenant-id') || env.DEFAULT_TENANT_ID;
 
     // SECURITY: Validate tenant ID format
     if (!tenantId || typeof tenantId !== 'string' || tenantId.length > 100) {
+      logger.warn({ tenantId }, 'Invalid tenant ID provided');
       return createServerErrorResponse('Invalid tenant ID', 400);
     }
 
     // SECURITY: Sanitize tenant ID (alphanumeric, hyphens, underscores only)
     if (!/^[a-zA-Z0-9_-]+$/.test(tenantId)) {
+      logger.warn({ tenantId }, 'Invalid tenant ID format');
       return createServerErrorResponse('Invalid tenant ID format', 400);
     }
 
@@ -94,6 +99,7 @@ export async function GET() {
     const tenant = mockTenants[tenantId];
 
     if (!tenant) {
+      logger.warn({ tenantId }, 'Tenant not found');
       return createServerErrorResponse(`Tenant not found: ${tenantId}`, 404);
     }
 
@@ -101,9 +107,17 @@ export async function GET() {
       tenant,
     };
 
+    logger.info(
+      {
+        tenantId,
+        tenantName: tenant.name,
+      },
+      'Tenant fetched successfully',
+    );
+
     return createSuccessResponse(responseData);
   } catch (error: unknown) {
-    console.error('Current tenant API error:', error);
+    logger.error(error, 'Current tenant API error');
     const errorMessage = error instanceof Error ? error.message : String(error);
     return createServerErrorResponse(
       `Failed to fetch current tenant: ${errorMessage}`,
