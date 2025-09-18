@@ -1,45 +1,112 @@
 /**
  * @jest-environment node
  */
-{{#if isTypeScript}}import { NextRequest } from "next/server";{{/if}}
-import { createMocks } from 'node-mocks-http';
+{{#if isTypeScript}}import { NextRequest } from 'next/server';{{/if}}
 
 // Import the API methods
-import { {{#each methods}}{{this.type}}{{#unless @last}}, {{/unless}}{{/each}} } from '@/app/api/{{dashCase name}}/{{#each dynamicRoutes}}[{{this}}]{{#unless @last}}/{{/unless}}{{/each}}/route';
+import { 
+  {{#each methods}}{{this.type}}{{#unless @last}},{{/unless}}{{/each}} 
+} from '@/app/api/{{dashCase name}}{{#if hasDynamicRoutes}}/{{#each dynamicRoutes}}[{{this}}]{{#unless @last}}/{{/unless}}{{/each}}{{/if}}/route';
 
-const schema = {
-  type: 'object',
-  properties: {
-    {{#if hasDynamicRoutes}}
-    {{#each dynamicRoutes}}
-    {{this}}: { type: 'string' },
-    {{/each}}
-    {{/if}}
-    name: { type: 'string' },
-  },
-  required: [{{#if hasDynamicRoutes}}{{#each dynamicRoutes}}'{{this}}'{{#unless @last}},{{/unless}}{{/each}}{{/if}}],
+// Mock logger to avoid console output in tests
+jest.mock('@/lib/logger', () => ({
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn(),
+}));
+
+{{#if (includes (join methods ',') 'POST PUT PATCH')}}
+const validRequestBody = {
+  // Add valid test data matching your schema
+  // name: 'Test Name',
+  // email: 'test@example.com',
 };
 
-describe('API Route: /{{dashCase name}}{{#if hasDynamicRoutes}}/{{#each dynamicRoutes}}[{{this}}]{{#unless @last}}/{{/unless}}{{/each}}{{/if}}', () => {
-  {{#each methods}}
-  test('{{this.type}} method', async () => {
-    {{#if ../hasDynamicRoutes}}const params = { {{#each dynamicRoutes}}{{this}}: ''{{#unless @last}}, {{/unless}}{{/each}} };{{/if}}
-    {{#if (eq this.type "POST")}}const body = { attr1: '', attr2: '' };{{else if (eq this.type "PUT")}}const body = { attr1: '', attr2: '' };{{/if}}
+const invalidRequestBody = {
+  // Add invalid test data
+  // name: '', // invalid - empty name
+};
+{{/if}}
 
-    const { req } = createMocks({
-      method: '{{this.type}}',
-      {{#if (eq this.type "POST")}}json: async () => body,
-      {{else if (eq this.type "PUT")}}json: async () => body,
+describe('API Route: /api/{{dashCase name}}{{#if hasDynamicRoutes}}/{{#each dynamicRoutes}}[{{this}}]{{#unless @last}}/{{/unless}}{{/each}}{{/if}}', () => {
+  {{#each methods}}
+  describe('{{this.type}} method', () => {
+    {{#if ../hasDynamicRoutes}}
+    const mockParams = {
+      {{#each ../dynamicRoutes}}{{this}}: 'test-{{this}}'{{#unless @last}},{{/unless}}{{/each}}
+    };
+    {{/if}}
+
+    it('should return success response for valid request', async () => {
+      {{#if (or (eq this.type 'POST') (eq this.type 'PUT') (eq this.type 'PATCH'))}}
+      // Create mock request with valid body
+      const mockRequest = new Request('http://localhost:3000/api/{{../name}}', {
+        method: '{{this.type}}',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(validRequestBody),
+      }) as NextRequest;
+
+      const response = await {{this.type}}(mockRequest{{#if ../hasDynamicRoutes}}, { params: mockParams }{{/if}});
+      {{else}}
+      // Create mock request for GET method
+      const mockRequest = new Request('http://localhost:3000/api/{{../name}}') as NextRequest;
+      
+      const response = await {{this.type}}(mockRequest{{#if ../hasDynamicRoutes}}, { params: mockParams }{{/if}});
       {{/if}}
-      {{#if ../hasDynamicRoutes}}params: params,{{/if}}
+      
+      expect(response.status).toBe({{#if (eq this.type 'POST')}}201{{else}}200{{/if}});
+      
+      const json = await response.json();
+      expect(json).toHaveProperty('success', true);
+      expect(json).toHaveProperty('data');
+      
+      {{#if ../hasDynamicRoutes}}
+      // Verify dynamic route params are included in response
+      {{#each ../dynamicRoutes}}
+      expect(json.data).toHaveProperty('{{this}}', 'test-{{this}}');
+      {{/each}}
+      {{/if}}
     });
 
-    const response = await {{this.type}}(req as NextRequest{{#if ../hasDynamicRoutes}}, { params: params }{{/if}});
-    const json = await response.json();
+    {{#if (or (eq this.type 'POST') (eq this.type 'PUT') (eq this.type 'PATCH'))}}
+    it('should return validation error for invalid request body', async () => {
+      const mockRequest = new Request('http://localhost:3000/api/{{../name}}', {
+        method: '{{this.type}}',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(invalidRequestBody),
+      }) as NextRequest;
 
-    expect(response.status).toBe({{#if (eq this.type "POST")}}201{{else}}200{{/if}});
-    expect(json.data.length).toBe(1);
-    expect(json.data[0]).toMatchSchema(schema);
+      const response = await {{this.type}}(mockRequest{{#if ../hasDynamicRoutes}}, { params: mockParams }{{/if}});
+      
+      expect(response.status).toBe(400);
+      
+      const json = await response.json();
+      expect(json).toHaveProperty('success', false);
+      expect(json).toHaveProperty('errors');
+    });
+
+    it('should return validation error for malformed JSON', async () => {
+      const mockRequest = new Request('http://localhost:3000/api/{{../name}}', {
+        method: '{{this.type}}',
+        headers: { 'Content-Type': 'application/json' },
+        body: 'invalid-json',
+      }) as NextRequest;
+
+      const response = await {{this.type}}(mockRequest{{#if ../hasDynamicRoutes}}, { params: mockParams }{{/if}});
+      
+      expect(response.status).toBe(400);
+      
+      const json = await response.json();
+      expect(json).toHaveProperty('success', false);
+      expect(json).toHaveProperty('errors');
+      expect(json.errors).toHaveProperty('body');
+    });
+    {{/if}}
+
+    it('should handle server errors gracefully', async () => {
+      // TODO: Add test that simulates a server error
+      // You might need to mock dependencies that could throw errors
+    });
   });
 
   {{/each}}

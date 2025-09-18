@@ -16,6 +16,31 @@ function registerHandleBarHelpers(plop) {
   plop.setHelper('raw', (options) => {
     return options.fn(undefined);
   });
+
+  // Custom helpers for our templates
+  plop.setHelper('includes', (array, value) => {
+    return array && array.includes && array.includes(value);
+  });
+
+  plop.setHelper('join', (array, separator) => {
+    return array && array.join ? array.join(separator || ',') : '';
+  });
+
+  plop.setHelper('not', (value) => {
+    return !value;
+  });
+
+  plop.setHelper('or', function () {
+    return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
+  });
+
+  plop.setHelper('and', function () {
+    return Array.prototype.slice.call(arguments, 0, -1).every(Boolean);
+  });
+
+  plop.setHelper('eq', (a, b) => {
+    return a === b;
+  });
 }
 
 function isUsingTypeScript() {
@@ -322,6 +347,168 @@ module.exports = function (plop) {
         fs.writeFileSync(manifestPath, JSON.stringify(json, null, 2) + '\n');
         return `Updated ${manifestPath}`;
       });
+
+      return actions;
+    },
+  });
+
+  // New Middleware generator
+  plop.setGenerator('Middleware', {
+    description: 'Generate a Next.js middleware',
+    prompts: async function (inquirer) {
+      const prompts = [
+        {
+          type: 'input',
+          name: 'name',
+          message: 'Middleware name?',
+        },
+      ];
+
+      if (!isTS) {
+        prompts.push({
+          type: 'confirm',
+          name: 'isTypeScript',
+          message: 'Use TypeScript?',
+          default: false,
+        });
+      }
+
+      const answers = await inquirer.prompt(prompts);
+
+      return {
+        isTypeScript: isTS || answers.isTypeScript,
+        name: answers.name,
+      };
+    },
+
+    actions: function (data) {
+      const extension = data.isTypeScript ? 'ts' : 'js';
+      const middlewarePath = `src/lib/middleware/${data.name}.${extension}`;
+      const testPath = `src/lib/middleware/${data.name}.test.${extension}`;
+
+      const actions = [
+        {
+          type: 'add',
+          path: middlewarePath,
+          templateFile: 'plop-templates/middleware/middleware.hbs',
+        },
+      ];
+
+      if (createTestFile.forApi === true) {
+        actions.push({
+          type: 'add',
+          path: testPath,
+          templateFile: 'plop-templates/tests/middleware.hbs',
+        });
+      }
+
+      return actions;
+    },
+  });
+
+  // New Hook generator
+  plop.setGenerator('Hook', {
+    description: 'Generate a React custom hook',
+    prompts: async function (inquirer) {
+      const prompts = [
+        {
+          type: 'input',
+          name: 'name',
+          message: 'Hook name? (without "use" prefix)',
+        },
+      ];
+
+      if (!isTS) {
+        prompts.push({
+          type: 'confirm',
+          name: 'isTypeScript',
+          message: 'Use TypeScript?',
+          default: false,
+        });
+      }
+
+      const answers = await inquirer.prompt(prompts);
+
+      return {
+        isTypeScript: isTS || answers.isTypeScript,
+        name: answers.name,
+      };
+    },
+
+    actions: function (data) {
+      const extension = data.isTypeScript ? 'ts' : 'js';
+      const hookPath = `src/lib/hooks/use${data.name}.${extension}`;
+      const testPath = `src/lib/hooks/use${data.name}.test.${extension}`;
+
+      const actions = [
+        {
+          type: 'add',
+          path: hookPath,
+          templateFile: 'plop-templates/hooks/hook.hbs',
+        },
+      ];
+
+      if (createTestFile.forApi === true) {
+        actions.push({
+          type: 'add',
+          path: testPath,
+          templateFile: 'plop-templates/tests/hook.hbs',
+        });
+      }
+
+      return actions;
+    },
+  });
+
+  // New Utility generator
+  plop.setGenerator('Utility', {
+    description: 'Generate a utility/lib function',
+    prompts: async function (inquirer) {
+      const prompts = [
+        {
+          type: 'input',
+          name: 'name',
+          message: 'Utility name?',
+        },
+      ];
+
+      if (!isTS) {
+        prompts.push({
+          type: 'confirm',
+          name: 'isTypeScript',
+          message: 'Use TypeScript?',
+          default: false,
+        });
+      }
+
+      const answers = await inquirer.prompt(prompts);
+
+      return {
+        isTypeScript: isTS || answers.isTypeScript,
+        name: answers.name,
+      };
+    },
+
+    actions: function (data) {
+      const extension = data.isTypeScript ? 'ts' : 'js';
+      const utilPath = `src/lib/${data.name}.${extension}`;
+      const testPath = `src/lib/${data.name}.test.${extension}`;
+
+      const actions = [
+        {
+          type: 'add',
+          path: utilPath,
+          templateFile: 'plop-templates/utils/util.hbs',
+        },
+      ];
+
+      if (createTestFile.forApi === true) {
+        actions.push({
+          type: 'add',
+          path: testPath,
+          templateFile: 'plop-templates/tests/util.hbs',
+        });
+      }
 
       return actions;
     },

@@ -263,5 +263,5 @@ export const apiClient = new ApiClient();
 /**
  * Create a new API client with custom configuration
  */
-export const createApiClient = (config: ApiRequestConfig) =>
+export const createApiClient = (config: ApiRequestConfig = {}) =>
   new ApiClient(config);

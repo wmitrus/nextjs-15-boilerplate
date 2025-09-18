@@ -1,0 +1,128 @@
+{{#if isTypeScript}}import { useCallback, useEffect, useState } from 'react';{{else}}import { useCallback, useEffect, useState } from 'react';{{/if}}
+
+{{#if isTypeScript}}
+interface Use{{pascalCase name}}Options {
+  // Add configuration options here
+  enabled?: boolean;
+  // Add other options as needed
+}
+
+interface Use{{pascalCase name}}Result {
+  // Define the return type of your hook
+  data: any | null;
+  loading: boolean;
+  error: string | null;
+  // Add other return values as needed
+}
+
+{{/if}}
+/**
+ * {{titleCase name}} Hook
+ * 
+ * Description: Add your hook description here
+ * Usage: const { data, loading, error } = use{{pascalCase name}}();
+ */
+export function use{{pascalCase name}}({{#if isTypeScript}}options: Use{{pascalCase name}}Options = {}{{/if}}){{#if isTypeScript}}: Use{{pascalCase name}}Result{{/if}} {
+  {{#if isTypeScript}}const { enabled = true } = options;{{else}}const enabled = options?.enabled ?? true;{{/if}}
+  
+  const [data, setData] = useState{{#if isTypeScript}}<any | null>{{/if}}(null);
+  const [loading, setLoading] = useState{{#if isTypeScript}}<boolean>{{/if}}(false);
+  const [error, setError] = useState{{#if isTypeScript}}<string | null>{{/if}}(null);
+
+  // Memoized function to fetch/process data
+  const fetch{{pascalCase name}}Data = useCallback(async () => {
+    if (!enabled) return;
+    
+    setLoading(true);
+    setError(null);
+
+    try {
+      // TODO: Implement your hook logic here
+      // Examples:
+      // - API calls
+      // - Local storage operations
+      // - WebSocket connections
+      // - Browser API interactions
+      // - Complex state calculations
+
+      // Simulated async operation
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Set your actual data here
+      const result = {
+        message: '{{titleCase name}} data loaded successfully',
+        timestamp: new Date().toISOString(),
+      };
+
+      setData(result);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
+      console.error('{{titleCase name}} hook error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [enabled]);
+
+  // Effect to run the hook logic
+  useEffect(() => {
+    fetch{{pascalCase name}}Data();
+  }, [fetch{{pascalCase name}}Data]);
+
+  // Cleanup function (if needed)
+  useEffect(() => {
+    return () => {
+      // Cleanup logic here if needed
+      // Examples:
+      // - Cancel API requests
+      // - Clear timers
+      // - Remove event listeners
+      // - Close WebSocket connections
+    };
+  }, []);
+
+  // Additional helper functions
+  const refresh = useCallback(() => {
+    fetch{{pascalCase name}}Data();
+  }, [fetch{{pascalCase name}}Data]);
+
+  const reset = useCallback(() => {
+    setData(null);
+    setError(null);
+    setLoading(false);
+  }, []);
+
+  return {
+    data,
+    loading,
+    error,
+    refresh,
+    reset,
+    // Add other return values as needed
+  };
+}
+
+// Export the hook as default for easier imports
+export default use{{pascalCase name}};
+
+// Usage example:
+/*
+import { use{{pascalCase name}} } from '@/lib/hooks/use{{pascalCase name}}';
+
+function MyComponent() {
+  const { data, loading, error, refresh, reset } = use{{pascalCase name}}({
+    enabled: true,
+  });
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+  return (
+    <div>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+      <button onClick={refresh}>Refresh</button>
+      <button onClick={reset}>Reset</button>
+    </div>
+  );
+}
+*/

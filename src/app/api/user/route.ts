@@ -1,24 +1,33 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
+
+import logger from '@/lib/logger';
+import {
+  createServerErrorResponse,
+  createSuccessResponse,
+  createUnauthorizedResponse,
+} from '@/lib/responseService';
 
 export async function GET() {
   try {
+    logger.info('Fetching current user profile');
+
     // Get the authentication state
     const { userId } = await auth();
 
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      logger.warn('Unauthorized access attempt to user API');
+      return createUnauthorizedResponse('Authentication required');
     }
 
     // Get the current user
     const user = await currentUser();
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      logger.warn({ userId }, 'User not found in Clerk');
+      return createServerErrorResponse('User profile not found');
     }
 
-    // Return user information
-    return NextResponse.json({
+    const userProfile = {
       id: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -28,12 +37,13 @@ export async function GET() {
       })),
       createdAt: user.createdAt,
       lastSignInAt: user.lastSignInAt,
-    });
+    };
+
+    logger.info({ userId: user.id }, 'User profile fetched successfully');
+
+    return createSuccessResponse(userProfile);
   } catch (error) {
-    console.error('Error in /api/user:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    logger.error(error, 'Error fetching user profile');
+    return createServerErrorResponse('Failed to fetch user profile');
   }
 }

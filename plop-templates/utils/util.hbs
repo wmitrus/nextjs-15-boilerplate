@@ -1,0 +1,182 @@
+{{#if isTypeScript}}
+/**
+ * Options for {{titleCase name}} utility
+ */
+export interface {{pascalCase name}}Options {
+  // Add configuration options here
+  strict?: boolean;
+  // Add other options as needed
+}
+
+/**
+ * Result type for {{titleCase name}} utility
+ */
+export interface {{pascalCase name}}Result {
+  // Define the return type
+  success: boolean;
+  data?: any;
+  error?: string;
+}
+
+{{/if}}
+/**
+ * {{titleCase name}} Utility
+ * 
+ * Description: Add your utility description here
+ * 
+ * @param input - The input parameter
+ * @param options - Configuration options
+ * @returns The processed result
+ * 
+ * @example
+ * ```typescript
+ * const result = {{camelCase name}}('input', { strict: true });
+ * if (result.success) {
+ *   console.log(result.data);
+ * }
+ * ```
+ */
+export function {{camelCase name}}(
+  input{{#if isTypeScript}}: string{{/if}},
+  options{{#if isTypeScript}}: {{pascalCase name}}Options = {}{{/if}}
+){{#if isTypeScript}}: {{pascalCase name}}Result{{/if}} {
+  {{#if isTypeScript}}const { strict = false } = options;{{else}}const strict = options?.strict ?? false;{{/if}}
+
+  try {
+    // TODO: Implement your utility logic here
+    // Examples:
+    // - String manipulation
+    // - Data transformation
+    // - Validation logic
+    // - Complex calculations
+    // - Format conversions
+
+    // Validate input
+    if (!input || typeof input !== 'string') {
+      return {
+        success: false,
+        error: 'Invalid input: expected non-empty string',
+      };
+    }
+
+    // Process the input
+    let processedData = input.trim();
+    
+    if (strict) {
+      // Apply strict processing
+      processedData = processedData.toLowerCase();
+    }
+
+    // Add your actual processing logic here
+    const result = {
+      original: input,
+      processed: processedData,
+      length: processedData.length,
+      timestamp: new Date().toISOString(),
+    };
+
+    return {
+      success: true,
+      data: result,
+    };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    
+    return {
+      success: false,
+      error: `{{titleCase name}} processing failed: ${errorMessage}`,
+    };
+  }
+}
+
+/**
+ * Async version of {{camelCase name}} utility
+ * 
+ * @param input - The input parameter
+ * @param options - Configuration options
+ * @returns Promise with the processed result
+ */
+export async function {{camelCase name}}Async(
+  input{{#if isTypeScript}}: string{{/if}},
+  options{{#if isTypeScript}}: {{pascalCase name}}Options = {}{{/if}}
+){{#if isTypeScript}}: Promise<{{pascalCase name}}Result>{{/if}} {
+  // Simulate async operation
+  await new Promise(resolve => setTimeout(resolve, 10));
+  
+  return {{camelCase name}}(input, options);
+}
+
+/**
+ * Batch process multiple inputs
+ * 
+ * @param inputs - Array of input values
+ * @param options - Configuration options
+ * @returns Array of processed results
+ */
+export function {{camelCase name}}Batch(
+  inputs{{#if isTypeScript}}: string[]{{/if}},
+  options{{#if isTypeScript}}: {{pascalCase name}}Options = {}{{/if}}
+){{#if isTypeScript}}: {{pascalCase name}}Result[]{{/if}} {
+  if (!Array.isArray(inputs)) {
+    return [{
+      success: false,
+      error: 'Invalid input: expected array',
+    }];
+  }
+
+  return inputs.map(input => {{camelCase name}}(input, options));
+}
+
+/**
+ * Validate input before processing
+ * 
+ * @param input - The input to validate
+ * @returns True if input is valid
+ */
+export function is{{pascalCase name}}Valid(input{{#if isTypeScript}}: any{{/if}}){{#if isTypeScript}}: input is string{{/if}} {
+  return typeof input === 'string' && input.length > 0;
+}
+
+// Constants related to {{titleCase name}}
+export const {{constantCase name}}_CONSTANTS = {
+  MAX_LENGTH: 1000,
+  MIN_LENGTH: 1,
+  DEFAULT_OPTIONS: {
+    strict: false,
+  }{{#if isTypeScript}} as const{{/if}},
+};
+
+// Export all utilities as a namespace
+export const {{pascalCase name}}Utils = {
+  process: {{camelCase name}},
+  processAsync: {{camelCase name}}Async,
+  processBatch: {{camelCase name}}Batch,
+  isValid: is{{pascalCase name}}Valid,
+  constants: {{constantCase name}}_CONSTANTS,
+};
+
+// Default export for convenience
+export default {{camelCase name}};
+
+// Usage examples:
+/*
+// Basic usage
+const result = {{camelCase name}}('hello world');
+
+// With options
+const strictResult = {{camelCase name}}('Hello World', { strict: true });
+
+// Async usage
+const asyncResult = await {{camelCase name}}Async('hello world');
+
+// Batch processing
+const batchResults = {{camelCase name}}Batch(['hello', 'world']);
+
+// Validation
+if (is{{pascalCase name}}Valid(input)) {
+  const result = {{camelCase name}}(input);
+}
+
+// Using the utils namespace
+const result = {{pascalCase name}}Utils.process('hello world');
+*/

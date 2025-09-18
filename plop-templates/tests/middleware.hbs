@@ -1,0 +1,51 @@
+/** * @jest-environment node */
+{{#if isTypeScript}}import { NextRequest, NextResponse } from 'next/server';{{/if}}
+
+import { create{{pascalCase name}}Middleware,
+{{camelCase name}}Middleware } from '@/lib/middleware/{{dashCase name}}'; //
+Mock logger to avoid console output in tests jest.mock('@/lib/logger', () => ({
+debug: jest.fn(), info: jest.fn(), warn: jest.fn(), error: jest.fn(), }));
+describe('{{titleCase name}}
+Middleware', () => { let mockRequest{{#if isTypeScript}}: NextRequest{{/if}};
+let mockResponse{{#if isTypeScript}}: NextResponse{{/if}}; beforeEach(() => {
+mockRequest = new NextRequest('http://localhost:3000/test'); mockResponse =
+NextResponse.next(); }); describe('create{{pascalCase name}}Middleware', () => {
+it('should create middleware function with default options', () => { const
+middleware = create{{pascalCase name}}Middleware(); expect(typeof
+middleware).toBe('function'); }); it('should create middleware function with
+custom options', () => { const middleware = create{{pascalCase
+  name
+}}Middleware({ enabled: false, }); expect(typeof middleware).toBe('function');
+}); }); describe('{{camelCase name}}Middleware', () => { it('should process
+request and return response', async () => { const result = await
+{{camelCase name}}Middleware(mockRequest, mockResponse);
+expect(result).toBeDefined(); expect(result.headers.get('X-{{titleCase
+  name
+}}-Processed')).toBe('true'); expect(result.headers.get('X-{{titleCase
+  name
+}}-Timestamp')).toBeDefined(); }); it('should handle different HTTP methods',
+async () => { const postRequest = new NextRequest('http://localhost:3000/test',
+{ method: 'POST', }); const result = await
+{{camelCase name}}Middleware(postRequest, mockResponse);
+expect(result).toBeDefined(); expect(result.headers.get('X-{{titleCase
+  name
+}}-Processed')).toBe('true'); }); it('should handle different pathnames', async
+() => { const apiRequest = new NextRequest('http://localhost:3000/api/test');
+const result = await
+{{camelCase name}}Middleware(apiRequest, mockResponse);
+expect(result).toBeDefined(); expect(result.headers.get('X-{{titleCase
+  name
+}}-Processed')).toBe('true'); }); }); describe('middleware with disabled
+option', () => { it('should skip processing when disabled', async () => { const
+middleware = create{{pascalCase name}}Middleware({ enabled: false }); const
+result = await middleware(mockRequest, mockResponse);
+expect(result).toBe(mockResponse); expect(result.headers.get('X-{{titleCase
+  name
+}}-Processed')).toBeNull(); }); }); describe('error handling', () => {
+it('should handle errors gracefully', async () => { const middleware = create{{pascalCase
+  name
+}}Middleware(); const originalHeaders = mockResponse.headers.set;
+mockResponse.headers.set = jest.fn().mockImplementation(() => { throw new
+Error('Header setting failed'); }); const result = await middleware(mockRequest,
+mockResponse); mockResponse.headers.set = originalHeaders;
+expect(result).toBeDefined(); }); }); });

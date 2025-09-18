@@ -1,0 +1,44 @@
+import { renderHook, waitFor } from '@testing-library/react'; import { act }
+from '@testing-library/react'; import { use{{pascalCase name}}
+} from '@/lib/hooks/use{{pascalCase name}}'; describe('use{{pascalCase name}}
+Hook', () => { beforeEach(() => { jest.clearAllMocks(); }); it('should
+initialize with correct default values', () => { const { result } =
+renderHook(() => use{{pascalCase name}}());
+expect(result.current.data).toBeNull();
+expect(result.current.loading).toBe(true);
+expect(result.current.error).toBeNull(); expect(typeof
+result.current.refresh).toBe('function'); expect(typeof
+result.current.reset).toBe('function'); }); it('should load data successfully',
+async () => { const { result } = renderHook(() => use{{pascalCase name}}());
+await waitFor(() => { expect(result.current.loading).toBe(false); });
+expect(result.current.data).toBeDefined();
+expect(result.current.data).toHaveProperty('message');
+expect(result.current.data).toHaveProperty('timestamp');
+expect(result.current.error).toBeNull(); }); it('should respect the enabled
+option', async () => { const { result } = renderHook(() => use{{pascalCase
+  name
+}}({ enabled: false })); expect(result.current.loading).toBe(false);
+expect(result.current.data).toBeNull(); expect(result.current.error).toBeNull();
+}); it('should handle refresh functionality', async () => { const { result } =
+renderHook(() => use{{pascalCase name}}()); await waitFor(() => {
+expect(result.current.loading).toBe(false); }); const initialData =
+result.current.data; act(() => { result.current.refresh(); });
+expect(result.current.loading).toBe(true); await waitFor(() => {
+expect(result.current.loading).toBe(false); });
+expect(result.current.data).toBeDefined(); if (initialData &&
+result.current.data) {
+expect(result.current.data.timestamp).not.toBe(initialData.timestamp); } });
+it('should handle reset functionality', async () => { const { result } =
+renderHook(() => use{{pascalCase name}}()); await waitFor(() => {
+expect(result.current.loading).toBe(false); });
+expect(result.current.data).toBeDefined(); act(() => { result.current.reset();
+}); expect(result.current.data).toBeNull();
+expect(result.current.error).toBeNull();
+expect(result.current.loading).toBe(false); }); it('should handle errors
+gracefully', async () => { const { result } = renderHook(() => use{{pascalCase
+  name
+}}()); await waitFor(() => { expect(result.current.loading).toBe(false); });
+expect(result.current.error).toBeNull(); }); it('should cleanup properly on
+unmount', () => { const { unmount } = renderHook(() => use{{pascalCase
+  name
+}}()); expect(() => unmount()).not.toThrow(); }); });
