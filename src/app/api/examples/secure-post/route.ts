@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 
-import logger from '@/lib/logger';
+import edgeLogger from '@/lib/logger/edge';
 import {
   createServerErrorResponse,
   createSuccessResponse,
@@ -17,11 +17,11 @@ interface DemoPayload {
 
 export async function POST(request: NextRequest) {
   try {
-    logger.info({ url: request.url }, 'Processing secure POST request');
+    edgeLogger.info({ url: request.url }, 'Processing secure POST request');
 
     const parsed = await parseAndSanitizeJson<DemoPayload>(request);
     if (parsed === null) {
-      logger.warn('Invalid JSON format in request body');
+      edgeLogger.warn('Invalid JSON format in request body');
       return createValidationErrorResponse({
         body: ['Invalid JSON format in request body'],
       });
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     const { name = 'Anonymous', message = '' } = parsed;
 
-    logger.info(
+    edgeLogger.info(
       {
         name,
         messageLength: message.length,
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    logger.error(
+    edgeLogger.error(
       {
         error: msg,
         url: request.url,
