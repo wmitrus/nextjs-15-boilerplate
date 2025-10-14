@@ -102,7 +102,7 @@
     }
   ],
   "dependencies": {
-    "@clerk/nextjs": "^6.32.0",
+    "@clerk/nextjs": "^6.32.2",
     "@edge-csrf/core": "2.5.3-cloudflare-rc1",
     "@hookform/resolvers": "^5.2.2",
     "@mdx-js/react": "^3.1.1",
